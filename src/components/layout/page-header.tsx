@@ -1,5 +1,5 @@
-import { RefreshCw } from "lucide-react";
 import type { ReactNode } from "react";
+import { RefreshButton } from "@/components/layout/refresh-button";
 
 export function PageHeader({
   title,
@@ -18,13 +18,7 @@ export function PageHeader({
       </div>
       <div className="flex items-center gap-2">
         {actions}
-        <button
-          type="button"
-          aria-label="Refresh"
-          className="grid size-9 place-items-center rounded-full border border-line bg-surface text-ink-muted transition-colors hover:text-ink"
-        >
-          <RefreshCw className="size-4" />
-        </button>
+        <RefreshButton />
       </div>
     </div>
   );
