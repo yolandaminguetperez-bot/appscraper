@@ -184,6 +184,27 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   );
 }
 
+// Quick look opens over the list, shows that app's numbers, and leaves the URL
+// (and so the filters and scroll position) alone.
+{
+  await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+  const trigger = page.getByLabel(/Quick look at/).first();
+  const name = (await trigger.getAttribute("aria-label")).replace("Quick look at ", "");
+  await trigger.click();
+  await page.waitForSelector("[role=dialog]");
+  await page.waitForTimeout(1200);
+  const panel = await page.locator("[role=dialog]").textContent();
+  check(
+    "quick look shows the app without navigating",
+    panel.includes(name) && panel.includes("MRR") && page.url().endsWith("/dashboard/apps"),
+    name,
+  );
+
+  await page.keyboard.press("Escape");
+  await page.waitForTimeout(300);
+  check("escape closes quick look", (await page.locator("[role=dialog]").count()) === 0, "");
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

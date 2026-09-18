@@ -6,6 +6,7 @@ import { MiniChart } from "@/components/charts/mini-chart";
 import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 import { SortableHeader } from "@/components/filters/sortable-header";
 import { SelectCheckbox } from "@/components/selection/select-checkbox";
+import { QuickLookButton } from "@/components/quicklook/quick-look-button";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
@@ -54,7 +55,7 @@ export function AppsTable({
             <th scope="col" className="px-4 py-3 font-medium">Revenue, 30d</th>
             <SortableHeader label="Revenue" sortKey="revenue" align="right" defaultKey="revenue" />
             <SortableHeader label="Released" sortKey="released" align="right" defaultKey="revenue" />
-            <th className="w-10 px-2 py-3" />
+            <th className="w-20 px-2 py-3" />
           </tr>
         </thead>
         <tbody>
@@ -106,7 +107,10 @@ export function AppsTable({
               <td className="px-4 py-3 text-right tabular-nums">{money(app.estRevenue)}</td>
               <td className="px-4 py-3 text-right text-[13px] text-ink-muted">{daysAgo(app.releasedAt)}</td>
               <td className="px-2 py-3">
-                <FavoriteButton kind="app" refId={app.id} initial={favorites.has(app.id)} />
+                <div className="flex items-center gap-0.5">
+                  <QuickLookButton id={app.id} title={app.title} />
+                  <FavoriteButton kind="app" refId={app.id} initial={favorites.has(app.id)} />
+                </div>
               </td>
             </tr>
           ))}

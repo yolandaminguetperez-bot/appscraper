@@ -5,6 +5,7 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { SelectCheckbox } from "@/components/selection/select-checkbox";
+import { QuickLookButton } from "@/components/quicklook/quick-look-button";
 import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 
 function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
@@ -87,6 +88,7 @@ export function AppsGrid({
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <SelectCheckbox id={app.id} title={app.title} />
+                <QuickLookButton id={app.id} title={app.title} />
                 <FavoriteButton kind="app" refId={app.id} initial={favorites.has(app.id)} />
               </div>
             </header>

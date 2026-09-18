@@ -153,4 +153,8 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       navegación (sessionStorage, no la URL: cambiar un filtro la borraría), con
       barra flotante "N selected → Compare". El parámetro del comparador es
       `app`, no `ids` — con `ids` la comparación salía vacía en silencio
+- [x] I2. Panel "quick look": inspecciona una app sobre la lista, sin perder
+      filtros ni scroll. Carga por fetch al detalle de la API, se cierra con
+      Escape o clic fuera, y limpia los datos al cambiar de app para no enseñar
+      las cifras de una bajo el nombre de otra
 
