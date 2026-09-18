@@ -16,14 +16,15 @@ const METRIC_LABEL: Record<string, string> = {
 };
 
 function describe(alert: AlertHit): string {
-  const unit = alert.metric === "rating" ? "pts" : alert.metric === "position" ? "places" : "%";
+  // Percent hugs its number, words do not: "10%" but "4 places".
+  const unit = alert.metric === "rating" ? " pts" : alert.metric === "position" ? " places" : "%";
   const verb = alert.direction === "up" ? "gains" : "loses";
   const subject = alert.term ? `“${alert.term}”` : METRIC_LABEL[alert.metric];
   return `when ${subject} ${verb} ${alert.threshold}${unit} in ${alert.windowDays} days`;
 }
 
 function movement(alert: AlertHit): string {
-  const unit = alert.metric === "rating" ? "pts" : alert.metric === "position" ? "places" : "%";
+  const unit = alert.metric === "rating" ? " pts" : alert.metric === "position" ? " places" : "%";
   const sign = alert.change > 0 ? "+" : "";
   const size = alert.metric === "rating" ? alert.change.toFixed(2) : Math.round(alert.change);
   return `${sign}${size}${unit}`;
