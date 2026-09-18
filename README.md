@@ -171,6 +171,33 @@ docker run -p 3000:3000 -v appscraper-data:/app/data appscraper
 No está probado: la máquina donde se escribió tiene el cliente de Docker pero
 no el demonio, así que la imagen nunca se ha construido. La vía con Node sí.
 
+### Si `npm install` falla con EACCES o EEXIST
+
+```
+npm error code EEXIST
+npm error EACCES: permission denied, rename '/Users/<tu-usuario>/.npm/_cacache/...'
+```
+
+No es del proyecto: es el caché global de npm, que en macOS suele acabar con
+ficheros de root después de un `sudo npm install` en cualquier otro momento.
+Devuélvete la propiedad de tu caché y reinstala:
+
+```bash
+sudo chown -R $(whoami) ~/.npm
+npm install
+```
+
+O, si prefieres no usar `sudo`, usa un caché dentro del propio proyecto y no
+toques nada del sistema:
+
+```bash
+npm install --cache ./.npm-cache
+```
+
+Después de esto, `npm run seed` vuelve a funcionar. Si lo ejecutaste antes y
+falló con `Cannot find package 'better-sqlite3'`, era la consecuencia de que la
+instalación no había llegado a terminar, no un problema aparte.
+
 ## Map geometry
 
 `src/lib/geo/world.json` is built by `scripts/make-world-geo.mjs` from Natural
