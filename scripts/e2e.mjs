@@ -107,6 +107,36 @@ const trackedShown = trackedTitle
   : false;
 check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no title");
 
+// Every export endpoint returns CSV that parses back with a stable column count.
+for (const [name, path] of [
+  ["apps", "/api/apps/export?store=ios"],
+  ["ads", "/api/ads/export?minDays=30"],
+  ["organic", "/api/organic/export?platform=tiktok"],
+  ["reviews", "/api/reviews/export?sentiment=negative"],
+]) {
+  const res = await page.request.get(BASE + path);
+  const text = await res.text();
+  const lines = text.split("\n").filter(Boolean);
+  // A quoted field can hold a newline, so count commas outside quotes rather
+  // than splitting naively — a malformed row is exactly what this guards.
+  const widths = new Set(
+    lines.map((line) => {
+      let quoted = false;
+      let cells = 1;
+      for (const ch of line) {
+        if (ch === '"') quoted = !quoted;
+        else if (ch === "," && !quoted) cells += 1;
+      }
+      return cells;
+    }),
+  );
+  check(
+    `${name} export is well-formed CSV`,
+    res.ok() && lines.length > 1 && widths.size === 1,
+    `${lines.length} lines, widths ${[...widths].join("/")}`,
+  );
+}
+
 check("no 5xx responses", serverErrors.length === 0, serverErrors.join(", "));
 
 await browser.close();

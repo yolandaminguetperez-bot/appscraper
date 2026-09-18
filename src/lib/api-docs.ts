@@ -98,4 +98,34 @@ export const endpoints: Endpoint[] = [
     ],
     example: "/api/v1/keywords?term=budget",
   },
+  {
+    method: "GET",
+    path: "/api/apps/export",
+    summary: "The filtered app selection as CSV. Same filters as /api/v1/apps.",
+    params: [
+      { name: "(any /api/v1/apps filter)", description: "Pagination is ignored: the whole selection is written, capped at 10,000 rows." },
+    ],
+    example: "/api/apps/export?store=ios&minReviews=1000",
+  },
+  {
+    method: "GET",
+    path: "/api/ads/export",
+    summary: "Ad creatives as CSV, with the Ads Library filters applied.",
+    params: [{ name: "cat, lang, minMrr, minDownloads, minAds, minDays, q", description: "Same as the Ads Library." }],
+    example: "/api/ads/export?minDays=30",
+  },
+  {
+    method: "GET",
+    path: "/api/organic/export",
+    summary: "Creator posts as CSV, with the Organic Content filters applied.",
+    params: [{ name: "platform, cat, minViews, minLikes, minFollowers, q", description: "Same as Organic Content." }],
+    example: "/api/organic/export?platform=tiktok",
+  },
+  {
+    method: "GET",
+    path: "/api/reviews/export",
+    summary: "Reviews as CSV, with the Review Analytics filters applied.",
+    params: [{ name: "app, rating, sentiment, topic, window, q", description: "Same as Review Analytics." }],
+    example: "/api/reviews/export?sentiment=negative",
+  },
 ];

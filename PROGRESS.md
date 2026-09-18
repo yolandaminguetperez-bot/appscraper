@@ -72,7 +72,8 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       de 388 KB a 352 KB (-9,4%); el sprite se emite una vez en el layout
 - [x] AC. Export CSV en Ads, Organic y Review Analytics (antes solo Explore
       Apps), respetando los filtros activos; helper compartido en src/lib/csv.ts
-      y botón único ExportButton
+      y botón único ExportButton; documentados en /dashboard/api y cubiertos por
+      4 checks nuevos de e2e (33 en total) que re-parsean el CSV
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
