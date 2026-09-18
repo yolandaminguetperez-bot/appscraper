@@ -13,10 +13,10 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 1. Scaffold Next.js + Tailwind + estructura de carpetas
 - [x] 2. Design system (tokens verde/oscuro, tipografía, componentes base: Button, Chip, FilterDropdown, Card, Table)
 - [x] 3. Shell del dashboard: sidebar (Explore/Favorites/ASO Tracking/Tools/AI Agents) + user footer + colapsable
-- [ ] 4. Capa de datos: schema SQLite + repositorios + seed
-- [ ] 5. Scraper App Store (búsqueda, lookup, top charts, reviews)
-- [ ] 6. Scraper Google Play (búsqueda, detalle, top charts, reviews)
-- [ ] 7. Estimaciones (downloads/revenue/MRR) heurísticas
+- [x] 4. Capa de datos: schema SQLite + repositorios + seed
+- [x] 5. Scraper App Store (búsqueda, lookup, top charts, reviews)
+- [ ] 6. (BLOQUEADO EN ESTE ENTORNO) Scraper Google Play (búsqueda, detalle, top charts, reviews)
+- [x] 7. Estimaciones (downloads/revenue/MRR) heurísticas
 - [ ] 8. Página Explore Apps: buscador + 14 filtros + chips activos + tabla/grid + export CSV
 - [ ] 9. Página Ads Library (grouped/ads, filtros, creatividades)
 - [ ] 10. Página Organic Content (creator videos, filtros)
@@ -38,3 +38,13 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - El registro npmjs.org devuelve 503 en este entorno. Usar el mirror:
   `npm config set registry https://registry.yarnpkg.com/`
 - Rutas del dashboard ya creadas; cada una con placeholder hasta implementarla.
+
+## Bloqueo de red (importante)
+La política de egress de este contenedor **no permite** `itunes.apple.com`,
+`rss.applemarketingtools.com`, `play.google.com` ni `apps.apple.com` (todas devuelven
+"Host not in allowlist"). Por eso:
+- Los módulos de `src/lib/sources/` están escritos y tipados, pero **no se pueden verificar
+  contra la red aquí**. Funcionarán cuando esos hosts estén permitidos.
+- Mientras tanto se trabaja con un **dataset sembrado (fixtures)** para que toda la UI sea
+  navegable y funcional, con la misma forma de datos que devuelven los scrapers.
+Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
