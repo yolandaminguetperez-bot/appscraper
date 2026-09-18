@@ -1,14 +1,111 @@
+import Link from "next/link";
+import { Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
+import { KeywordSearch } from "@/components/keywords/keyword-search";
+import { keywordStats, suggestedKeywords } from "@/lib/db/keywords-query";
+import { compactNumber, money, rating } from "@/lib/format";
+import type { RawParams } from "@/lib/search-params";
 
-export default function Page() {
+export const dynamic = "force-dynamic";
+
+function Meter({ label, value, hint }: { label: string; value: number; hint: string }) {
   return (
-    <div className="pb-10">
-      <PageHeader title="Keyword Explorer" subtitle="Volume, difficulty and ranking apps per keyword." />
-      <div className="px-7 py-10">
-        <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-10 text-center text-sm text-ink-muted">
-          Coming together — this view is being built.
+    <div className="rounded-2xl border border-line bg-surface p-5">
+      <p className="text-[13px] text-ink-muted">{label}</p>
+      <p className="pt-1 text-[28px] font-semibold tabular-nums">{value}</p>
+      <span className="mt-2 block h-2 overflow-hidden rounded-full bg-surface-muted">
+        <span className="block h-full rounded-full bg-accent" style={{ width: `${value}%` }} />
+      </span>
+      <p className="pt-2 text-[11.5px] text-ink-faint">{hint}</p>
+    </div>
+  );
+}
+
+export default async function KeywordsPage({ searchParams }: { searchParams: Promise<RawParams> }) {
+  const params = await searchParams;
+  const raw = params.term;
+  const term = ((Array.isArray(raw) ? raw[0] : raw) ?? "").trim();
+  const suggestions = suggestedKeywords(18);
+  const stats = term ? keywordStats(term) : null;
+
+  return (
+    <div className="pb-12">
+      <PageHeader title="Keyword Explorer" subtitle="How crowded a term is, and who owns it today." />
+      <KeywordSearch initial={term} suggestions={suggestions.map((s) => s.term)} />
+
+      {!stats ? (
+        <div className="px-7 pt-6">
+          <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-12 text-center text-sm text-ink-muted">
+            Search a term, or pick one of the suggestions above.
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="space-y-4 px-7 pt-6">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Meter
+              label="Difficulty"
+              value={stats.difficulty}
+              hint="From the review mass of apps already ranking."
+            />
+            <Meter
+              label="Volume index"
+              value={stats.volumeIndex}
+              hint="Relative demand proxy — compare terms, not absolutes."
+            />
+            <div className="rounded-2xl border border-line bg-surface p-5">
+              <p className="text-[13px] text-ink-muted">Competing apps</p>
+              <p className="pt-1 text-[28px] font-semibold tabular-nums">
+                {stats.competingApps.toLocaleString()}
+              </p>
+              <p className="pt-2 text-[11.5px] text-ink-faint">
+                Apps in the catalogue mentioning “{stats.term}”.
+              </p>
+            </div>
+          </div>
+
+          <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+            <h2 className="border-b border-line px-5 py-3 text-[15px] font-semibold">
+              Apps ranking for “{stats.term}”
+            </h2>
+            <ol>
+              {stats.topApps.map((app, index) => (
+                <li
+                  key={app.id}
+                  className="flex items-center gap-4 border-b border-line px-5 py-3 last:border-0"
+                >
+                  <span className="w-6 text-right text-[13px] tabular-nums text-ink-faint">
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/dashboard/apps/${encodeURIComponent(app.id)}`}
+                      className="block truncate text-[14px] font-medium hover:text-accent-ink"
+                    >
+                      {app.title}
+                    </Link>
+                    <span className="block truncate text-[12px] text-ink-muted">
+                      {app.developer} · {app.category}
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-[13px]">
+                    <Star className="size-3.5 text-accent" />
+                    {rating(app.rating)}
+                  </span>
+                  <span className="w-20 text-right text-[13px] tabular-nums text-ink-muted">
+                    {compactNumber(app.ratingCount)} reviews
+                  </span>
+                  <span className="w-16 text-right text-[13px] tabular-nums">{money(app.estMrr)}</span>
+                </li>
+              ))}
+              {stats.topApps.length === 0 && (
+                <li className="px-5 py-10 text-center text-sm text-ink-muted">
+                  Nothing in the catalogue targets this term yet.
+                </li>
+              )}
+            </ol>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
