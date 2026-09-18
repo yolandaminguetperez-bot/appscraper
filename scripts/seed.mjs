@@ -30,6 +30,10 @@ const DEVS = ["Northline Labs", "Fernbrook Studio", "Kettle & Co", "Lightfold", 
 const LANGS = ["en", "es", "de", "fr", "pt", "ja", "ko"];
 const COUNTRIES = ["us", "gb", "de", "es", "fr", "br", "jp"];
 
+// Rendered by scripts/make-sample-media.mjs — generated motion graphics, not scraped media.
+const CLIPS = ["pulse", "sweep", "orbit", "rise"].flatMap((v) => [1, 2, 3, 4].map((i) => `${v}-${i}`));
+const clipUrl = (name, ext) => `/sample-creatives/${name}.${ext}`;
+
 const SCREEN_TYPES = ["Onboarding", "Quiz", "Home", "Paywall", "Permissions", "Content", "Profile Setup", "Feature Intro", "Welcome", "Preferences", "Sign Up", "Settings", "Login", "Success", "Subscription", "Lesson", "Discount", "Search", "Checkout", "Other"];
 const PLATFORMS = ["tiktok", "instagram", "youtube"];
 const CTAS = ["Install now", "Get started", "Try free", "Download", "Learn more"];
@@ -97,8 +101,8 @@ const insertCreative = db.prepare(`INSERT OR REPLACE INTO creatives
   VALUES (@id, @app_id, @network, @kind, @headline, @body, @cta, @media_url, @thumb_url, @landing_url, @first_seen, @last_seen, @days_running, @countries_json)`);
 
 const insertOrganic = db.prepare(`INSERT OR REPLACE INTO organic_posts
-  (id, app_id, platform, author, author_followers, caption, post_url, thumb_url, views, likes, comments, posted_at)
-  VALUES (@id, @app_id, @platform, @author, @author_followers, @caption, @post_url, @thumb_url, @views, @likes, @comments, @posted_at)`);
+  (id, app_id, platform, author, author_followers, caption, post_url, thumb_url, media_url, views, likes, comments, posted_at)
+  VALUES (@id, @app_id, @platform, @author, @author_followers, @caption, @post_url, @thumb_url, @media_url, @views, @likes, @comments, @posted_at)`);
 
 const insertFlow = db.prepare(`INSERT OR REPLACE INTO flows (id, app_id, kind, title, captured_at) VALUES (@id, @app_id, @kind, @title, @captured_at)`);
 const insertScreen = db.prepare(`INSERT OR REPLACE INTO flow_screens (id, flow_id, position, screen_type, image_url, note) VALUES (@id, @flow_id, @position, @screen_type, @image_url, @note)`);
@@ -130,12 +134,17 @@ db.transaction(() => {
       const n = between(1, 6);
       for (let k = 0; k < n; k++) {
         const first = between(5, 300);
+        // Poster and clip must be the same take, or the frame jumps on play.
+        const clip = pick(CLIPS);
         insertCreative.run({
           id: `${app.id}:ad:${k}`, app_id: app.id, network: "meta",
           kind: rnd() < 0.7 ? "video" : "image",
           headline: `${app.title} — ${pick(["stop guessing", "in 5 minutes a day", "made simple", "your new routine"])}`,
           body: `People switching to ${app.title} report progress in the first week.`,
-          cta: pick(CTAS), media_url: null, thumb_url: null, landing_url: null,
+          cta: pick(CTAS),
+          media_url: clipUrl(clip, "mp4"),
+          thumb_url: clipUrl(clip, "jpg"),
+          landing_url: null,
           first_seen: new Date(Date.now() - first * 86400000).toISOString(),
           last_seen: new Date(Date.now() - between(0, 4) * 86400000).toISOString(),
           days_running: first, countries_json: JSON.stringify([pick(COUNTRIES), pick(COUNTRIES)]),
@@ -147,12 +156,15 @@ db.transaction(() => {
       const n = between(1, 5);
       for (let k = 0; k < n; k++) {
         const views = between(4000, 3_000_000);
+        const clip = pick(CLIPS);
         insertOrganic.run({
           id: `${app.id}:org:${k}`, app_id: app.id, platform: pick(PLATFORMS),
           author: `@${pick(NOUN).toLowerCase()}${between(10, 99)}`,
           author_followers: between(1200, 900_000),
           caption: `How I use ${app.title} every morning`,
-          post_url: null, thumb_url: null,
+          post_url: null,
+          thumb_url: clipUrl(clip, "jpg"),
+          media_url: clipUrl(clip, "mp4"),
           views, likes: Math.round(views * (0.03 + rnd() * 0.09)),
           comments: Math.round(views * (0.001 + rnd() * 0.004)),
           posted_at: new Date(Date.now() - between(1, 400) * 86400000).toISOString(),

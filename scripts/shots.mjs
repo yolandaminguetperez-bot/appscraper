@@ -17,6 +17,11 @@ const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, de
 
 for (const view of views) {
   await page.goto(BASE + view.path, { waitUntil: "load" });
+  // `load` can fire while the route is still streaming its loading skeleton.
+  await page
+    .waitForFunction(() => !document.querySelector("main .animate-pulse"), null, { timeout: 15000 })
+    .catch(() => {});
+  await page.waitForTimeout(600);
   await page.screenshot({ path: `${OUT}/${view.name}.png`, fullPage: false });
   console.log(`captured ${view.name} <- ${view.path}`);
 }

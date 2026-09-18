@@ -9,6 +9,10 @@ const browser = await chromium.launch({ executablePath: "/opt/pw-browsers/chromi
 const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
 
 await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+await page
+  .waitForFunction(() => !document.querySelector("main .animate-pulse"), null, { timeout: 15000 })
+  .catch(() => {});
+await page.waitForTimeout(600);
 await page.screenshot({ path: "shots/mobile-apps.png" });
 
 await page.getByLabel("Open navigation").click();

@@ -1,22 +1,8 @@
 import Link from "next/link";
-import { Clock3, Film, Globe2, Image as ImageIcon } from "lucide-react";
-import type { AdGroup, Creative } from "@/lib/db/marketing-query";
-import { compactNumber, daysAgo, money } from "@/lib/format";
+import type { AdGroup } from "@/lib/db/marketing-query";
+import { compactNumber, money } from "@/lib/format";
 import { FavoriteButton } from "@/components/ui/favorite-button";
-
-function CreativeThumb({ creative }: { creative: Creative }) {
-  const Icon = creative.kind === "video" ? Film : ImageIcon;
-  return (
-    <div className="relative flex aspect-[9/14] flex-col justify-end rounded-xl bg-panel p-3 text-panel-ink">
-      <Icon className="absolute left-3 top-3 size-4 opacity-40" />
-      <p className="line-clamp-3 text-[12.5px] leading-snug">{creative.headline}</p>
-      <p className="mt-2 inline-flex items-center gap-1 text-[11px] text-panel-ink-muted">
-        <Clock3 className="size-3" />
-        {creative.daysRunning ?? 0}d running
-      </p>
-    </div>
-  );
-}
+import { CreativeGrid, type CreativeWithApp } from "@/components/marketing/creative-grid";
 
 export function AdGroupCard({ group, favorites }: { group: AdGroup; favorites: Set<string> }) {
   const { app, creatives, total } = group;
@@ -56,44 +42,22 @@ export function AdGroupCard({ group, favorites }: { group: AdGroup; favorites: S
         </div>
       </dl>
 
-      <div className="mt-3 grid grid-cols-4 gap-2">
-        {creatives.map((creative) => (
-          <CreativeThumb key={creative.id} creative={creative} />
-        ))}
+      <div className="mt-3">
+        <CreativeGrid
+          creatives={creatives.map((c) => ({ ...c, appTitle: app.title, appDeveloper: app.developer }))}
+          columns="grid grid-cols-4 gap-2"
+        />
       </div>
     </article>
   );
 }
 
-export function CreativeCard({
-  creative,
-  saved,
+export function CreativeCards({
+  creatives,
+  savedIds,
 }: {
-  creative: Creative & { appTitle: string; appDeveloper: string | null };
-  saved: boolean;
+  creatives: CreativeWithApp[];
+  savedIds: Set<string>;
 }) {
-  return (
-    <article className="overflow-hidden rounded-2xl border border-line bg-surface">
-      <CreativeThumb creative={creative} />
-      <div className="space-y-1.5 p-3">
-        <div className="flex items-center justify-between gap-2">
-          <Link
-            href={`/dashboard/apps/${encodeURIComponent(creative.appId)}`}
-            className="block truncate text-[13px] font-medium hover:text-accent-ink"
-          >
-            {creative.appTitle}
-          </Link>
-          <FavoriteButton kind="ad" refId={creative.id} initial={saved} />
-        </div>
-        <p className="line-clamp-2 text-[12px] text-ink-muted">{creative.body}</p>
-        <div className="flex items-center justify-between pt-1 text-[11.5px] text-ink-faint">
-          <span className="inline-flex items-center gap-1">
-            <Globe2 className="size-3" />
-            {creative.countries.join(", ").toUpperCase() || "—"}
-          </span>
-          <span>last seen {daysAgo(creative.lastSeen)}</span>
-        </div>
-      </div>
-    </article>
-  );
+  return <CreativeGrid creatives={creatives} footer="app" savedIds={[...savedIds]} />;
 }

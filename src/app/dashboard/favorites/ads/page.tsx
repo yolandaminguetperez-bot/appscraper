@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
-import { CreativeCard } from "@/components/marketing/ad-cards";
+import { CreativeCards } from "@/components/marketing/ad-cards";
 import { favoriteCreatives } from "@/lib/db/favorites";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +15,8 @@ export default async function FavoriteAdsPage() {
     headline: (row.headline as string) ?? null,
     body: (row.body as string) ?? null,
     cta: (row.cta as string) ?? null,
-    mediaUrl: null,
-    thumbUrl: null,
+    mediaUrl: (row.media_url as string) ?? null,
+    thumbUrl: (row.thumb_url as string) ?? null,
     landingUrl: null,
     firstSeen: (row.first_seen as string) ?? null,
     lastSeen: (row.last_seen as string) ?? null,
@@ -35,11 +35,7 @@ export default async function FavoriteAdsPage() {
             Nothing saved yet — tap the heart on any creative.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
-            {creatives.map((creative) => (
-              <CreativeCard key={creative.id} creative={creative} saved />
-            ))}
-          </div>
+          <CreativeCards creatives={creatives} savedIds={new Set(creatives.map((c) => c.id))} />
         )}
       </div>
     </div>

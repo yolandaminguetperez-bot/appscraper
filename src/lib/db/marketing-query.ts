@@ -28,6 +28,7 @@ export type OrganicPost = {
   caption: string | null;
   postUrl: string | null;
   thumbUrl: string | null;
+  mediaUrl: string | null;
   views: number | null;
   likes: number | null;
   comments: number | null;
@@ -75,6 +76,7 @@ function rowToOrganic(row: Row): OrganicPost {
     caption: (row.caption as string) ?? null,
     postUrl: (row.post_url as string) ?? null,
     thumbUrl: (row.thumb_url as string) ?? null,
+    mediaUrl: (row.media_url as string) ?? null,
     views: (row.views as number) ?? null,
     likes: (row.likes as number) ?? null,
     comments: (row.comments as number) ?? null,

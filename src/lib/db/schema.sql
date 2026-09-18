@@ -106,6 +106,7 @@ CREATE TABLE IF NOT EXISTS organic_posts (
   caption     TEXT,
   post_url    TEXT,
   thumb_url   TEXT,
+  media_url   TEXT,
   views       INTEGER,
   likes       INTEGER,
   comments    INTEGER,

@@ -1,7 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { ActiveChips } from "@/components/filters/active-chips";
 import { AdsFilterBar } from "@/components/marketing/ads-filter-bar";
-import { AdGroupCard, CreativeCard } from "@/components/marketing/ad-cards";
+import { AdGroupCard, CreativeCards } from "@/components/marketing/ad-cards";
 import { Pagination } from "@/components/ui/pagination";
 import { distinctCategories, distinctLanguages } from "@/lib/db/app-query";
 import { queryAdGroups, queryCreatives } from "@/lib/db/marketing-query";
@@ -48,11 +48,7 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
         )}
 
         {flat && (
-          <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
-            {flat.creatives.map((creative) => (
-              <CreativeCard key={creative.id} creative={creative} saved={savedAds.has(creative.id)} />
-            ))}
-          </div>
+          <CreativeCards creatives={flat.creatives} savedIds={savedAds} />
         )}
 
         {total === 0 && (
