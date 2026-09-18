@@ -1,47 +1,90 @@
 # AppScraper
 
-App Store and Google Play market intelligence — free, no paywall. A working rebuild of the
-kind of dashboard app-marketing teams use to find apps, ads, creator videos and onboarding
-flows worth studying.
+App Store and Google Play market intelligence — free, no account, no paywall. Find apps worth
+studying, the ads they run, the creators posting about them, the onboarding flows they ship, and
+what their reviewers actually complain about.
 
-## Preview it locally
+## Run it
 
 ```bash
-git clone -b claude/replicate-appkittie-web-qft5y2 https://github.com/yolandaminguetperez-bot/appscraper
-cd appscraper
 npm install
 npm run seed     # fills data/appscraper.db with a sample catalogue
 npm run dev      # http://localhost:3000
 ```
 
-`npm run seed` generates a deterministic sample dataset so every view is usable offline.
-Real store data comes from the scrapers in `src/lib/sources/` (see *Network access* below).
+`npm run seed` generates a deterministic sample dataset so every view works offline. Real store
+data comes from the scrapers in `src/lib/sources/` — press Refresh in any view, or `POST /api/refresh`.
 
-## Screenshots without running it
+## Scripts
+
+| Script | What it does |
+| --- | --- |
+| `npm run dev` / `build` / `start` | Next.js dev server, production build, production server |
+| `npm run seed` | Regenerate the sample dataset |
+| `npm run e2e` | Drive a real browser against a running build (needs `npm run start` first) |
+| `npm run shots` | Screenshot dashboard routes into `shots/` |
+| `npm run mcp` | Start the MCP server for AI agents |
+
+## What is in it
+
+| View | What it answers |
+| --- | --- |
+| Explore Apps | Which apps match 14 filters across both stores, exportable as CSV |
+| Ads Library | Who is advertising, grouped by app or as a flat creative feed |
+| Organic | Which creator videos are driving installs |
+| Onboardings | How shipping apps sequence their onboarding and paywall screens |
+| Trending / Rising | Which apps are gaining users fastest, over 7/30/90 days |
+| Store Rankings | Top free, paid and grossing by store and country |
+| Review Analytics | Rating mix, sentiment split, and the topics behind complaints |
+| Keyword Explorer | How crowded a term is and who owns it today |
+| Your Apps / Competitors | The apps you are tracking, yours and theirs |
+| Favorites | Saved apps, ads and creator videos |
+| API / MCP | The same data from code or from an AI agent |
+
+## API
+
+Read-only, JSON, no key. It accepts the same query parameters the dashboard puts in its URL, so you
+can build a request by filtering a page and copying its query string.
 
 ```bash
-npm run build && npm run start &
-npm run shots                        # writes shots/*.png
-npm run shots /dashboard/ads         # or capture specific routes
+curl "http://localhost:3000/api/v1/apps?store=ios&minRating=4&signal=ads&perPage=5"
 ```
+
+Endpoints: `/api/v1/apps`, `/api/v1/apps/{id}`, `/api/v1/rankings`, `/api/v1/reviews`, `/api/v1/ads`,
+`/api/v1/organic`, `/api/v1/flows`, `/api/v1/keywords`. Full reference at `/dashboard/api`.
+
+## MCP
+
+`npm run mcp` starts a JSON-RPC-over-stdio server exposing eight tools (`search_apps`, `get_app`,
+`get_rankings`, `search_reviews`, `search_ads`, `search_organic`, `search_flows`, `keyword_stats`).
+It forwards each call to the REST API above, so agents and the UI cannot drift apart. Client
+configuration is at `/dashboard/mcp`.
+
+## Estimates, and what they are worth
+
+Stores do not publish download or revenue figures. `src/lib/sources/estimates.ts` derives them from
+signals that *are* public — rating volume, app age, price, whether in-app purchases exist. Read them
+as orders of magnitude for comparing apps, not as facts. Google Play's own install bracket is used
+when available, in preference to the derived number.
 
 ## Network access
 
-The scrapers talk to `itunes.apple.com`, `rss.applemarketingtools.com` and `play.google.com`.
-Some sandboxes block those hosts; when they are blocked the app still runs on seeded data.
+The scrapers talk to `itunes.apple.com`, `rss.applemarketingtools.com` and `play.google.com`. Some
+sandboxes block those hosts; the app still runs fully on seeded data, and Refresh reports which
+hosts it could not reach rather than failing silently.
 
 ## Layout
 
 | Path | What lives there |
 | --- | --- |
 | `src/app/dashboard/*` | One route per dashboard view |
+| `src/app/api/v1/*` | The public read-only API |
 | `src/components/filters/*` | URL-backed filter primitives shared by every view |
 | `src/lib/db/*` | SQLite schema, repositories and query builders |
-| `src/lib/sources/*` | Store scrapers and the download/revenue estimate model |
-| `scripts/seed.mjs` | Sample dataset generator |
+| `src/lib/sources/*` | Store scrapers, refresh pipeline and the estimate model |
+| `scripts/*` | Seeder, e2e checks, screenshots, MCP server |
 
-## Estimates
+## Deployment
 
-Stores do not publish download or revenue figures. `src/lib/sources/estimates.ts` derives them
-from public signals (rating volume, age, price, IAP presence). Read them as orders of
-magnitude, not facts.
+The app keeps its data in a local SQLite file, so it needs a host with a persistent disk (a small VM
+or container), not a serverless platform. Point `APPSCRAPER_DB` at the database file you want to use.

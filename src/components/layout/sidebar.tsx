@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { useState } from "react";
+import { ChevronRight, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { navSections } from "@/lib/nav";
 import { NavIcon } from "@/components/ui/icon";
 import { cn } from "@/lib/cn";
@@ -11,13 +11,38 @@ import { cn } from "@/lib/cn";
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
 
+  // On phones the sidebar is a drawer; navigating should close it.
+  useEffect(() => setDrawerOpen(false), [pathname]);
+
   return (
+    <>
+      <button
+        type="button"
+        onClick={() => setDrawerOpen(true)}
+        aria-label="Open navigation"
+        className="fixed left-3 top-3 z-40 grid size-10 place-items-center rounded-xl bg-panel text-panel-ink md:hidden"
+      >
+        <Menu className="size-5" />
+      </button>
+
+      {drawerOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setDrawerOpen(false)}
+          className="fixed inset-0 z-40 bg-panel/50 md:hidden"
+        />
+      )}
+
     <aside
       className={cn(
-        "flex h-full shrink-0 flex-col bg-panel text-panel-ink transition-[width] duration-200",
+        "z-50 flex h-full shrink-0 flex-col bg-panel text-panel-ink transition-[width] duration-200",
+        "max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:w-[248px] max-md:transition-transform",
+        drawerOpen ? "max-md:translate-x-0" : "max-md:-translate-x-full",
         collapsed ? "w-[76px]" : "w-[248px]",
       )}
     >
@@ -30,9 +55,17 @@ export function Sidebar() {
           type="button"
           onClick={() => setCollapsed((v) => !v)}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className="ml-auto grid size-8 place-items-center rounded-lg text-panel-ink-muted hover:bg-panel-soft hover:text-panel-ink"
+          className="ml-auto grid size-8 place-items-center rounded-lg text-panel-ink-muted hover:bg-panel-soft hover:text-panel-ink max-md:hidden"
         >
           {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+        </button>
+        <button
+          type="button"
+          onClick={() => setDrawerOpen(false)}
+          aria-label="Close navigation"
+          className="ml-auto grid size-8 place-items-center rounded-lg text-panel-ink-muted hover:bg-panel-soft md:hidden"
+        >
+          <X className="size-4" />
         </button>
       </div>
 
@@ -104,5 +137,6 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 }

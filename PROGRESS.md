@@ -29,11 +29,13 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 16. Review Analytics
 - [x] 17. Competitor Tracking
 - [x] 18. Páginas MCP y API (docs + endpoints reales)
-- [ ] 19. Auth simple (cuenta local) y perfil de usuario
+- [~] 19. Auth: NO se implementa a propósito — el producto es gratis y sin cuenta.
+      Los datos se guardan en la base local. Si algún día hace falta multiusuario,
+      es el único punto que habría que añadir.
 - [x] 20. Jobs de refresco de datos + botón refresh en cada página
 - [x] 21. Landing pública
-- [x] 22. (parcial)  Pulido responsive, estados vacíos, loading skeletons
-- [ ] 23. Tests + README
+- [x] 22.  Pulido responsive, estados vacíos, loading skeletons
+- [x] 23. Tests + README
 
 ## Notas de sesión
 - El registro npmjs.org devuelve 503 en este entorno. Usar el mirror:

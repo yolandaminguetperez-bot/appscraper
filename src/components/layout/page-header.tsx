@@ -11,7 +11,7 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 px-7 pt-6">
+    <div className="flex items-start justify-between gap-4 px-5 pt-6 max-md:pl-16 md:px-7">
       <div>
         <h1 className="text-[22px] font-semibold tracking-tight">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}

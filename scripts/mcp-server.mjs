@@ -154,7 +154,7 @@ function send(message) {
 }
 
 async function handle(request) {
-  const { id, method, params } = request;
+  const { method, params } = request;
 
   if (method === "initialize") {
     return {
