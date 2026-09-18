@@ -21,8 +21,8 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 9. Página Ads Library (grouped/ads, filtros, creatividades)
 - [x] 10. Página Organic Content (creator videos, filtros)
 - [x] 11. Página Onboarding Flows (screens/apps, categorías de pantalla)
-- [ ] 12. Páginas Trending y Rising
-- [ ] 13. Store Rankings (Top Free/Paid/Grossing, país, categoría, ambas tiendas)
+- [x] 12. Páginas Trending y Rising
+- [x] 13. Store Rankings (Top Free/Paid/Grossing, país, categoría, ambas tiendas)
 - [ ] 14. Favoritos (Apps/Ads/Organic) con persistencia
 - [ ] 15. Keyword Explorer + Your Apps + Add App
 - [ ] 16. Review Analytics
