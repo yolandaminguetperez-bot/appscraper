@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatTile } from "@/components/charts/stat-tile";
 import { BarChart } from "@/components/charts/bar-chart";
-import { TrendChart } from "@/components/charts/trend-chart";
+import { ColumnChart } from "@/components/charts/column-chart";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { AppIcon } from "@/components/ui/app-icon";
 import { metricsForApps } from "@/lib/db/app-query";
@@ -68,7 +68,7 @@ export default async function OverviewPage() {
           format="money"
         />
 
-        <TrendChart
+        <ColumnChart
           title="Releases per month"
           subtitle="Apps in the catalogue by release month."
           points={releases}
@@ -80,11 +80,14 @@ export default async function OverviewPage() {
           <h3 className="text-[15px] font-semibold">Biggest movers</h3>
           <p className="pt-0.5 text-[12.5px] text-ink-muted">Most reviews gained in the last 30 days.</p>
           <ul className="pt-3">
-            {movers.map(({ app, gained }) => (
+            {movers.map(({ app, gained }, index) => (
               <li
                 key={app.id}
                 className="flex items-center gap-3 border-b border-line py-2.5 last:border-0"
               >
+                <span className="metric w-4 shrink-0 text-right text-[12px] text-ink-faint">
+                  {index + 1}
+                </span>
                 <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-9" />
                 <div className="min-w-0 flex-1">
                   <Link
@@ -100,8 +103,8 @@ export default async function OverviewPage() {
                   label={`Downloads trend for ${app.title}`}
                   className="h-8 w-24 shrink-0"
                 />
-                <span className="w-20 shrink-0 text-right text-[12.5px] tabular-nums text-accent-ink">
-                  +{compactNumber(gained)}
+                <span className="shrink-0 rounded-full bg-pos-soft px-2 py-0.5 text-[12px] font-medium text-pos">
+                  <span className="metric">+{compactNumber(gained)}</span>
                 </span>
               </li>
             ))}

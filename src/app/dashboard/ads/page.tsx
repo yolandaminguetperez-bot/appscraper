@@ -56,6 +56,7 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
       {reach.length > 0 && (
         <div className="max-w-4xl px-7 pt-4">
           <WorldMap
+            collapsible
             title="Where these ads run"
             description="Creatives in the current selection, counted by the countries they are served in. Click a country to filter to it."
             valueHeading="Creatives"

@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+/* Self-hosted rather than linked: the Google Fonts host is blocked in some of
+   the environments this runs in, and a blocked stylesheet link blocks first
+   paint. 72KB of woff2 ships with the app instead.
+
+   Instrument Sans carries the interface — a grotesque with some character at
+   small sizes, where the usual choice has none. IBM Plex Mono carries every
+   number in a data position: it separates the figures from the chrome, and its
+   tabular figures line up in a column without being asked. */
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("/fonts/instrument-sans-var.woff2") format("woff2-variations");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-500.woff2") format("woff2");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/fonts/ibm-plex-mono-600.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
+
 :root {
   --bg: #f6f8f6;
   --surface: #ffffff;
@@ -47,6 +80,18 @@
   --map-3: #0f9559;
   --map-4: #0a5c33;
   --map-none: #dfe4e0;
+
+  /* Deltas need their own pair. The brand green cannot say "up" on a page
+     already made of brand green, and pure red shouts on this ground. */
+  --pos: #0d8a49;
+  --pos-soft: #e6f7ee;
+  --neg: #b23a2f;
+  --neg-soft: #fbeae8;
+
+  /* Three elevations instead of one card style stamped on everything. */
+  --raise-0: none;
+  --raise-1: 0 1px 2px rgba(16, 21, 17, 0.05);
+  --raise-2: 0 1px 2px rgba(16, 21, 17, 0.04), 0 8px 24px -16px rgba(16, 21, 17, 0.18);
 }
 
 /* Dark mode is its own set of steps, not an inversion: surfaces lift off black,
@@ -137,8 +182,12 @@
   --color-chart-line: var(--chart-line);
   --color-chart-fill: var(--chart-fill);
   --color-chart-grid: var(--chart-grid);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --color-pos: var(--pos);
+  --color-pos-soft: var(--pos-soft);
+  --color-neg: var(--neg);
+  --color-neg-soft: var(--neg-soft);
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 html, body { height: 100%; }
@@ -148,6 +197,36 @@ body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: "cv05" 1;
+}
+
+/* Tracking tightens as size grows: a grotesque set at 28px with default
+   spacing reads loose and unfinished. */
+h1 { letter-spacing: -0.025em; }
+h2 { letter-spacing: -0.018em; }
+h3 { letter-spacing: -0.012em; }
+
+/* Every number in a data position wears the mono face, in one place rather
+   than a utility class repeated across forty components. */
+.tabular-nums,
+.num,
+td.num,
+th.num,
+dd,
+.metric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "zero" 1;
+  letter-spacing: -0.01em;
+}
+
+/* Uppercase micro-labels need air or they read as one word. */
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--ink-faint);
 }
 
 .dotted-canvas {

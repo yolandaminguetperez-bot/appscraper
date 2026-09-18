@@ -172,3 +172,21 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       y el catálogo sembrado son apps inventadas: no existe icono original que
       traer hasta que los scrapers traigan apps reales
 
+## Pasada de diseño
+- [x] D1. Tipografía propia, autoalojada (72 KB): Instrument Sans para la
+      interfaz e IBM Plex Mono para TODO número en posición de dato. El host de
+      Google Fonts está bloqueado en algunos entornos y un <link> bloqueado
+      retrasa el primer pintado, así que los ficheros viajan con la app
+- [x] D2. Roles de color: par semántico --pos/--neg para deltas (el verde de
+      marca no puede decir "sube" en una página hecha de verde de marca) y tres
+      elevaciones en vez de una sombra de tarjeta estampada en todo
+- [x] D3. Tabla de apps con jerarquía: nombre destacado, barra de magnitud SOLO
+      en la columna por la que ordenas, cabecera pegajosa, acciones en reposo
+      ocultas, categorías como chips clicables
+- [x] D4. "Releases per month" pasa de línea de área a columnas (son buckets
+      discretos; la línea insinuaba un movimiento que el dato no tiene) y el mes
+      en curso va rayado y fuera del delta: comparaba un mes a medias contra uno
+      completo y cantaba un -88% falso
+- [x] D5. Ads Library: el mapa colapsado a una tira; a pantalla completa empujaba
+      las creatividades —el motivo de la página— por debajo del pliegue
+

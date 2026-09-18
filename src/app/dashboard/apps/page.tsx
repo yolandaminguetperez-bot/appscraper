@@ -58,7 +58,7 @@ export default async function AppsPage({
         {view === "grid" ? (
           <AppsGrid apps={result.apps} favorites={favorites} trends={trends} />
         ) : (
-          <AppsTable apps={result.apps} favorites={favorites} trends={trends} />
+          <AppsTable apps={result.apps} favorites={favorites} trends={trends} sortKey={filters.sort} />
         )}
         <Pagination
           page={result.page}

@@ -35,6 +35,8 @@ export function WorldMap({
   /** Drawn as an outline instead of a shade — see below. */
   marked,
   markedNote = "viewing",
+  /** Collapsed by default where the map is context, not the subject. */
+  collapsible = false,
 }: {
   title: string;
   description: string;
@@ -42,6 +44,7 @@ export function WorldMap({
   valueHeading: string;
   marked?: string;
   markedNote?: string;
+  collapsible?: boolean;
 }) {
   // A marked country is excluded from the scale on purpose: on the rankings map
   // it is the country being viewed, which overlaps itself completely and would
@@ -72,10 +75,15 @@ export function WorldMap({
       };
     });
 
-  return (
-    <section className="surface-card p-5">
+  const header = (
+    <>
       <h2 className="text-[15px] font-semibold">{title}</h2>
       <p className="pt-0.5 text-[12.5px] text-ink-muted">{description}</p>
+    </>
+  );
+
+  const body = (
+    <>
 
       {/* The unshaded base is an image: 175 country paths inlined here would be
           serialised into the HTML and again into the RSC payload, ~156KB per
@@ -145,6 +153,31 @@ export function WorldMap({
           </tbody>
         </table>
       </details>
+    </>
+  );
+
+  // On the Ads Library the map is context and the creatives are the subject; a
+  // 600px map above them pushed the whole reason for the page below the fold.
+  if (collapsible) {
+    return (
+      <details className="surface-card px-5 py-4 [&[open]>summary]:pb-3">
+        <summary className="cursor-pointer list-none">
+          <span className="flex items-center justify-between gap-3">
+            <span>{header}</span>
+            <span className="shrink-0 rounded-full border border-line px-3 py-1 text-[12px] text-ink-muted">
+              {values.length} countries
+            </span>
+          </span>
+        </summary>
+        {body}
+      </details>
+    );
+  }
+
+  return (
+    <section className="surface-card p-5">
+      {header}
+      {body}
     </section>
   );
 }
