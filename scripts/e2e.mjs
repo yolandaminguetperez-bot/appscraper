@@ -425,6 +425,23 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   );
 }
 
+// Importing a real app from its store page: the parsing is exercised here
+// because it is the half that works with no network. The fetch itself needs
+// the store hosts, which are blocked in the sandbox this was built in, so the
+// UI path asserted below is the one that fails before any request is made.
+{
+  await page.goto(`${BASE}/dashboard/your-apps/new`, { waitUntil: "load" });
+  await page.waitForTimeout(700);
+  await page.getByLabel("Store link or app id").fill("this is not an app");
+  await page.getByRole("button", { name: "Import" }).click();
+  await page.waitForTimeout(800);
+  check(
+    "an unusable store reference is rejected without a request",
+    (await page.textContent("body")).includes("Paste an App Store or Google Play link"),
+    "",
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

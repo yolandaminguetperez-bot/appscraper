@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { AppPicker } from "@/components/tracking/app-picker";
+import { ImportApp } from "@/components/tracking/import-app";
 import { searchAppsByName } from "@/lib/db/keywords-query";
 import type { RawParams } from "@/lib/search-params";
 
@@ -13,8 +14,11 @@ export default async function AddAppPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="pb-12">
-      <PageHeader title="Add App" subtitle="Pick an app from the catalogue to track it." />
+      <PageHeader title="Add App" subtitle="Track an app from the catalogue, or bring a new one in from its store." />
       <div className="px-7 pt-5">
+        <div className="pb-5">
+          <ImportApp />
+        </div>
         <AppPicker role="own" results={results} />
         {term && results.length === 0 && (
           <p className="pt-4 text-sm text-ink-muted">Nothing in the catalogue matches “{term}”.</p>

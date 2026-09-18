@@ -198,6 +198,22 @@ colour schemes, so the creative player has real, varied video to play offline.
 Nothing there is scraped or third-party, and ad copy is overlaid in the DOM rather
 than burned into the frame, which keeps it selectable.
 
+**Importing real apps.** The sample catalogue is invented, so its apps have no
+store artwork to fetch. To bring in a real one, open **Add App** and paste a
+store link or id — an App Store URL, a Google Play URL, a numeric track id or a
+package name all resolve:
+
+```
+https://apps.apple.com/us/app/whatsapp-messenger/id310633997
+https://play.google.com/store/apps/details?id=com.whatsapp
+com.spotify.music
+```
+
+The parsing runs offline (`npm run parse-check`); the fetch needs
+`itunes.apple.com` or `play.google.com` to be reachable. Where they are not,
+the importer says so rather than reporting "app not found" — a blocked host and
+a wrong id are different problems and send you looking in different places.
+
 **App icons.** Every view shows the app's own store artwork whenever the row has
 one: `icon_url` is captured by both adapters (`artworkUrl512` on iTunes, the
 icon from the Play detail page) and always wins. The generated mark in

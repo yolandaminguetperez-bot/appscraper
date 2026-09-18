@@ -235,4 +235,10 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       devuelve NULL y el formateador de números petaba). Arreglado en la consulta
       y añadido estado "the catalogue is empty" con el comando exacto. Las 14
       páginas restantes ya aguantaban base vacía; comprobado una a una
+- [x] F6. Importar apps reales desde la tienda (Add App): pegas un enlace de App
+      Store o Google Play, un id numérico o un package name. El parser resuelve
+      las 4 formas sin red (13 casos en npm run parse-check) y el fetch usa los
+      adaptadores que ya existían. Un host bloqueado se reporta como INALCANZABLE,
+      no como "app no encontrada": son problemas distintos y mandan a buscar a
+      sitios distintos. El camino con red NO se puede verificar en este entorno
 
