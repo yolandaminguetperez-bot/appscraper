@@ -142,6 +142,21 @@ stored choice never renders one frame in the wrong palette. Dark ink is checked
 against every dark surface it lands on: `--ink-faint` was raised from 4.09:1 to
 5.10:1 because it labels 11px axis ticks, which need 4.5:1.
 
+## Map geometry
+
+`src/lib/geo/world.json` is built by `scripts/make-world-geo.mjs` from Natural
+Earth's 110m Admin 0 countries (public domain, no attribution required; credit
+given here anyway). The script projects to Equal Earth and rounds coordinates to
+whole units in a 1000-wide box, which is a fraction of a pixel at map size: 175
+countries in 78KB. Re-run it to refresh or to swap in a finer source:
+
+```bash
+node scripts/make-world-geo.mjs            # fetches the source
+node scripts/make-world-geo.mjs local.geojson
+```
+
+Known source limitation: Singapore is absent from the 110m dataset.
+
 ## Sample media
 
 `public/sample-creatives/` holds generated motion graphics rendered by
