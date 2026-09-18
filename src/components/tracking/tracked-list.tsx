@@ -24,7 +24,7 @@ export function TrackedList({ entries, empty }: { entries: TrackedEntry[]; empty
   }
 
   return (
-    <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <ul className="surface-card overflow-hidden">
       {entries.map(({ app, addedAt }) => (
         <li key={app.id} className="flex items-center gap-4 border-b border-line px-5 py-3 last:border-0">
           <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-9" />

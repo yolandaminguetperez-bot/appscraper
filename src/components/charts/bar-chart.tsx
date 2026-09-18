@@ -36,7 +36,7 @@ export function BarChart({
   const max = Math.max(...bars.map((bar) => bar.value), 1);
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5">
+    <section className="surface-card p-5">
       <h3 className="text-[15px] font-semibold">{title}</h3>
       {subtitle && <p className="pt-0.5 text-[12.5px] text-ink-muted">{subtitle}</p>}
 

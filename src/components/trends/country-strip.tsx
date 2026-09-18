@@ -23,7 +23,7 @@ export function CountryStrip({
   const peak = Math.max(...countries.map((c) => c.apps), 1);
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5">
+    <section className="surface-card p-5">
       <h2 className="text-[15px] font-semibold">This chart around the world</h2>
       <p className="pt-0.5 text-[12.5px] text-ink-muted">
         How much each country&apos;s chart overlaps with {current.toUpperCase()}, and who leads it there.

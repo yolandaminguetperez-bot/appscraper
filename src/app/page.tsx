@@ -67,7 +67,7 @@ export default async function LandingPage() {
 
         <section className="grid gap-4 pt-20 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map((feature) => (
-            <article key={feature.title} className="rounded-2xl border border-line bg-surface p-5">
+            <article key={feature.title} className="surface-card p-5">
               <Check className="size-4 text-accent" />
               <h2 className="pt-3 text-[14.5px] font-medium">{feature.title}</h2>
               <p className="pt-1 text-[13px] leading-relaxed text-ink-muted">{feature.body}</p>

@@ -11,7 +11,7 @@ export default async function ApiPage() {
         subtitle="Every view in this dashboard is a query you can run yourself."
       />
 
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="surface-card p-5">
         <h2 className="text-[15px] font-semibold">Getting started</h2>
         <p className="pt-1 text-[13.5px] text-ink-muted">
           The API is read-only, returns JSON, needs no key, and accepts the same query parameters the
@@ -25,7 +25,7 @@ export default async function ApiPage() {
 
       <div className="space-y-4">
         {endpoints.map((endpoint) => (
-          <section key={endpoint.path} className="rounded-2xl border border-line bg-surface p-5">
+          <section key={endpoint.path} className="surface-card p-5">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[11.5px] font-semibold text-accent-ink">
                 {endpoint.method}

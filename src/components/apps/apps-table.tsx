@@ -37,7 +37,7 @@ export function AppsTable({
   }
 
   return (
-    <div className="scroll-thin overflow-x-auto rounded-2xl border border-line bg-surface">
+    <div className="surface-card scroll-thin overflow-x-auto">
       <IconSprite />
       <table className="w-full min-w-[860px] border-collapse text-sm">
         <thead>

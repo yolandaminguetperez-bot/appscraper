@@ -21,7 +21,7 @@ export function TrendTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <div className="surface-card overflow-hidden">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">

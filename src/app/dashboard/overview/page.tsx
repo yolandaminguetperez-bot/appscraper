@@ -76,7 +76,7 @@ export default async function OverviewPage() {
       </div>
 
       <div className="grid gap-4 px-7 lg:grid-cols-3">
-        <section className="rounded-2xl border border-line bg-surface p-5 lg:col-span-2">
+        <section className="surface-card p-5 lg:col-span-2">
           <h3 className="text-[15px] font-semibold">Biggest movers</h3>
           <p className="pt-0.5 text-[12.5px] text-ink-muted">Most reviews gained in the last 30 days.</p>
           <ul className="pt-3">

@@ -89,7 +89,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
           </div>
 
           <div className="px-7">
-            <div className="scroll-thin overflow-x-auto rounded-2xl border border-line bg-surface">
+            <div className="surface-card scroll-thin overflow-x-auto">
               <table className="w-full border-collapse text-sm">
                 <caption className="sr-only">Side-by-side comparison</caption>
                 <thead>

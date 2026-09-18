@@ -20,7 +20,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5">
+    <section className="surface-card p-5">
       <h2 className="pb-3 text-[15px] font-semibold">{title}</h2>
       {children}
     </section>

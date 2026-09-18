@@ -16,7 +16,7 @@ export function StatTile({
   trend?: number[];
 }) {
   return (
-    <article className="rounded-2xl border border-line bg-surface p-5">
+    <article className="surface-card p-5">
       <div className="flex items-center gap-2 text-ink-muted">
         {icon && <NavIcon name={icon} className="size-4 text-accent" />}
         <p className="text-[12.5px]">{label}</p>

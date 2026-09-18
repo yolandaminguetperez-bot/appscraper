@@ -65,6 +65,12 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       Ads/Organic/Onboardings, que comparten la misma mecánica de filtros)
 - [ ] T. Selector de resultados por página
 
+## Sobre los logos reales
+Los CDN de arte de las tiendas (is1-ssl.mzstatic.com, play-lh.googleusercontent.com)
+están BLOQUEADOS en este entorno, igual que las APIs. No se pueden traer logos reales
+y no se van a imitar marcas ajenas. Lo que se ve son marcas generadas por hash del id.
+En cuanto `icon_url` tenga valor (scrapers con red), el icono real gana automáticamente.
+
 ## Rendimiento (medido, no supuesto)
 - `npm run stress` mide percentiles por ruta. 0 errores en todo lo probado.
 - Cuello de botella real a escala: peso de la respuesta (~380 KB/página), no la BD.

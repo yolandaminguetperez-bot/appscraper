@@ -136,9 +136,17 @@ against every dark surface it lands on: `--ink-faint` was raised from 4.09:1 to
 ## Sample media
 
 `public/sample-creatives/` holds generated motion graphics rendered by
-`scripts/make-sample-media.mjs` — abstract shapes only, so the creative player has
-real video to play offline. Nothing there is scraped or third-party, and ad copy is
-overlaid in the DOM rather than burned into the frame, which keeps it selectable.
+`scripts/make-sample-media.mjs` — animated gradients and moving shapes across eight
+colour schemes, so the creative player has real, varied video to play offline.
+Nothing there is scraped or third-party, and ad copy is overlaid in the DOM rather
+than burned into the frame, which keeps it selectable.
+
+**App icons.** Real store artwork lives on Apple and Google CDNs
+(`is1-ssl.mzstatic.com`, `play-lh.googleusercontent.com`). Where those hosts are
+blocked, no real icon can be fetched, so `src/lib/identicon.ts` draws an original
+mark from a hash of the app id — same app, same icon, every time. A real `iconUrl`
+always wins over it, so icons become real automatically once the CDNs are
+reachable.
 
 `public/sample-screens/` holds onboarding screens drawn as SVG by
 `scripts/make-sample-screens.mjs` — original wireframes with generic copy, modelled

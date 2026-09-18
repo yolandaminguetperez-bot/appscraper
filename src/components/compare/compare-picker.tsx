@@ -57,7 +57,7 @@ export function ComparePicker({
       </div>
 
       {results.length > 0 && !full && (
-        <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+        <ul className="surface-card overflow-hidden">
           {results.map((app) => {
             const already = ids.includes(app.id);
             return (

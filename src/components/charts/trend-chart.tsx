@@ -71,7 +71,7 @@ export function TrendChart({
 
   if (points.length < 2) {
     return (
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="surface-card p-5">
         <h3 className="text-[15px] font-semibold">{title}</h3>
         <p className="pt-2 text-[13px] text-ink-muted">Not enough history yet to plot a trend.</p>
       </section>
@@ -109,7 +109,7 @@ export function TrendChart({
   };
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5">
+    <section className="surface-card p-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-[15px] font-semibold">{title}</h3>

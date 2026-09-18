@@ -31,7 +31,9 @@ const LANGS = ["en", "es", "de", "fr", "pt", "ja", "ko"];
 const COUNTRIES = ["us", "gb", "de", "es", "fr", "br", "jp"];
 
 // Rendered by scripts/make-sample-media.mjs — generated motion graphics, not scraped media.
-const CLIPS = ["pulse", "sweep", "orbit", "rise"].flatMap((v) => [1, 2, 3, 4].map((i) => `${v}-${i}`));
+const CLIPS = ["mint", "dusk", "ember", "tide", "rose", "slate", "citrus", "plum"].flatMap((scheme) =>
+  [1, 2, 3].map((i) => `${scheme}-${i}`),
+);
 const clipUrl = (name, ext) => `/sample-creatives/${name}.${ext}`;
 
 // Rendered by scripts/make-sample-screens.mjs — original wireframes, not captures.

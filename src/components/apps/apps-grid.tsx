@@ -6,6 +6,19 @@ import { MiniChart } from "@/components/charts/mini-chart";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { IconSprite, SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 
+function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+  return (
+    <div>
+      <dt className="text-[11px] uppercase tracking-[0.06em] text-ink-faint">{label}</dt>
+      <dd
+        className={`pt-0.5 text-[15px] font-semibold tabular-nums ${accent ? "text-accent-ink" : ""}`}
+      >
+        {value}
+      </dd>
+    </div>
+  );
+}
+
 /** The same rows as the table, laid out for scanning artwork rather than columns. */
 export function AppsGrid({
   apps,
@@ -30,54 +43,58 @@ export function AppsGrid({
       <IconSprite />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {apps.map((app) => (
-          <article key={app.id} className="rounded-2xl border border-line bg-surface p-4">
-            <header className="flex items-start gap-3">
-              <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-12" />
+          <article
+            key={app.id}
+            className="surface-card surface-card-interactive flex flex-col overflow-hidden"
+          >
+            <header className="flex items-start gap-3.5 p-5 pb-4">
+              <AppIcon
+                id={app.id}
+                title={app.title}
+                iconUrl={app.iconUrl}
+                className="size-[52px] shadow-[0_6px_16px_-8px_rgba(16,21,17,0.5)]"
+              />
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/dashboard/apps/${encodeURIComponent(app.id)}`}
-                  className="block truncate text-[14.5px] font-medium hover:text-accent-ink"
+                  className="block truncate text-[16px] font-semibold leading-tight tracking-tight hover:text-accent-ink"
                 >
                   {app.title}
                 </Link>
-                <p className="truncate text-[12.5px] text-ink-muted">{app.developer}</p>
-                <p className="flex items-center gap-1.5 pt-1 text-[11.5px] text-ink-faint">
-                  <SpriteIcon
-                    id={app.store === "ios" ? SPRITE_IDS.apple : SPRITE_IDS.play}
-                    className="size-3"
-                  />
-                  {app.category ?? "—"}
+                <p className="truncate pt-0.5 text-[13px] text-ink-muted">{app.developer}</p>
+                <p className="flex items-center gap-1.5 pt-2">
+                  {/* Long category names wrapped the badge and made one card
+                      taller than its neighbours. */}
+                  <span className="inline-flex min-w-0 items-center gap-1.5 rounded-full bg-surface-muted px-2 py-0.5 text-[11.5px] text-ink-muted">
+                    <SpriteIcon
+                      id={app.store === "ios" ? SPRITE_IDS.apple : SPRITE_IDS.play}
+                      className="size-3"
+                    />
+                    <span className="truncate">{app.category ?? "—"}</span>
+                  </span>
+                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-[11.5px] font-medium text-accent-ink">
+                    <SpriteIcon id={SPRITE_IDS.star} className="size-3" />
+                    {rating(app.rating)}
+                  </span>
                 </p>
               </div>
               <FavoriteButton kind="app" refId={app.id} initial={favorites.has(app.id)} />
             </header>
 
-            <dl className="grid grid-cols-3 gap-2 pt-3.5 text-[12px]">
-              <div>
-                <dt className="text-ink-faint">Rating</dt>
-                <dd className="flex items-center gap-1 font-medium">
-                  <SpriteIcon id={SPRITE_IDS.star} className="size-3 text-accent" />
-                  {rating(app.rating)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-ink-faint">Downloads</dt>
-                <dd className="font-medium tabular-nums">{compactNumber(app.estDownloads)}</dd>
-              </div>
-              <div>
-                <dt className="text-ink-faint">MRR</dt>
-                <dd className="font-medium tabular-nums">{money(app.estMrr)}</dd>
-              </div>
+            <dl className="grid grid-cols-3 gap-3 border-t border-line px-5 py-3.5">
+              <Metric label="Downloads" value={compactNumber(app.estDownloads)} />
+              <Metric label="MRR" value={money(app.estMrr)} accent />
+              <Metric label="Reviews" value={compactNumber(app.ratingCount)} />
             </dl>
 
-            <div className="flex items-end justify-between gap-3 pt-3">
+            <div className="mt-auto flex items-end justify-between gap-3 border-t border-line bg-surface-muted/40 px-5 py-3">
               <MiniChart
                 values={trends?.get(app.id) ?? []}
                 label={`Revenue trend for ${app.title}`}
-                className="h-9 w-32"
+                className="h-9 w-28"
               />
-              <p className="text-right text-[11.5px] text-ink-faint">
-                {compactNumber(app.ratingCount)} reviews
+              <p className="text-right text-[11.5px] leading-tight text-ink-faint">
+                {money(app.estRevenue)} lifetime
                 <br />
                 released {daysAgo(app.releasedAt)}
               </p>

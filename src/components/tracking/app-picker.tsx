@@ -31,7 +31,7 @@ export function AppPicker({ role, results }: { role: "own" | "competitor"; resul
       </div>
 
       {results.length > 0 && (
-        <ul className="overflow-hidden rounded-2xl border border-line bg-surface">
+        <ul className="surface-card overflow-hidden">
           {results.map((app) => (
             <li
               key={app.id}

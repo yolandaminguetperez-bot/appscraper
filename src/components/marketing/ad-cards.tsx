@@ -9,7 +9,7 @@ export function AdGroupCard({ group, favorites }: { group: AdGroup; favorites: S
   const { app, creatives, total } = group;
 
   return (
-    <article className="rounded-2xl border border-line bg-surface p-4">
+    <article className="surface-card p-4">
       <header className="flex items-start justify-between gap-3">
         <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-10" />
         <div className="min-w-0 flex-1">

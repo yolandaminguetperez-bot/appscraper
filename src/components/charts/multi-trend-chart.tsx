@@ -61,7 +61,7 @@ export function MultiTrendChart({
 
   if (series.length === 0 || length < 2) {
     return (
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="surface-card p-5">
         <h3 className="text-[15px] font-semibold">{title}</h3>
         <p className="pt-2 text-[13px] text-ink-muted">Pick at least one app to plot.</p>
       </section>
@@ -79,7 +79,7 @@ export function MultiTrendChart({
   };
 
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5">
+    <section className="surface-card p-5">
       <h3 className="text-[15px] font-semibold">{title}</h3>
       {subtitle && <p className="pt-0.5 text-[12.5px] text-ink-muted">{subtitle}</p>}
 

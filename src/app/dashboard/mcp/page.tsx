@@ -29,7 +29,7 @@ export default async function McpPage() {
     <div className="space-y-5 px-7 pb-12">
       <PageHeader title="MCP" subtitle="Give an AI agent the same data this dashboard runs on." />
 
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="surface-card p-5">
         <h2 className="text-[15px] font-semibold">How it works</h2>
         <p className="pt-1 text-[13.5px] text-ink-muted">
           The bundled MCP server speaks JSON-RPC over stdio and forwards each tool call to this
@@ -42,7 +42,7 @@ npm run mcp            # the MCP server itself`}</code>
         </pre>
       </section>
 
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="surface-card p-5">
         <h2 className="text-[15px] font-semibold">Client configuration</h2>
         <p className="pt-1 text-[13.5px] text-ink-muted">
           Add this to your MCP client&apos;s config file, with <code>cwd</code> pointing at your clone.
@@ -52,7 +52,7 @@ npm run mcp            # the MCP server itself`}</code>
         </pre>
       </section>
 
-      <section className="rounded-2xl border border-line bg-surface p-5">
+      <section className="surface-card p-5">
         <h2 className="pb-3 text-[15px] font-semibold">Tools ({TOOLS.length})</h2>
         <ul className="space-y-2">
           {TOOLS.map((tool) => (

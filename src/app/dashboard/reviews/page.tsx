@@ -41,7 +41,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
       <ActiveChips chips={chips} />
 
       <div className="grid gap-4 px-7 pt-4 lg:grid-cols-3">
-        <section className="rounded-2xl border border-line bg-surface p-5">
+        <section className="surface-card p-5">
           <h2 className="text-[15px] font-semibold">Rating mix</h2>
           <p className="pt-1 text-[28px] font-semibold tabular-nums">{summary.average.toFixed(2)}</p>
           <p className="text-[12.5px] text-ink-muted">{summary.total.toLocaleString()} reviews</p>
@@ -61,7 +61,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-line bg-surface p-5">
+        <section className="surface-card p-5">
           <h2 className="text-[15px] font-semibold">Sentiment</h2>
           <div className="flex h-2.5 overflow-hidden rounded-full bg-surface-muted mt-4">
             <span
@@ -90,7 +90,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
           </ul>
         </section>
 
-        <section className="rounded-2xl border border-line bg-surface p-5">
+        <section className="surface-card p-5">
           <h2 className="text-[15px] font-semibold">Topics</h2>
           <ul className="space-y-2 pt-3">
             {summary.topics.slice(0, 6).map((topic) => (
@@ -126,7 +126,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
       </div>
 
       <div className="px-7 pt-4">
-        <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+        <div className="surface-card overflow-hidden">
           <ul>
             {result.reviews.map((review) => (
               <li key={review.id} className="border-b border-line px-5 py-4 last:border-0">

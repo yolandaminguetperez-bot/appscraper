@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 function Meter({ label, value, hint }: { label: string; value: number; hint: string }) {
   return (
-    <div className="rounded-2xl border border-line bg-surface p-5">
+    <div className="surface-card p-5">
       <p className="text-[13px] text-ink-muted">{label}</p>
       <p className="pt-1 text-[28px] font-semibold tabular-nums">{value}</p>
       <span className="mt-2 block h-2 overflow-hidden rounded-full bg-surface-muted">
@@ -53,7 +53,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
               value={stats.volumeIndex}
               hint="Relative demand proxy — compare terms, not absolutes."
             />
-            <div className="rounded-2xl border border-line bg-surface p-5">
+            <div className="surface-card p-5">
               <p className="text-[13px] text-ink-muted">Competing apps</p>
               <p className="pt-1 text-[28px] font-semibold tabular-nums">
                 {stats.competingApps.toLocaleString()}
@@ -64,7 +64,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
             </div>
           </div>
 
-          <section className="overflow-hidden rounded-2xl border border-line bg-surface">
+          <section className="surface-card overflow-hidden">
             <h2 className="border-b border-line px-5 py-3 text-[15px] font-semibold">
               Apps ranking for “{stats.term}”
             </h2>
