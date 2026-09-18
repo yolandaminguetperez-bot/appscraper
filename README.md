@@ -24,6 +24,7 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | `npm run e2e` | Drive a real browser against a running build (needs `npm run start` first) |
 | `npm run stress` | Load test a running build (`--concurrency`, `--seconds`) |
 | `npm run ux-check` | Drive the keyboard paths, sorting, filter clearing and focus |
+| `npm run preview` | Build a standalone static snapshot into `preview-build/` |
 | `npm run shots` | Screenshot dashboard routes into `shots/` |
 | `npm run shots-dark` | Screenshot the same routes in dark mode |
 | `npm run mcp` | Start the MCP server for AI agents |
@@ -84,6 +85,14 @@ never cycled, with their own steps per theme. Both sets pass the palette checks
 against their surface; the orange/carmine pair sits in the tritan floor band, so
 every series also carries a legend entry and a direct end label rather than
 relying on hue.
+
+## Static preview
+
+`npm run preview` exports a slice of the catalogue plus the creatives it references
+and drops them beside `preview/index.html`, giving a self-contained page that runs
+the filters, sorting, charts and video playback with no server behind it. Useful for
+sharing what the dashboard looks like without asking anyone to install it; it is a
+snapshot, so favourites, saved views and refresh are not part of it.
 
 ## Interaction
 

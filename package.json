@@ -16,7 +16,8 @@
     "screens": "node scripts/make-sample-screens.mjs",
     "shots-dark": "node scripts/shots-dark.mjs",
     "stress": "node scripts/stress.mjs",
-    "ux-check": "node scripts/ux-check.mjs"
+    "ux-check": "node scripts/ux-check.mjs",
+    "preview": "node scripts/export-preview.mjs preview-build && cp preview/index.html preview-build/"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
