@@ -87,7 +87,10 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       Limitación de la fuente: Singapur no está en el dataset 110m.
 - [x] AD. El mapa es genérico (WorldMap recibe valores por país, no una forma
       concreta) y se reutiliza en Ads Library: "dónde se ven estos ads",
-      contando creatividades por país sobre la selección filtrada
+      contando creatividades por país sobre la selección filtrada. Los países del
+      mapa son además un filtro: click filtra a ese país, click de nuevo lo quita.
+      El alcance del filtro depende de la vista — apps que anuncian ALLÍ (126) vs
+      creatividades que corren allí (196); cuadran con la base de datos
 - [~] Re-verificadas las APIs de tiendas y los CDN de arte: siguen denegados por
       política de red (connect_rejected). No es una suposición heredada
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)

@@ -126,6 +126,34 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   check("map countries link to their chart", links > 1, `${links} linked countries`);
 }
 
+// Clicking a country on the ads map filters to it, and the two views scope that
+// filter differently: apps that run *something* there vs creatives that run there.
+{
+  const inJp = db
+    .prepare("SELECT COUNT(*) AS creatives FROM creatives WHERE countries_json LIKE '%\"jp\"%'")
+    .get().creatives;
+  const appsInJp = db
+    .prepare("SELECT COUNT(DISTINCT app_id) AS apps FROM creatives WHERE countries_json LIKE '%\"jp\"%'")
+    .get().apps;
+
+  const countOn = async (url) => {
+    await page.goto(BASE + url, { waitUntil: "load" });
+    const text = await page.textContent("body");
+    return Number((text.match(/([\d,]+) results/) ?? [])[1]?.replace(/,/g, "") ?? -1);
+  };
+
+  check(
+    "country filter scopes creatives to that country",
+    (await countOn("/dashboard/ads?view=ads&country=jp")) === inJp,
+    `expected ${inJp}`,
+  );
+  check(
+    "country filter scopes the grouped view to apps running there",
+    (await countOn("/dashboard/ads?country=jp")) === appsInJp,
+    `expected ${appsInJp}`,
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

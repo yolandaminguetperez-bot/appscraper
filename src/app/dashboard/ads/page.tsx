@@ -57,11 +57,19 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
         <div className="max-w-4xl px-7 pt-4">
           <WorldMap
             title="Where these ads run"
-            description="Creatives in the current selection, counted by the countries they are served in."
+            description="Creatives in the current selection, counted by the countries they are served in. Click a country to filter to it."
             valueHeading="Creatives"
+            marked={filters.country}
+            markedNote="filtered to"
             values={reach.map((row) => ({
               code: row.code,
               value: row.creatives,
+              // Clicking a country filters the page to it; clicking the one
+              // already selected clears it, so the map is a toggle.
+              href: `/dashboard/ads?${toQueryString(params, {
+                country: row.code === filters.country ? null : row.code,
+                page: null,
+              })}`,
               label: `${row.code.toUpperCase()} — ${row.creatives.toLocaleString()} creatives running here`,
             }))}
           />

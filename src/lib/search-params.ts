@@ -53,13 +53,20 @@ export function parseAppFilters(params: RawParams): AppFilters {
   };
 }
 
-export function toQueryString(params: RawParams, overrides: Record<string, string> = {}): string {
+/** An override of null removes the key, which is how a toggle link clears itself. */
+export function toQueryString(
+  params: RawParams,
+  overrides: Record<string, string | null> = {},
+): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
     if (value === undefined) continue;
     for (const v of Array.isArray(value) ? value : [value]) search.append(key, v);
   }
-  for (const [key, value] of Object.entries(overrides)) search.set(key, value);
+  for (const [key, value] of Object.entries(overrides)) {
+    if (value === null) search.delete(key);
+    else search.set(key, value);
+  }
   return search.toString();
 }
 
@@ -125,6 +132,7 @@ export function parseAdFilters(params: RawParams) {
     minDownloads: num(params, "minDownloads"),
     minAds: num(params, "minAds"),
     minDaysRunning: num(params, "minDays"),
+    country: one(params, "country"),
     sort: (sort === "revenue" || sort === "downloads" || sort === "recent" ? sort : "ads") as
       | "ads"
       | "revenue"
@@ -151,6 +159,8 @@ export function describeAdFilters(params: RawParams) {
     const value = one(params, key);
     if (value) chips.push({ key, label: `${label}${value}${key === "minDays" ? "d" : ""}` });
   }
+  const country = one(params, "country");
+  if (country) chips.push({ key: "country", label: `Running in ${country.toUpperCase()}` });
   const q = one(params, "q");
   if (q) chips.push({ key: "q", label: `“${q}”` });
   return chips;

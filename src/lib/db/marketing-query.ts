@@ -95,12 +95,20 @@ export type AdFilters = {
   minDownloads?: number;
   minAds?: number;
   minDaysRunning?: number;
+  /** ISO 3166-1 alpha-2, lowercase: only creatives served in this country. */
+  country?: string;
   sort?: "ads" | "revenue" | "downloads" | "recent";
   page?: number;
   perPage?: number;
 };
 
-function adWhere(f: AdFilters) {
+/**
+ * `scope` says what a country filter applies to: with "creative" the row itself
+ * must run there, with "app" it is enough that the app runs something there.
+ * The grouped view lists apps, the flat view lists creatives, and using the
+ * wrong one shows an app's whole creative set because one of them ran in Japan.
+ */
+function adWhere(f: AdFilters, scope: "app" | "creative" = "app") {
   const sql: string[] = ["EXISTS (SELECT 1 FROM creatives c WHERE c.app_id = a.id)"];
   const params: unknown[] = [];
 
@@ -132,6 +140,16 @@ function adWhere(f: AdFilters) {
     sql.push("EXISTS (SELECT 1 FROM creatives c3 WHERE c3.app_id = a.id AND c3.days_running >= ?)");
     params.push(f.minDaysRunning);
   }
+  if (f.country) {
+    // The quotes are what makes this safe: '%"us"%' cannot match "aus".
+    const needle = `%"${f.country.toLowerCase()}"%`;
+    if (scope === "creative") {
+      sql.push("c.countries_json LIKE ?");
+    } else {
+      sql.push("EXISTS (SELECT 1 FROM creatives c4 WHERE c4.app_id = a.id AND c4.countries_json LIKE ?)");
+    }
+    params.push(needle);
+  }
 
   return { sql: `WHERE ${sql.join(" AND ")}`, params };
 }
@@ -151,7 +169,7 @@ const AD_SORTS = {
  * LIKE on the JSON column would match "us" inside "aus" and quietly overcount.
  */
 export function adCountryReach(f: AdFilters = {}): { code: string; creatives: number }[] {
-  const where = adWhere(f);
+  const where = adWhere(f, "creative");
   const rows = db()
     .prepare(
       `SELECT c.countries_json FROM creatives c JOIN apps a ON a.id = c.app_id ${where.sql}`,
@@ -206,7 +224,7 @@ export function queryAdGroups(f: AdFilters = {}) {
 }
 
 export function queryCreatives(f: AdFilters = {}) {
-  const where = adWhere(f);
+  const where = adWhere(f, "creative");
   const perPage = Math.min(Math.max(f.perPage ?? 48, 1), 200);
   const page = Math.max(f.page ?? 1, 1);
 
