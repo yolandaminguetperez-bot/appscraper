@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/layout/page-header";
+import { CodeBlock } from "@/components/ui/code-block";
 
 export const dynamic = "force-dynamic";
 
@@ -31,15 +32,16 @@ export default async function McpPage() {
 
       <section className="surface-card p-5">
         <h2 className="text-[15px] font-semibold">How it works</h2>
-        <p className="pt-1 text-[13.5px] text-ink-muted">
+        <p className="pt-1 text-[13.5px] leading-relaxed text-ink-muted">
           The bundled MCP server speaks JSON-RPC over stdio and forwards each tool call to this
           app&apos;s REST API, so an agent sees exactly what you see. Start the app, point your MCP
           client at the server, and the tools below appear in its tool list.
         </p>
-        <pre className="mt-3 overflow-x-auto rounded-xl bg-panel p-4 text-[12.5px] text-panel-ink">
-          <code>{`npm run start          # the app the server reads from
-npm run mcp            # the MCP server itself`}</code>
-        </pre>
+        <CodeBlock
+          className="mt-3"
+          code={`npm run start          # the app the server reads from
+npm run mcp            # the MCP server itself`}
+        />
       </section>
 
       <section className="surface-card p-5">
@@ -47,18 +49,16 @@ npm run mcp            # the MCP server itself`}</code>
         <p className="pt-1 text-[13.5px] text-ink-muted">
           Add this to your MCP client&apos;s config file, with <code>cwd</code> pointing at your clone.
         </p>
-        <pre className="mt-3 overflow-x-auto rounded-xl bg-panel p-4 text-[12.5px] text-panel-ink">
-          <code>{CONFIG}</code>
-        </pre>
+        <CodeBlock className="mt-3" code={CONFIG} />
       </section>
 
       <section className="surface-card p-5">
         <h2 className="pb-3 text-[15px] font-semibold">Tools ({TOOLS.length})</h2>
-        <ul className="space-y-2">
+        <ul className="grid gap-2 sm:grid-cols-2">
           {TOOLS.map((tool) => (
-            <li key={tool.name} className="rounded-xl bg-surface-muted px-4 py-3">
-              <code className="text-[13px] font-medium text-accent-ink">{tool.name}</code>
-              <p className="pt-0.5 text-[13px] text-ink-muted">{tool.summary}</p>
+            <li key={tool.name} className="rounded-xl border border-line bg-surface-muted/60 px-4 py-3">
+              <code className="font-mono text-[13px] font-medium text-accent-ink">{tool.name}</code>
+              <p className="pt-1 text-[12.5px] leading-relaxed text-ink-muted">{tool.summary}</p>
             </li>
           ))}
         </ul>
