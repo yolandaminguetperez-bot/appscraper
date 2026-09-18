@@ -72,6 +72,8 @@ export default async function AppsPage({
           pages={result.pages}
           total={result.total}
           makeHref={(page) => `/dashboard/apps?${toQueryString(params, { page: String(page) })}`}
+          perPage={result.perPage}
+          perPageOptions={[25, 50, 100, 200]}
         />
       </div>
       </PendingOverlay>

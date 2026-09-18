@@ -3,6 +3,8 @@ import { ActiveChips } from "@/components/filters/active-chips";
 import { FlowsFilterBar } from "@/components/flows/flows-filter-bar";
 import { FlowCard } from "@/components/flows/flow-card";
 import { Pagination } from "@/components/ui/pagination";
+import { SaveView } from "@/components/views/save-view";
+import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { distinctCategories, distinctLanguages } from "@/lib/db/app-query";
 import { distinctScreenTypes, queryFlows } from "@/lib/db/flows-query";
 import { describeFlowFilters, parseFlowFilters, toQueryString, type RawParams } from "@/lib/search-params";
@@ -18,10 +20,16 @@ export default async function OnboardingsPage({
   const filters = parseFlowFilters(params);
   const result = queryFlows(filters);
   const chips = describeFlowFilters(params);
+  const savedViews = listSavedViews("/dashboard/onboardings");
+  const savedId = findSavedView("/dashboard/onboardings", toQueryString(params))?.id ?? null;
 
   return (
     <div className="pb-12">
-      <PageHeader title="Onboarding Flows" subtitle="Screen-by-screen flows from shipping apps." />
+      <PageHeader
+        title="Onboarding Flows"
+        subtitle="Screen-by-screen flows from shipping apps."
+        actions={<SaveView views={savedViews} savedId={savedId} />}
+      />
       <FlowsFilterBar
         screenTypes={distinctScreenTypes()}
         categories={distinctCategories()}
@@ -43,6 +51,8 @@ export default async function OnboardingsPage({
           pages={result.pages}
           total={result.total}
           makeHref={(page) => `/dashboard/onboardings?${toQueryString(params, { page: String(page) })}`}
+          perPage={result.perPage}
+          perPageOptions={[12, 24, 48, 96]}
         />
       </div>
     </div>

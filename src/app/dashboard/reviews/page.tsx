@@ -178,6 +178,8 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
           pages={result.pages}
           total={result.total}
           makeHref={(page) => `/dashboard/reviews?${toQueryString(params, { page: String(page) })}`}
+          perPage={result.perPage}
+          perPageOptions={[25, 50, 100]}
         />
       </div>
     </div>

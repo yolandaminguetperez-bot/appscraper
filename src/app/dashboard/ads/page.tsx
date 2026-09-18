@@ -3,6 +3,8 @@ import { ActiveChips } from "@/components/filters/active-chips";
 import { AdsFilterBar } from "@/components/marketing/ads-filter-bar";
 import { AdGroupCard, CreativeCards } from "@/components/marketing/ad-cards";
 import { Pagination } from "@/components/ui/pagination";
+import { SaveView } from "@/components/views/save-view";
+import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { distinctCategories, distinctLanguages } from "@/lib/db/app-query";
 import { queryAdGroups, queryCreatives } from "@/lib/db/marketing-query";
 import { favoriteIds } from "@/lib/db/favorites";
@@ -15,6 +17,8 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
   const filters = parseAdFilters(params);
   const view = params.view === "ads" ? "ads" : "grouped";
   const chips = describeAdFilters(params);
+  const savedViews = listSavedViews("/dashboard/ads");
+  const savedId = findSavedView("/dashboard/ads", toQueryString(params))?.id ?? null;
 
   const savedApps = favoriteIds("app");
   const savedAds = favoriteIds("ad");
@@ -29,6 +33,7 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
       <PageHeader
         title="Ads Library"
         subtitle={view === "grouped" ? "Apps running paid creatives." : "Every creative we have on file."}
+        actions={<SaveView views={savedViews} savedId={savedId} />}
       />
 
       <AdsFilterBar
@@ -62,6 +67,8 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
           pages={pages}
           total={total}
           makeHref={(page) => `/dashboard/ads?${toQueryString(params, { page: String(page) })}`}
+          perPage={grouped?.perPage ?? flat?.perPage ?? 24}
+          perPageOptions={view === "ads" ? [24, 48, 96, 192] : [12, 24, 48, 96]}
         />
       </div>
     </div>

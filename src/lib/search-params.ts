@@ -131,6 +131,7 @@ export function parseAdFilters(params: RawParams) {
       | "downloads"
       | "recent",
     page: num(params, "page") ?? 1,
+    perPage: num(params, "perPage"),
   };
 }
 
@@ -172,6 +173,7 @@ export function parseOrganicFilters(params: RawParams) {
       | "recent"
       | "followers",
     page: num(params, "page") ?? 1,
+    perPage: num(params, "perPage"),
   };
 }
 
@@ -212,6 +214,7 @@ export function parseFlowFilters(params: RawParams) {
       | "screens"
       | "recent",
     page: num(params, "page") ?? 1,
+    perPage: num(params, "perPage"),
   };
 }
 
@@ -248,6 +251,7 @@ export function parseReviewFilters(params: RawParams) {
     topics: all(params, "topic"),
     windowDays: num(params, "window"),
     page: num(params, "page") ?? 1,
+    perPage: num(params, "perPage"),
   };
 }
 

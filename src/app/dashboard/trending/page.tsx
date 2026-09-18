@@ -1,5 +1,8 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { TrendTable } from "@/components/trends/trend-table";
+import { TrendGrid } from "@/components/trends/trend-grid";
+import { ViewToggle } from "@/components/apps/view-toggle";
+import { favoriteIds } from "@/lib/db/favorites";
 import { WindowTabs } from "@/components/trends/window-tabs";
 import { queryTrending } from "@/lib/db/trends-query";
 import { metricsForApps } from "@/lib/db/app-query";
@@ -17,6 +20,7 @@ export default async function TrendingPage({ searchParams }: { searchParams: Pro
   const params = await searchParams;
   const raw = Array.isArray(params.window) ? params.window[0] : params.window;
   const windowDays = Number(raw) || 7;
+  const view = (Array.isArray(params.view) ? params.view[0] : params.view) === "grid" ? "grid" : "table";
 
   const rows = queryTrending({ windowDays });
   const trends = metricsForApps(rows.map((row) => row.app.id), {
@@ -29,10 +33,19 @@ export default async function TrendingPage({ searchParams }: { searchParams: Pro
       <PageHeader
         title="Trending"
         subtitle="Apps gaining users fastest right now."
-        actions={<WindowTabs options={WINDOWS} />}
+        actions={
+          <>
+            <WindowTabs options={WINDOWS} />
+            <ViewToggle />
+          </>
+        }
       />
       <div className="px-7 pt-5">
-        <TrendTable rows={rows} trends={trends} />
+        {view === "grid" ? (
+          <TrendGrid rows={rows} trends={trends} favorites={favoriteIds("app")} />
+        ) : (
+          <TrendTable rows={rows} trends={trends} />
+        )}
       </div>
     </div>
   );

@@ -58,7 +58,7 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       real — "¿este mercado se parece al mío?")
 - [x] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
-- [~] Q. Vista de tarjetas: hecho en Favoritos/apps; falta Trending
+- [x] Q. Vista de tarjetas también en Favoritos/apps y Trending (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
       API (índice pegajoso + copiar), MCP, landing (preview con datos reales)
 - [x] V1. Detalle de app: cabecera con badges + favorito, ads y vídeos de creadores
@@ -71,9 +71,10 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] X. Bloque "apps de tamaño similar en esta categoría" en el detalle de app
 - [x] R. Pasada de UX: paleta de comandos, orden por columna, foco visible,
       feedback al filtrar, jerarquía de filtros, tabla usable en móvil
-- [x] S. Guardar vistas/filtros con nombre (en Explore Apps; falta llevarlo a
-      Ads/Organic/Onboardings, que comparten la misma mecánica de filtros)
-- [ ] T. Selector de resultados por página
+- [x] S. Guardar vistas/filtros con nombre en Explore Apps, Ads, Organic y Onboardings
+- [x] T. Selector de resultados por página en Apps, Ads, Organic, Onboardings
+      y Reviews (junto al contador; visible también con una sola página, que
+      es justo cuando se quiere subir el tamaño)
 
 ## Sobre los logos reales
 Los CDN de arte de las tiendas (is1-ssl.mzstatic.com, play-lh.googleusercontent.com)
