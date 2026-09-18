@@ -59,6 +59,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [ ] Q. Vista de tarjetas también en Favoritos y Trending
+- [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
+      API (índice pegajoso + copiar), MCP, landing (preview con datos reales)
+- [ ] V. Falta pasada específica en: detalle de app, Favoritos, Your Apps/Competitors
 - [x] R. Pasada de UX: paleta de comandos, orden por columna, foco visible,
       feedback al filtrar, jerarquía de filtros, tabla usable en móvil
 - [x] S. Guardar vistas/filtros con nombre (en Explore Apps; falta llevarlo a
