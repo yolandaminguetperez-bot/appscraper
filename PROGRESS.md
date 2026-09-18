@@ -10,9 +10,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - Sin pasarela de pago: TODO gratis, sin paywall
 
 ## Tareas
-- [ ] 1. Scaffold Next.js + Tailwind + estructura de carpetas
-- [ ] 2. Design system (tokens verde/oscuro, tipografía, componentes base: Button, Chip, FilterDropdown, Card, Table)
-- [ ] 3. Shell del dashboard: sidebar (Explore/Favorites/ASO Tracking/Tools/AI Agents) + user footer + colapsable
+- [x] 1. Scaffold Next.js + Tailwind + estructura de carpetas
+- [x] 2. Design system (tokens verde/oscuro, tipografía, componentes base: Button, Chip, FilterDropdown, Card, Table)
+- [x] 3. Shell del dashboard: sidebar (Explore/Favorites/ASO Tracking/Tools/AI Agents) + user footer + colapsable
 - [ ] 4. Capa de datos: schema SQLite + repositorios + seed
 - [ ] 5. Scraper App Store (búsqueda, lookup, top charts, reviews)
 - [ ] 6. Scraper Google Play (búsqueda, detalle, top charts, reviews)
@@ -35,4 +35,6 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [ ] 23. Tests + README
 
 ## Notas de sesión
-- (vacío)
+- El registro npmjs.org devuelve 503 en este entorno. Usar el mirror:
+  `npm config set registry https://registry.yarnpkg.com/`
+- Rutas del dashboard ya creadas; cada una con placeholder hasta implementarla.
