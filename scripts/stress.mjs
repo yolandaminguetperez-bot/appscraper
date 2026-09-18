@@ -31,6 +31,7 @@ const ROUTES = [
   { path: "/dashboard/rankings?chart=grossing", weight: 2, kind: "page" },
   { path: "/dashboard/reviews", weight: 2, kind: "page" },
   { path: "/dashboard/keywords?term=budget", weight: 1, kind: "page" },
+  { path: "/dashboard/apps/android%3Acom.cobalt.notes7889", weight: 2, kind: "page" },
   { path: "/api/v1/apps?perPage=50", weight: 4, kind: "api" },
   { path: "/api/v1/apps?store=ios&minRevenue=100000&sort=revenue", weight: 3, kind: "api" },
   { path: "/api/v1/rankings?chart=grossing&limit=50", weight: 2, kind: "api" },

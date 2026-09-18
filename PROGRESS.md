@@ -62,6 +62,11 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       competidores, puntuados dentro de ese subconjunto y enlazables
 - [x] Z. Detalle de app: bloque "keywords in this title" con nº de apps
       compitiendo y dificultad de cada término, enlazado al Keyword Explorer
+- [x] AA. Memoización de queryTrending (medido a 25k apps: 138 ms de los 155 ms
+      de la página, repetidos en cada request; ahora ~35 ms en caliente). Las
+      queries de Rankings y keywords se midieron también: 24 ms y 10-20 ms a
+      25k, así que NO se tocaron — el techo restante es CPU de render en un
+      solo proceso, no la base de datos
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
