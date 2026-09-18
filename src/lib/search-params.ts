@@ -194,3 +194,47 @@ export function describeOrganicFilters(params: RawParams) {
   if (q) chips.push({ key: "q", label: `“${q}”` });
   return chips;
 }
+
+export function parseFlowFilters(params: RawParams) {
+  const sort = one(params, "sort");
+  const kind = one(params, "kind");
+  return {
+    q: one(params, "q"),
+    kinds: kind ? [kind] : [],
+    screenTypes: all(params, "screen"),
+    categories: all(params, "cat"),
+    languages: all(params, "lang"),
+    minDownloads: num(params, "minDownloads"),
+    minMrr: num(params, "minMrr"),
+    sort: (sort === "downloads" || sort === "screens" || sort === "recent" ? sort : "revenue") as
+      | "revenue"
+      | "downloads"
+      | "screens"
+      | "recent",
+    page: num(params, "page") ?? 1,
+  };
+}
+
+export function describeFlowFilters(params: RawParams) {
+  const chips: { key: string; value?: string; label: string }[] = [];
+  const kind = one(params, "kind");
+  if (kind) chips.push({ key: "kind", label: kind === "web-funnel" ? "Web funnels" : "Onboardings" });
+  for (const screen of all(params, "screen")) {
+    chips.push({ key: "screen", value: screen, label: `Screen: ${screen}` });
+  }
+  for (const cat of all(params, "cat")) chips.push({ key: "cat", value: cat, label: cat });
+  for (const lang of all(params, "lang")) {
+    chips.push({ key: "lang", value: lang, label: `Language: ${lang.toUpperCase()}` });
+  }
+  const numeric: [string, string][] = [
+    ["minDownloads", "Downloads ≥ "],
+    ["minMrr", "MRR ≥ $"],
+  ];
+  for (const [key, label] of numeric) {
+    const value = one(params, key);
+    if (value) chips.push({ key, label: `${label}${value}` });
+  }
+  const q = one(params, "q");
+  if (q) chips.push({ key: "q", label: `“${q}”` });
+  return chips;
+}

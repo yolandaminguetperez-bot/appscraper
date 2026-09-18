@@ -20,7 +20,7 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 8. Página Explore Apps: buscador + 14 filtros + chips activos + tabla/grid + export CSV
 - [x] 9. Página Ads Library (grouped/ads, filtros, creatividades)
 - [x] 10. Página Organic Content (creator videos, filtros)
-- [ ] 11. Página Onboarding Flows (screens/apps, categorías de pantalla)
+- [x] 11. Página Onboarding Flows (screens/apps, categorías de pantalla)
 - [ ] 12. Páginas Trending y Rising
 - [ ] 13. Store Rankings (Top Free/Paid/Grossing, país, categoría, ambas tiendas)
 - [ ] 14. Favoritos (Apps/Ads/Organic) con persistencia
