@@ -165,4 +165,10 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
 - [x] I5. El quick look actúa, no solo informa: guardar en favoritos y seguir
       como competidor desde el panel, con estado real leído de /api/app-state
       (fuera de /api/v1, que es la forma pública documentada)
+- [x] I6. Iconos: el arte real de la tienda gana siempre; el icono generado pasa
+      a ser SOLO fallback (fila sin icon_url todavía, o icon_url que falla al
+      cargar) en vez de imagen rota. scripts/backfill-icons.mjs rellena el arte
+      real desde las tiendas. En ESTE entorno los cuatro hosts responden 403,
+      y el catálogo sembrado son apps inventadas: no existe icono original que
+      traer hasta que los scrapers traigan apps reales
 

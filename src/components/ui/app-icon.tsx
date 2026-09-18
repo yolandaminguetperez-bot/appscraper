@@ -1,6 +1,17 @@
+"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/cn";
 
-/** A real store icon when we have one, a deterministic generated mark when we do not. */
+/**
+ * The app's own store artwork whenever we have it.
+ *
+ * The generated mark is a fallback for two cases and nothing else: a row whose
+ * icon_url we have not fetched yet, and an icon_url that fails to load (the CDN
+ * is unreachable, the artwork moved, the app was pulled). Without the onError
+ * arm the second case renders a broken image, which is worse than a placeholder
+ * and looks like a bug in the page.
+ */
 export function AppIcon({
   id,
   title,
@@ -12,7 +23,8 @@ export function AppIcon({
   iconUrl?: string | null;
   className?: string;
 }) {
-  const src = iconUrl ?? `/api/icon/${encodeURIComponent(id)}`;
+  const generated = `/api/icon/${encodeURIComponent(id)}`;
+  const [src, setSrc] = useState(iconUrl || generated);
 
   return (
     // Remote store icons come from arbitrary CDNs; next/image would need each one
@@ -22,6 +34,9 @@ export function AppIcon({
       src={src}
       alt={`${title} icon`}
       loading="lazy"
+      onError={() => {
+        if (src !== generated) setSrc(generated);
+      }}
       className={cn("shrink-0 rounded-[22%] bg-surface-muted object-cover", className)}
     />
   );
