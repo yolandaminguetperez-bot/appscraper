@@ -199,4 +199,14 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
 - [x] D8. Keyword Explorer separa quién RANKEA por el término (posiciones reales)
       de quién solo lo MENCIONA (coincidencia de texto), que es lo único que
       sabía antes
+- [x] D9. Navegación por teclado en la tabla: j/k (y flechas) mueven, Enter abre,
+      Espacio abre la vista rápida, s selecciona. El resaltado es una clase en la
+      fila, no foco: enfocar la fila robaría el foco a sus enlaces
+- [x] D10. La vista rápida muestra mercados y posiciones de búsqueda; /api/v1/apps/{id}
+      los expone también (son datos de la app, no estado de interfaz)
+- [x] BUG. Sembrar keywords con INSERT OR REPLACE borraba posiciones: la fila de
+      keyword la COMPARTEN las apps que compiten por el término, REPLACE es
+      DELETE+INSERT y el ON DELETE CASCADE se llevaba lo ya escrito. 353 de 420
+      apps perdieron su histórico y la tabla seguía pareciendo llena. Upsert en
+      sitio; 5.880 -> 73.500 posiciones. Hay check de regresión por cobertura
 

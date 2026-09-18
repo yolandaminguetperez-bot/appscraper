@@ -32,6 +32,8 @@ type Detail = {
   creatives: { id: string; headline: string | null; network: string; daysRunning: number | null }[];
   organic: { id: string; author: string | null; views: number | null; platform: string }[];
   reviews: { id: string; rating: number | null; title: string | null; body: string | null }[];
+  markets: { country: string; revenue: number | null; share: number }[];
+  keywordRanks: { term: string; position: number; change: number }[];
 };
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -171,6 +173,46 @@ export function QuickLookPanel() {
                 </div>
               ))}
             </div>
+
+            {detail.markets?.length > 0 && (
+              <section className="surface-card p-4">
+                <p className="pb-2 text-[13px] font-medium">Top markets</p>
+                <ul className="space-y-1.5">
+                  {detail.markets.slice(0, 3).map((market) => (
+                    <li key={market.country} className="grid grid-cols-[2rem_1fr_auto] items-center gap-2">
+                      <span className="text-[12px] font-medium uppercase">{market.country}</span>
+                      <span className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
+                        <span
+                          className="block h-full rounded-full bg-chart-line"
+                          style={{ width: `${Math.round(market.share * 100)}%` }}
+                        />
+                      </span>
+                      <span className="metric text-[11.5px] text-ink-muted">
+                        {(market.share * 100).toFixed(0)}%
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            {detail.keywordRanks?.length > 0 && (
+              <section className="surface-card p-4">
+                <p className="pb-2 text-[13px] font-medium">Search positions</p>
+                <ul className="space-y-1.5">
+                  {detail.keywordRanks.slice(0, 4).map((rank) => (
+                    <li key={rank.term} className="flex items-baseline gap-2 text-[12.5px]">
+                      <span className="metric w-8 shrink-0 font-semibold">#{rank.position}</span>
+                      <span className="min-w-0 flex-1 truncate">{rank.term}</span>
+                      <span className={`metric shrink-0 text-[11.5px] ${rank.change > 0 ? "text-pos" : rank.change < 0 ? "text-neg" : "text-ink-faint"}`}>
+                        {rank.change > 0 ? "+" : ""}
+                        {rank.change}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             {detail.creatives.length > 0 && (
               <section className="surface-card p-4">

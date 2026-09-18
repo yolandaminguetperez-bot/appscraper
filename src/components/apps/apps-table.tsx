@@ -7,6 +7,7 @@ import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 import { SortableHeader } from "@/components/filters/sortable-header";
 import { SelectCheckbox } from "@/components/selection/select-checkbox";
 import { QuickLookButton } from "@/components/quicklook/quick-look-button";
+import { TableKeys } from "@/components/apps/table-keys";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
@@ -99,6 +100,7 @@ export function AppsTable({
 
   return (
     <div className="scroll-thin overflow-x-auto rounded-2xl border border-line bg-surface shadow-[var(--raise-1)]">
+      <TableKeys />
       <table className="w-full min-w-[920px] border-collapse text-sm">
         <thead>
           {/* Sticky: the columns stay labelled while you scroll a long page. */}
@@ -122,7 +124,8 @@ export function AppsTable({
           {apps.map((app) => (
             <tr
               key={app.id}
-              className="group border-b border-line/70 last:border-0 transition-colors hover:bg-surface-muted/50"
+              data-app-id={app.id}
+              className="group border-b border-line/70 last:border-0 transition-colors hover:bg-surface-muted/50 data-[active=true]:bg-accent-soft/60 data-[active=true]:shadow-[inset_3px_0_0_0_var(--accent)]"
             >
               <td className="py-2.5 pl-4 pr-0">
                 <SelectCheckbox id={app.id} title={app.title} />

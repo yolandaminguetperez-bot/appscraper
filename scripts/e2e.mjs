@@ -262,6 +262,18 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   const shares = db
     .prepare("SELECT SUM(share) AS total FROM app_countries WHERE app_id = ?")
     .get(tracked).total;
+  // Regression: keywords are shared between competing apps, and seeding them
+  // with INSERT OR REPLACE cascaded into keyword_ranks and deleted the
+  // positions already written. 353 of 420 apps lost their history and the
+  // table still looked populated, so coverage is what this asserts.
+  const covered = db.prepare("SELECT COUNT(DISTINCT app_id) AS n FROM keyword_ranks").get().n;
+  const totalApps = db.prepare("SELECT COUNT(*) AS n FROM apps").get().n;
+  check(
+    "every app kept its search positions",
+    covered === totalApps,
+    `${covered} of ${totalApps} apps`,
+  );
+
   check(
     "country shares of one app sum to 1",
     Math.abs(shares - 1) < 0.001,

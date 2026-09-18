@@ -121,9 +121,18 @@ const insertFlow = db.prepare(`INSERT OR REPLACE INTO flows (id, app_id, kind, t
 const insertScreen = db.prepare(`INSERT OR REPLACE INTO flow_screens (id, flow_id, position, screen_type, image_url, note) VALUES (@id, @flow_id, @position, @screen_type, @image_url, @note)`);
 const insertReview = db.prepare(`INSERT OR REPLACE INTO reviews (id, app_id, author, rating, title, body, version, country, posted_at, sentiment, topics_json) VALUES (@id, @app_id, @author, @rating, @title, @body, @version, @country, @posted_at, @sentiment, @topics_json)`);
 const insertRanking = db.prepare(`INSERT OR REPLACE INTO rankings (store, chart, country, category, position, app_id, day) VALUES (@store, @chart, @country, @category, @position, @app_id, @day)`);
-const insertKeyword = db.prepare(`INSERT OR REPLACE INTO keywords
+// Upsert in place, never INSERT OR REPLACE. A keyword row is shared by every
+// app that competes for the term, and REPLACE is a DELETE followed by an
+// INSERT: the delete cascades into keyword_ranks and wipes the positions
+// already written for that term. It cost 353 of 420 apps their rank history,
+// silently, and the table still looked populated.
+const insertKeyword = db.prepare(`INSERT INTO keywords
   (id, term, store, country, volume, difficulty, checked_at)
-  VALUES (@id, @term, @store, @country, @volume, @difficulty, @checked_at)`);
+  VALUES (@id, @term, @store, @country, @volume, @difficulty, @checked_at)
+  ON CONFLICT (id) DO UPDATE SET
+    volume = excluded.volume,
+    difficulty = excluded.difficulty,
+    checked_at = excluded.checked_at`);
 const insertKeywordRank = db.prepare(`INSERT OR REPLACE INTO keyword_ranks
   (keyword_id, app_id, position, day) VALUES (@keyword_id, @app_id, @position, @day)`);
 const insertCountry = db.prepare(`INSERT OR REPLACE INTO app_countries
