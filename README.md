@@ -161,6 +161,20 @@ abre con doble clic, sin servidor. Reproduce el filtrado, la selección para
 comparar, la vista rápida, el mapa con tooltip y las creatividades en vídeo;
 no incluye lo que necesita servidor (favoritos, seguimiento, exportación CSV).
 
+### If the app loads unstyled, or icons come out huge
+
+`next dev` and `next start` share the `.next` directory. Running one while the
+other is serving replaces the build the running server has in memory, and it
+then asks for a stylesheet filename that no longer exists: the page arrives as
+unstyled HTML, with icons at their natural 100px instead of 36px. Nothing is
+wrong with the code — rebuild and restart:
+
+```bash
+rm -rf .next && npm run build && npm start
+```
+
+Use one or the other, not both at once.
+
 ## Map geometry
 
 `src/lib/geo/world.json` is built by `scripts/make-world-geo.mjs` from Natural

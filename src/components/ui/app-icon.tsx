@@ -25,6 +25,7 @@ export function AppIcon({
 }) {
   const generated = `/api/icon/${encodeURIComponent(id)}`;
   const [src, setSrc] = useState(iconUrl || generated);
+  const isGenerated = src === generated;
 
   return (
     // Remote store icons come from arbitrary CDNs; next/image would need each one
@@ -33,7 +34,14 @@ export function AppIcon({
     <img
       src={src}
       alt={`${title} icon`}
+      // Says what it is on hover, so a generated mark is never mistaken for the
+      // app's real artwork failing to load.
+      title={isGenerated ? `${title} — generated mark, no store artwork on file` : undefined}
       loading="lazy"
+      // Intrinsic size, so the row keeps its shape while the image is still
+      // loading and does not collapse if the stylesheet is missing.
+      width={36}
+      height={36}
       onError={() => {
         if (src !== generated) setSrc(generated);
       }}
