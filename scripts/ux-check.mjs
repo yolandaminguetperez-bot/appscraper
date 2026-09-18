@@ -3,6 +3,9 @@
  * keyboard entry points, sorting, clearing filters, and focus visibility.
  */
 import { chromium } from "playwright";
+import Database from "better-sqlite3";
+
+const db = new Database(process.env.APPSCRAPER_DB ?? "data/appscraper.db");
 
 const BASE = process.env.E2E_BASE ?? "http://localhost:3000";
 const results = [];
@@ -16,6 +19,7 @@ const page = await browser.newPage({ viewport: { width: 1500, height: 950 } });
 
 await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
 await page.waitForSelector("table");
+await page.getByRole("button", { name: /Search or jump to/ }).waitFor({ state: "visible" });
 
 // Command palette opens on the keyboard shortcut.
 await page.keyboard.press("Control+k");
@@ -37,6 +41,7 @@ check("Enter navigates to the result", !page.url().includes("/dashboard/apps?"),
 
 // Escape closes it.
 await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+await page.getByRole("button", { name: /Search or jump to/ }).waitFor({ state: "visible" });
 await page.keyboard.press("Control+k");
 await page.waitForTimeout(250);
 await page.keyboard.press("Escape");
@@ -79,6 +84,57 @@ check(
   Boolean(outline && outline.outlineStyle !== "none" && parseFloat(outline.outlineWidth) > 0),
   JSON.stringify(outline),
 );
+
+// Saved views: named filter sets that survive a reload.
+db.prepare("DELETE FROM saved_views").run();
+await page.goto(`${BASE}/dashboard/apps?minRating=4&signal=ads`, { waitUntil: "load" });
+await page.waitForSelector("table");
+
+await page.getByRole("button", { name: /Save view/ }).click();
+await page.waitForTimeout(300);
+const nameField = page.locator("#save-view-name");
+const suggested = await nameField.inputValue();
+check("save panel suggests a name from the filters", suggested.length > 0, `"${suggested}"`);
+
+await nameField.fill("High rated advertisers");
+await page.getByRole("button", { name: "Save", exact: true }).click();
+await page.waitForTimeout(1200);
+
+const stored = db.prepare("SELECT name, path, query FROM saved_views").all();
+check("saving writes the view to the database", stored.length === 1, JSON.stringify(stored));
+check(
+  "saved query drops the page parameter",
+  stored[0] && !stored[0].query.includes("page="),
+  stored[0]?.query ?? "",
+);
+
+// Restoring it from somewhere else puts the filters back.
+await page.goto(`${BASE}/dashboard/overview`, { waitUntil: "load" });
+// The shortcut is a client listener: pressing it before hydration does nothing.
+await page.getByRole("button", { name: /Search or jump to/ }).waitFor({ state: "visible" });
+await page.keyboard.press("Control+k");
+await page.waitForTimeout(300);
+await page.keyboard.type("High rated");
+await page.waitForTimeout(600);
+const paletteHit = await page
+  .getByRole("dialog", { name: "Command palette" })
+  .locator("li button")
+  .first()
+  .textContent();
+check("saved view is reachable from the palette", /High rated/.test(paletteHit ?? ""), paletteHit?.trim());
+
+await page.keyboard.press("Enter");
+await page.waitForTimeout(1500);
+check(
+  "following it restores the filters",
+  page.url().includes("minRating=4") && page.url().includes("signal=ads"),
+  page.url().replace(BASE, ""),
+);
+
+// The button reflects that the current filters are already saved.
+await page.waitForSelector("table");
+const savedLabel = await page.getByRole("button", { name: /Saved|Save view/ }).first().textContent();
+check("button shows the current view is saved", /Saved/.test(savedLabel ?? ""), savedLabel?.trim());
 
 await browser.close();
 const failed = results.filter((r) => !r).length;

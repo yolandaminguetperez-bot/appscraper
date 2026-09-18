@@ -163,6 +163,20 @@ CREATE TABLE IF NOT EXISTS favorites (
   UNIQUE (kind, ref_id)
 );
 
+-- A saved view is a page plus the query string that produced it, so restoring one
+-- is a navigation rather than a re-derivation of filter state.
+CREATE TABLE IF NOT EXISTS saved_views (
+  id           TEXT PRIMARY KEY,
+  name         TEXT NOT NULL,
+  path         TEXT NOT NULL,
+  query        TEXT NOT NULL,
+  created_at   TEXT NOT NULL,
+  last_used_at TEXT,
+  UNIQUE (path, query)
+);
+
+CREATE INDEX IF NOT EXISTS idx_saved_views_path ON saved_views (path, name);
+
 CREATE TABLE IF NOT EXISTS tracked_apps (
   app_id     TEXT PRIMARY KEY REFERENCES apps(id) ON DELETE CASCADE,
   role       TEXT NOT NULL,        -- 'own' | 'competitor'

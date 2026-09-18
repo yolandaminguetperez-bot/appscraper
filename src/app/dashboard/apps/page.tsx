@@ -7,6 +7,8 @@ import { AppsGrid } from "@/components/apps/apps-grid";
 import { ViewToggle } from "@/components/apps/view-toggle";
 import { ActiveChips } from "@/components/filters/active-chips";
 import { PendingOverlay } from "@/components/filters/filter-transition";
+import { SaveView } from "@/components/views/save-view";
+import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { Pagination } from "@/components/ui/pagination";
 import { distinctCategories, distinctLanguages, metricsForApps, queryApps } from "@/lib/db/app-query";
 import { favoriteIds } from "@/lib/db/favorites";
@@ -26,6 +28,9 @@ export default async function AppsPage({
   const trends = metricsForApps(result.apps.map((app) => app.id));
   const view = (Array.isArray(params.view) ? params.view[0] : params.view) === "grid" ? "grid" : "table";
   const favorites = favoriteIds("app");
+  const savedViews = listSavedViews("/dashboard/apps");
+  const currentQuery = toQueryString(params);
+  const savedId = findSavedView("/dashboard/apps", currentQuery)?.id ?? null;
 
   return (
     <div className="pb-12">
@@ -38,6 +43,7 @@ export default async function AppsPage({
         }
         actions={
           <>
+          <SaveView views={savedViews} savedId={savedId} />
           <ViewToggle />
           <Link
             href={`/api/apps/export?${toQueryString(params)}`}

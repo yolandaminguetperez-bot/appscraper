@@ -20,6 +20,8 @@ type Item = {
 
 type AppHit = { id: string; title: string; developer: string | null; iconUrl: string | null };
 
+export type PaletteView = { id: string; name: string; path: string; query: string };
+
 function setTheme(theme: "light" | "dark") {
   document.documentElement.setAttribute("data-theme", theme);
   try {
@@ -33,7 +35,7 @@ function setTheme(theme: "light" | "dark") {
  * Keyboard-first navigation. This is a tool people live in for hours: reaching
  * for the sidebar and then a search box for every lookup is the slow path.
  */
-export function CommandPalette() {
+export function CommandPalette({ savedViews = [] }: { savedViews?: PaletteView[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -132,6 +134,14 @@ export function CommandPalette() {
       ]),
     );
 
+    const saved: Item[] = savedViews.map((view) => ({
+      id: `saved:${view.id}`,
+      label: view.name,
+      hint: "Saved view",
+      icon: "heart",
+      run: () => go(`${view.path}${view.query ? `?${view.query}` : ""}`),
+    }));
+
     const actions: Item[] = [
       {
         id: "theme-dark",
@@ -167,8 +177,13 @@ export function CommandPalette() {
     const matches = (item: Item) =>
       !term || item.label.toLowerCase().includes(term) || item.hint?.toLowerCase().includes(term);
 
-    return [...appItems, ...views.filter(matches), ...actions.filter(matches)];
-  }, [apps, query, go]);
+    return [
+      ...appItems,
+      ...saved.filter(matches),
+      ...views.filter(matches),
+      ...actions.filter(matches),
+    ];
+  }, [apps, query, go, savedViews]);
 
   useEffect(() => setActive(0), [items.length]);
 

@@ -61,7 +61,8 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [ ] Q. Vista de tarjetas también en Favoritos y Trending
 - [x] R. Pasada de UX: paleta de comandos, orden por columna, foco visible,
       feedback al filtrar, jerarquía de filtros, tabla usable en móvil
-- [ ] S. Guardar vistas/filtros con nombre
+- [x] S. Guardar vistas/filtros con nombre (en Explore Apps; falta llevarlo a
+      Ads/Organic/Onboardings, que comparten la misma mecánica de filtros)
 - [ ] T. Selector de resultados por página
 
 ## Rendimiento (medido, no supuesto)

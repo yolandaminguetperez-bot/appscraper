@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { RefreshButton } from "@/components/layout/refresh-button";
 import { CommandPalette } from "@/components/command/command-palette";
+import { listSavedViews } from "@/lib/db/saved-views";
 
 export function PageHeader({
   title,
@@ -20,7 +21,14 @@ export function PageHeader({
         {subtitle && <p className="mt-1 hidden text-sm text-ink-muted sm:block">{subtitle}</p>}
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <CommandPalette />
+        <CommandPalette
+          savedViews={listSavedViews().map((view) => ({
+            id: view.id,
+            name: view.name,
+            path: view.path,
+            query: view.query,
+          }))}
+        />
         {actions}
         <RefreshButton />
       </div>

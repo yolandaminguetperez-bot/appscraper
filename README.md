@@ -96,6 +96,9 @@ relying on hue.
 - **One button clears every filter**; the chips remove them one at a time.
 - **Secondary filters** sit behind one control with a count, so a dozen equal
   pills no longer give the rare filter the same weight as the common one.
+- **Saved views** name a set of filters and restore them from the palette on any
+  page. The suggested name is built from the filters themselves, and `page` is
+  stripped before saving so the same filters never save twice.
 - **Keyboard focus is visible everywhere** and a skip link reaches the results.
   The components set `outline-none` for mouse users, which had left keyboard
   users with no indication at all.
