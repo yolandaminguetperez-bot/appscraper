@@ -107,6 +107,25 @@ const trackedShown = trackedTitle
   : false;
 check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no title");
 
+// The world map: the base image is served and cacheable, and the countries with
+// data are real links rather than decoration.
+{
+  const svg = await page.request.get(`${BASE}/api/world-map`);
+  const body = await svg.text();
+  check(
+    "base world map is served as a cacheable image",
+    svg.ok() &&
+      (svg.headers()["content-type"] ?? "").includes("image/svg+xml") &&
+      (svg.headers()["cache-control"] ?? "").includes("immutable") &&
+      body.split("<path").length > 100,
+    `${body.split("<path").length - 1} paths`,
+  );
+
+  await page.goto(`${BASE}/dashboard/rankings`, { waitUntil: "load" });
+  const links = await page.locator('svg a[href*="country="]').count();
+  check("map countries link to their chart", links > 1, `${links} linked countries`);
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

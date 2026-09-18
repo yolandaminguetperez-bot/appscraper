@@ -38,6 +38,15 @@
   --series-2: #1864ab;
   --series-3: #a61e4d;
   --series-4: #d9480f;
+
+  /* Sequential ramp for the world map: one hue, light to dark. Every step sits
+     at least ΔE 17 (OKLab) from --map-none, so "lowest bucket" never reads as
+     "no data", and the steps descend monotonically in lightness. */
+  --map-1: #6bd09b;
+  --map-2: #2eb97b;
+  --map-3: #0f9559;
+  --map-4: #0a5c33;
+  --map-none: #dfe4e0;
 }
 
 /* Dark mode is its own set of steps, not an inversion: surfaces lift off black,
@@ -66,6 +75,14 @@
     --series-2: #4a90d9;
     --series-3: #cf5a8a;
     --series-4: #cf7526;
+
+    /* The dark ramp is stepped for the dark surface, not flipped from the light
+       one: it runs dark to light so magnitude still reads as "more ink". */
+    --map-1: #1c6b45;
+    --map-2: #22915c;
+    --map-3: #34b878;
+    --map-4: #6fdda6;
+    --map-none: #232b26;
   }
 }
 
@@ -91,6 +108,14 @@
   --series-2: #4a90d9;
   --series-3: #cf5a8a;
   --series-4: #cf7526;
+
+  /* The dark ramp is stepped for the dark surface, not flipped from the light
+     one: it runs dark to light so magnitude still reads as "more ink". */
+  --map-1: #1c6b45;
+  --map-2: #22915c;
+  --map-3: #34b878;
+  --map-4: #6fdda6;
+  --map-none: #232b26;
 }
 
 @theme inline {

@@ -74,7 +74,17 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       Apps), respetando los filtros activos; helper compartido en src/lib/csv.ts
       y botón único ExportButton; documentados en /dashboard/api y cubiertos por
       4 checks nuevos de e2e (33 en total) que re-parsean el CSV
-- [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
+- [x] P. Mapa geográfico real. raw.githubusercontent.com SÍ es alcanzable desde
+      este entorno (jsdelivr y unpkg no), así que la geometría de Natural Earth
+      110m (dominio público) se descarga, se proyecta en Equal Earth y se
+      simplifica en scripts/make-world-geo.mjs -> src/lib/geo/world.json (78 KB,
+      175 países). Coropleta del solapamiento de charts, con rampa secuencial de
+      un solo tono validada contra el relleno "sin datos" (ΔE >= 17 en OKLab en
+      ambos modos), leyenda, tooltip nativo, países clicables y tabla de cifras.
+      El mapa base va como imagen cacheada para siempre (/api/world-map): en
+      línea costaba ~156 KB por vista, porque un componente de servidor se
+      serializa en el HTML y otra vez en el payload RSC.
+      Limitación de la fuente: Singapur no está en el dataset 110m.
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
       API (índice pegajoso + copiar), MCP, landing (preview con datos reales)

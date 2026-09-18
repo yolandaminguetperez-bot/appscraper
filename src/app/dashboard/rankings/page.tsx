@@ -5,6 +5,7 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { RankingsControls } from "@/components/trends/rankings-controls";
 import { queryRankings, rankHistory, rankingCountries, rankingsByCountry } from "@/lib/db/trends-query";
 import { CountryStrip } from "@/components/trends/country-strip";
+import { WorldMap } from "@/components/trends/world-map";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { compactNumber, money, rating } from "@/lib/format";
 import type { RawParams } from "@/lib/search-params";
@@ -37,7 +38,8 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
       <PageHeader title="Store Rankings" subtitle="Browse top charts by country and store." />
       <RankingsControls countries={rankingCountries()} />
 
-      <div className="px-7 pt-5">
+      <div className="grid gap-4 px-7 pt-5 xl:grid-cols-2">
+        <WorldMap countries={byCountry} current={country} hrefFor={countryHref} />
         <CountryStrip countries={byCountry} current={country} hrefFor={countryHref} />
       </div>
 
