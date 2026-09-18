@@ -9,6 +9,7 @@ import { CreativeGrid } from "@/components/marketing/creative-grid";
 import { OrganicGrid } from "@/components/marketing/organic-grid";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { favoriteIds } from "@/lib/db/favorites";
+import { similarApps } from "@/lib/db/developer-query";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +39,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
 
   const { app, history, reviews, creatives, organic, flowScreens, ratingBreakdown } = detail;
   const saved = favoriteIds("app");
+  const similar = similarApps(app);
 
   const badges = [
     app.category,
@@ -63,7 +65,14 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
           <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-16" />
           <div>
             <h1 className="text-[26px] font-semibold tracking-tight">{app.title}</h1>
-            <p className="pt-0.5 text-sm text-ink-muted">{app.developer}</p>
+            {app.developer ? (
+              <Link
+                href={`/dashboard/developers/${encodeURIComponent(app.developer)}`}
+                className="pt-0.5 text-sm text-ink-muted hover:text-accent-ink"
+              >
+                {app.developer}
+              </Link>
+            ) : null}
             <ul className="flex flex-wrap gap-1.5 pt-2.5">
               {badges.map((badge) => (
                 <li
@@ -147,6 +156,34 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
           {flowScreens.length > 0 && (
             <Section title="Onboarding flow">
               <ScreenStrip screens={flowScreens} title={app.title} />
+            </Section>
+          )}
+
+          {similar.length > 0 && (
+            <Section title="Apps of a similar size in this category">
+              <ul className="grid gap-2 sm:grid-cols-2">
+                {similar.map((other) => (
+                  <li key={other.id}>
+                    <Link
+                      href={`/dashboard/apps/${encodeURIComponent(other.id)}`}
+                      className="flex items-center gap-3 rounded-xl border border-line px-3 py-2.5 transition-colors hover:border-accent/40"
+                    >
+                      <AppIcon
+                        id={other.id}
+                        title={other.title}
+                        iconUrl={other.iconUrl}
+                        className="size-9"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[13.5px] font-medium">{other.title}</span>
+                        <span className="block truncate text-[12px] text-ink-muted">
+                          {compactNumber(other.estDownloads)} downloads · {money(other.estMrr)} MRR
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </Section>
           )}
 

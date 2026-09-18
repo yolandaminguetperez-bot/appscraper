@@ -61,7 +61,14 @@ export function AppsGrid({
                 >
                   {app.title}
                 </Link>
-                <p className="truncate pt-0.5 text-[13px] text-ink-muted">{app.developer}</p>
+                {app.developer ? (
+                  <Link
+                    href={`/dashboard/developers/${encodeURIComponent(app.developer)}`}
+                    className="block truncate pt-0.5 text-[13px] text-ink-muted hover:text-accent-ink"
+                  >
+                    {app.developer}
+                  </Link>
+                ) : null}
                 <p className="flex items-center gap-1.5 pt-2">
                   {/* Long category names wrapped the badge and made one card
                       taller than its neighbours. */}

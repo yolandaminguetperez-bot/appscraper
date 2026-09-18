@@ -58,12 +58,17 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       real — "¿este mercado se parece al mío?")
 - [x] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
-- [ ] Q. Vista de tarjetas también en Favoritos y Trending
+- [~] Q. Vista de tarjetas: hecho en Favoritos/apps; falta Trending
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
       API (índice pegajoso + copiar), MCP, landing (preview con datos reales)
 - [x] V1. Detalle de app: cabecera con badges + favorito, ads y vídeos de creadores
       reproducibles en vez de listas de texto
-- [ ] V2. Falta pasada específica en: Favoritos, Your Apps/Competitors
+- [x] V2. Pasada visual en Favoritos/apps, Your Apps y Competitors: rejilla de
+      tarjetas con estados vacíos guiados (título, explicación y acción)
+- [x] W. Página de portfolio de developer (/dashboard/developers/[name]): KPIs
+      combinados, reparto por categoría y tabla de apps; el nombre del developer
+      es enlace desde la tabla, la rejilla y el detalle de app
+- [x] X. Bloque "apps de tamaño similar en esta categoría" en el detalle de app
 - [x] R. Pasada de UX: paleta de comandos, orden por columna, foco visible,
       feedback al filtrar, jerarquía de filtros, tabla usable en móvil
 - [x] S. Guardar vistas/filtros con nombre (en Explore Apps; falta llevarlo a

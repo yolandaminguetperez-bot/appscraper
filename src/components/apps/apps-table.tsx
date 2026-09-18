@@ -68,7 +68,16 @@ export function AppsTable({
                     >
                       {app.title}
                     </Link>
-                    <span className="block truncate text-[12px] text-ink-muted">{app.developer}</span>
+                    {app.developer ? (
+                      <Link
+                        href={`/dashboard/developers/${encodeURIComponent(app.developer)}`}
+                        className="block truncate text-[12px] text-ink-muted hover:text-accent-ink"
+                      >
+                        {app.developer}
+                      </Link>
+                    ) : (
+                      <span className="block truncate text-[12px] text-ink-muted">—</span>
+                    )}
                   </div>
                 </div>
               </td>

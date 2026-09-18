@@ -27,6 +27,7 @@ page.on("response", (res) => {
 const routes = [
   "/dashboard/overview",
   "/dashboard/apps",
+  "/dashboard/developers/Ninefold",
   "/dashboard/ads",
   "/dashboard/ads?view=ads",
   "/dashboard/organic",
@@ -63,10 +64,18 @@ await page.getByLabel("Save to favorites").first().click();
 await page.waitForTimeout(1200);
 const saved = db.prepare("SELECT kind, ref_id FROM favorites").all();
 check("favoriting an app writes to the database", saved.length === 1, JSON.stringify(saved));
+const savedTitle = saved[0]
+  ? db.prepare("SELECT title FROM apps WHERE id = ?").get(saved[0].ref_id)?.title
+  : null;
 
 await page.goto(`${BASE}/dashboard/favorites/apps`, { waitUntil: "load" });
-const favRows = await page.locator("main tbody tr").count();
-check("saved app appears on the favorites page", favRows === 1, `${favRows} rows`);
+// Assert the app is on the page, not that it sits in a particular element:
+// the row-count assertion broke the moment the view became a card grid, while
+// the feature itself was fine.
+const favShown = savedTitle
+  ? await page.getByText(savedTitle, { exact: false }).first().isVisible().catch(() => false)
+  : false;
+check("saved app appears on the favorites page", favShown, savedTitle ?? "no title");
 
 // Filters actually narrow the result set.
 await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
@@ -88,12 +97,15 @@ await page.getByRole("button", { name: "Add app" }).first().click();
 await page.waitForTimeout(1200);
 const tracked = db.prepare("SELECT app_id, role FROM tracked_apps").all();
 check("adding an app writes to tracked_apps", tracked.length === 1, JSON.stringify(tracked));
+const trackedTitle = tracked[0]
+  ? db.prepare("SELECT title FROM apps WHERE id = ?").get(tracked[0].app_id)?.title
+  : null;
 
 await page.goto(`${BASE}/dashboard/your-apps`, { waitUntil: "load" });
-// Assert against rendered rows, not body text: RSC payload scripts carry the
-// empty-state string even when the list is populated.
-const trackedRows = await page.locator("main ul > li").count();
-check("tracked app appears on Your Apps", trackedRows === 1, `${trackedRows} rows`);
+const trackedShown = trackedTitle
+  ? await page.getByText(trackedTitle, { exact: false }).first().isVisible().catch(() => false)
+  : false;
+check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no title");
 
 check("no 5xx responses", serverErrors.length === 0, serverErrors.join(", "));
 

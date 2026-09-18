@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
-import { TrackedList } from "@/components/tracking/tracked-list";
+import { TrackedGrid } from "@/components/tracking/tracked-grid";
+import { metricsForApps } from "@/lib/db/app-query";
 import { trackedApps } from "@/lib/db/keywords-query";
 
 export const dynamic = "force-dynamic";
 
 export default async function YourAppsPage() {
   const entries = trackedApps("own");
+  const trends = metricsForApps(entries.map((entry) => entry.app.id));
 
   return (
     <div className="pb-12">
@@ -25,7 +27,15 @@ export default async function YourAppsPage() {
         }
       />
       <div className="px-7 pt-5">
-        <TrackedList entries={entries} empty="No apps yet — add one to start tracking it." />
+        <TrackedGrid
+          entries={entries}
+          trends={trends}
+          empty={{
+            title: "No apps tracked yet",
+            body: "Add your own apps to watch their rating, downloads and revenue beside the rest of the market.",
+          }}
+          emptyAction={{ href: "/dashboard/your-apps/new", label: "Add an app" }}
+        />
       </div>
     </div>
   );
