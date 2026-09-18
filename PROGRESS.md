@@ -18,8 +18,8 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 6. Scraper Google Play (escrito; sin verificar por bloqueo de red) (búsqueda, detalle, top charts, reviews)
 - [x] 7. Estimaciones (downloads/revenue/MRR) heurísticas
 - [x] 8. Página Explore Apps: buscador + 14 filtros + chips activos + tabla/grid + export CSV
-- [ ] 9. Página Ads Library (grouped/ads, filtros, creatividades)
-- [ ] 10. Página Organic Content (creator videos, filtros)
+- [x] 9. Página Ads Library (grouped/ads, filtros, creatividades)
+- [x] 10. Página Organic Content (creator videos, filtros)
 - [ ] 11. Página Onboarding Flows (screens/apps, categorías de pantalla)
 - [ ] 12. Páginas Trending y Rising
 - [ ] 13. Store Rankings (Top Free/Paid/Grossing, país, categoría, ambas tiendas)

@@ -107,3 +107,90 @@ export function describeAppFilters(params: RawParams) {
 
   return chips;
 }
+
+function num(params: RawParams, key: string): number | undefined {
+  const raw = all(params, key)[0];
+  if (raw === undefined) return undefined;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+export function parseAdFilters(params: RawParams) {
+  const sort = one(params, "sort");
+  return {
+    q: one(params, "q"),
+    categories: all(params, "cat"),
+    languages: all(params, "lang"),
+    minMrr: num(params, "minMrr"),
+    minDownloads: num(params, "minDownloads"),
+    minAds: num(params, "minAds"),
+    minDaysRunning: num(params, "minDays"),
+    sort: (sort === "revenue" || sort === "downloads" || sort === "recent" ? sort : "ads") as
+      | "ads"
+      | "revenue"
+      | "downloads"
+      | "recent",
+    page: num(params, "page") ?? 1,
+  };
+}
+
+export function describeAdFilters(params: RawParams) {
+  const chips: { key: string; value?: string; label: string }[] = [];
+  for (const cat of all(params, "cat")) chips.push({ key: "cat", value: cat, label: cat });
+  for (const lang of all(params, "lang")) {
+    chips.push({ key: "lang", value: lang, label: `Language: ${lang.toUpperCase()}` });
+  }
+  const numeric: [string, string][] = [
+    ["minMrr", "MRR ≥ $"],
+    ["minDownloads", "Downloads ≥ "],
+    ["minAds", "Ads ≥ "],
+    ["minDays", "Running ≥ "],
+  ];
+  for (const [key, label] of numeric) {
+    const value = one(params, key);
+    if (value) chips.push({ key, label: `${label}${value}${key === "minDays" ? "d" : ""}` });
+  }
+  const q = one(params, "q");
+  if (q) chips.push({ key: "q", label: `“${q}”` });
+  return chips;
+}
+
+export function parseOrganicFilters(params: RawParams) {
+  const sort = one(params, "sort");
+  return {
+    q: one(params, "q"),
+    platforms: all(params, "platform"),
+    categories: all(params, "cat"),
+    minViews: num(params, "minViews"),
+    minLikes: num(params, "minLikes"),
+    minFollowers: num(params, "minFollowers"),
+    minDownloads: num(params, "minDownloads"),
+    minMrr: num(params, "minMrr"),
+    sort: (sort === "likes" || sort === "recent" || sort === "followers" ? sort : "views") as
+      | "views"
+      | "likes"
+      | "recent"
+      | "followers",
+    page: num(params, "page") ?? 1,
+  };
+}
+
+export function describeOrganicFilters(params: RawParams) {
+  const chips: { key: string; value?: string; label: string }[] = [];
+  for (const p of all(params, "platform")) chips.push({ key: "platform", value: p, label: p });
+  for (const cat of all(params, "cat")) chips.push({ key: "cat", value: cat, label: cat });
+  const numeric: [string, string][] = [
+    ["minViews", "Views ≥ "],
+    ["minLikes", "Likes ≥ "],
+    ["minFollowers", "Followers ≥ "],
+    ["minDownloads", "App downloads ≥ "],
+    ["minMrr", "App MRR ≥ $"],
+  ];
+  for (const [key, label] of numeric) {
+    const value = one(params, key);
+    if (value) chips.push({ key, label: `${label}${value}` });
+  }
+  const q = one(params, "q");
+  if (q) chips.push({ key: "q", label: `“${q}”` });
+  return chips;
+}
