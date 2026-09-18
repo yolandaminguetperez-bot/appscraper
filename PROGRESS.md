@@ -50,7 +50,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] J. Página Overview con KPIs, barras y tendencias
 - [x] K. Galería de capturas en el detalle de app
 - [x] L. Modo oscuro completo de la interfaz
-- [ ] M. Comparador de apps lado a lado
+- [x] M. Comparador de apps lado a lado
+- [ ] N. Mapa de países en Store Rankings
+- [ ] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
 
 ## Aviso para el yo futuro
 NO borrar `data/appscraper.db` con el servidor levantado: mantiene abierto el fichero

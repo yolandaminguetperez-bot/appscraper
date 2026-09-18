@@ -55,6 +55,7 @@ export const navSections: NavSection[] = [
     items: [
       { label: "Review Analytics", href: "/dashboard/reviews", icon: "reviews" },
       { label: "Competitor Tracking", href: "/dashboard/competitors", icon: "target" },
+      { label: "Compare apps", href: "/dashboard/compare", icon: "onboardings" },
       { label: "Store Rankings", href: "/dashboard/rankings", icon: "trending" },
     ],
   },

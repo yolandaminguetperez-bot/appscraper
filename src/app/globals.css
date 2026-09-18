@@ -24,6 +24,14 @@
   --chart-line: #0d8a49;
   --chart-fill: #16c46a;
   --chart-grid: #e7ece8;
+
+  /* Categorical series, assigned in this fixed order and never cycled. The
+     orange/carmine pair sits in the tritan floor band, so every series also
+     carries a direct label and a legend entry. */
+  --series-1: #0d8a49;
+  --series-2: #1864ab;
+  --series-3: #a61e4d;
+  --series-4: #d9480f;
 }
 
 /* Dark mode is its own set of steps, not an inversion: surfaces lift off black,
@@ -46,6 +54,10 @@
     --chart-line: #12a659;
     --chart-fill: #12a659;
     --chart-grid: #232d27;
+    --series-1: #12a659;
+    --series-2: #4a90d9;
+    --series-3: #cf5a8a;
+    --series-4: #cf7526;
   }
 }
 
@@ -65,6 +77,10 @@
   --chart-line: #12a659;
   --chart-fill: #12a659;
   --chart-grid: #232d27;
+  --series-1: #12a659;
+  --series-2: #4a90d9;
+  --series-3: #cf5a8a;
+  --series-4: #cf7526;
 }
 
 @theme inline {

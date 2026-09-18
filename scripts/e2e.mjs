@@ -44,6 +44,7 @@ const routes = [
   "/dashboard/your-apps",
   "/dashboard/reviews",
   "/dashboard/competitors",
+  "/dashboard/compare",
   "/dashboard/mcp",
   "/dashboard/api",
 ];

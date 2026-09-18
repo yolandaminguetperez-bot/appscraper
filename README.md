@@ -42,6 +42,8 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | Review Analytics | Rating mix, sentiment split, and the topics behind complaints |
 | Keyword Explorer | How crowded a term is and who owns it today |
 | Your Apps / Competitors | The apps you are tracking, yours and theirs |
+| Compare apps | Up to four apps side by side, on one revenue scale |
+| Overview | The whole catalogue: KPIs, revenue by category, movers |
 | Favorites | Saved apps, ads and creator videos |
 | API / MCP | The same data from code or from an AI agent |
 
@@ -72,6 +74,14 @@ with a per-day readout, and a table view for every value. Chart ink is its own t
 (`--chart-line`), separate from the brand accent, because the accent only reaches
 2.3:1 against white — below the 3:1 a data mark needs. Both the light and dark steps
 are validated against the surface they render on.
+
+## Series colours
+
+The four comparison series use a fixed token order (`--series-1` … `--series-4`),
+never cycled, with their own steps per theme. Both sets pass the palette checks
+against their surface; the orange/carmine pair sits in the tritan floor band, so
+every series also carries a legend entry and a direct end label rather than
+relying on hue.
 
 ## Theme
 
