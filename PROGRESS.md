@@ -43,9 +43,19 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] C. Gráficos de tendencia con ejes, total exacto, delta, tooltip y vista de tabla
 - [x] D. Métricas diarias con tendencia/estacionalidad (antes eran constantes: línea plana)
 - [x] E. Pantallas de onboarding renderizadas como mockups, no como etiquetas
-- [ ] F. Series por día para Trending/Rising (mini gráfico por fila)
-- [ ] G. Evolución de rating en Review Analytics
-- [ ] H. Gráfico de posición histórica en Store Rankings
+- [x] F. Series por día para Trending/Rising (mini gráfico por fila)
+- [x] G. Evolución de rating en Review Analytics
+- [x] H. Gráfico de posición histórica en Store Rankings
+- [x] I. Iconos de app generados (hash del id) en todas las vistas
+- [x] J. Página Overview con KPIs, barras y tendencias
+- [x] K. Galería de capturas en el detalle de app
+- [ ] L. Modo oscuro completo de la interfaz (los tokens de gráfico ya lo soportan)
+- [ ] M. Comparador de apps lado a lado
+
+## Aviso para el yo futuro
+NO borrar `data/appscraper.db` con el servidor levantado: mantiene abierto el fichero
+borrado y sigue sirviendo datos fantasma con ids que ya no existen. Parar el servidor,
+reseed, arrancar.
 
 ## Notas de sesión
 - El registro npmjs.org devuelve 503 en este entorno. Usar el mirror:

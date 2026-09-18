@@ -96,6 +96,26 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
             points={history.map((point) => ({ day: point.day, value: point.downloads ?? 0 }))}
           />
 
+          {app.screenshots.length > 0 && (
+            <Section title="Screenshots">
+              <ul className="scroll-thin flex gap-3 overflow-x-auto pb-2">
+                {app.screenshots.map((url, index) => (
+                  <li key={url + index} className="w-[132px] shrink-0">
+                    {/* Store screenshots come from arbitrary CDNs; these render small
+                        and next/image would need every host allow-listed. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={url}
+                      alt={`${app.title} screenshot ${index + 1}`}
+                      loading="lazy"
+                      className="block aspect-[15/32] w-full rounded-xl border border-panel-line object-cover"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
           <Section title="Description">
             <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-ink-muted">
               {app.description ?? "No description on file."}

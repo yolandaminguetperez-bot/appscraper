@@ -25,6 +25,7 @@ page.on("response", (res) => {
 
 // Every dashboard route renders.
 const routes = [
+  "/dashboard/overview",
   "/dashboard/apps",
   "/dashboard/ads",
   "/dashboard/ads?view=ads",

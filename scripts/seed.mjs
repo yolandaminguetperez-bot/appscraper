@@ -81,7 +81,11 @@ for (let i = 0; i < 420; i++) {
     version: `${between(1, 9)}.${between(0, 20)}.${between(0, 9)}`,
     size_bytes: between(20, 400) * 1024 * 1024,
     released_at: releasedAt, updated_at: updatedAt,
-    screenshots_json: JSON.stringify([]),
+    // Store screenshots we cannot fetch offline; the generated screens stand in so
+    // the gallery has something real to show.
+    screenshots_json: JSON.stringify(
+      Array.from({ length: between(3, 6) }, () => screenUrl(pick(SCREEN_TYPES))),
+    ),
     est_downloads: estDownloads, est_revenue: estRevenue, est_mrr: estMrr,
     is_game: isGame ? 1 : 0, fetched_at: new Date().toISOString(),
   });

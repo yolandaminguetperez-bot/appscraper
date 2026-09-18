@@ -14,6 +14,7 @@ export const navSections: NavSection[] = [
   {
     title: "Explore",
     items: [
+      { label: "Overview", href: "/dashboard/overview", icon: "onboardings" },
       { label: "Apps", href: "/dashboard/apps", icon: "apps" },
       { label: "Ads", href: "/dashboard/ads", icon: "ads" },
       { label: "Organic", href: "/dashboard/organic", icon: "organic" },

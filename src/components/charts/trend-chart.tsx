@@ -8,7 +8,9 @@ import { cn } from "@/lib/cn";
 type Format = "money" | "count" | "rating";
 
 const PLOT = { width: 720, height: 200 };
-const PAD = { left: 56, right: 60, top: 12, bottom: 26 };
+// The right gutter has to hold the end label ("$157.7K" is 7 glyphs at 11.5px);
+// at 60 it clipped against the card edge.
+const PAD = { left: 58, right: 92, top: 12, bottom: 26 };
 
 function formatValue(value: number, format: Format): string {
   if (format === "rating") return value.toFixed(1);
