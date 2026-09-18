@@ -37,9 +37,9 @@ export function AppsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+    <div className="scroll-thin overflow-x-auto rounded-2xl border border-line bg-surface">
       <IconSprite />
-      <table className="w-full border-collapse text-sm">
+      <table className="w-full min-w-[860px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">
             <SortableHeader label="App" sortKey="title" defaultKey="revenue" />

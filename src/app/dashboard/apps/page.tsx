@@ -44,7 +44,8 @@ export default async function AppsPage({
             className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-panel transition-colors hover:bg-accent-ink hover:text-white"
           >
             <Download className="size-4" />
-            Export CSV
+            <span className="hidden sm:inline">Export CSV</span>
+            <span className="sr-only sm:hidden">Export CSV</span>
           </Link>
           </>
         }

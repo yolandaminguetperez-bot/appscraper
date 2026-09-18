@@ -61,7 +61,11 @@ await clear.click();
 await page.waitForTimeout(1200);
 check("clear-all removes every filter", !page.url().includes("minRating"), page.url().replace(BASE, ""));
 
-// Keyboard focus is visible.
+// Keyboard focus is visible. Wait for the clear-all navigation to settle first:
+// pressing keys mid-navigation destroys the execution context and the whole run
+// dies rather than reporting a failed check.
+await page.waitForLoadState("networkidle").catch(() => {});
+await page.waitForSelector("table");
 await page.keyboard.press("Tab");
 await page.keyboard.press("Tab");
 const outline = await page.evaluate(() => {

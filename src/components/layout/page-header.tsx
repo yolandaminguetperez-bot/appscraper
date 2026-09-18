@@ -12,12 +12,14 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 px-5 pt-6 max-md:pl-16 md:px-7">
-      <div>
-        <h1 className="text-[22px] font-semibold tracking-tight">{title}</h1>
-        {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
+    <div className="flex flex-wrap items-start justify-between gap-3 px-5 pt-6 max-md:pl-16 md:flex-nowrap md:gap-4 md:px-7">
+      <div className="min-w-0">
+        <h1 className="truncate text-[19px] font-semibold tracking-tight md:text-[22px]">{title}</h1>
+        {/* The subtitle is context, not content: on a phone it wrapped to five
+            lines and pushed the results below the fold. */}
+        {subtitle && <p className="mt-1 hidden text-sm text-ink-muted sm:block">{subtitle}</p>}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <CommandPalette />
         {actions}
         <RefreshButton />

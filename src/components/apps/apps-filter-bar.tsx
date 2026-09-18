@@ -4,6 +4,8 @@ import { Search } from "lucide-react";
 import { useFilterParams } from "@/components/filters/use-filter-params";
 import { FilterPopover } from "@/components/filters/filter-popover";
 import { CheckboxList, NumberField, RadioList } from "@/components/filters/controls";
+import { MoreFilters } from "@/components/filters/more-filters";
+import { X } from "lucide-react";
 
 const TIME_OPTIONS = [
   { value: "7", label: "Released last 7 days" },
@@ -59,11 +61,21 @@ export function AppsFilterBar({
   const langs = getAll("lang");
   const signals = getAll("signal");
 
+  // Everything tucked away still declares itself in the badge.
+  const secondaryCount =
+    getAll("xcat").length +
+    getAll("lang").length +
+    signals.length +
+    ["priceMin", "priceMax", "iap", "minRevenue", "minDownloads", "minReviews", "minRating"].filter(
+      (key) => get(key),
+    ).length;
+
   return (
     <div className="px-7 pt-5">
       <div className="flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-2.5">
         <Search className="size-4 shrink-0 text-ink-faint" />
         <input
+          key={get("q") ?? ""}
           defaultValue={get("q") ?? ""}
           placeholder="Search apps, developers, descriptions…"
           onKeyDown={(e) => {
@@ -72,6 +84,16 @@ export function AppsFilterBar({
           onBlur={(e) => set({ q: e.target.value.trim() || null })}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-ink-faint"
         />
+        {get("q") && (
+          <button
+            type="button"
+            onClick={() => set({ q: null })}
+            aria-label="Clear search"
+            className="grid size-6 place-items-center rounded-full text-ink-faint hover:text-ink"
+          >
+            <X className="size-3.5" />
+          </button>
+        )}
         <select
           value={get("in") ?? "title"}
           onChange={(e) => set({ in: e.target.value === "title" ? null : e.target.value })}
@@ -85,7 +107,7 @@ export function AppsFilterBar({
         </select>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <FilterPopover label="Time" icon="trending" active={Boolean(get("released"))}>
           <RadioList
             options={TIME_OPTIONS}
@@ -110,85 +132,88 @@ export function AppsFilterBar({
           />
         </FilterPopover>
 
+        <MoreFilters activeCount={secondaryCount}>
         <FilterPopover
-          label={excluded.length ? `${excluded.length} excluded` : "Exclude"}
-          icon="onboardings"
-          active={excluded.length > 0}
-        >
-          <CheckboxList
-            options={categories.map((c) => ({ value: c, label: c }))}
-            selected={excluded}
-            onChange={(v) => set({ xcat: v })}
-          />
-        </FilterPopover>
+            label={excluded.length ? `${excluded.length} excluded` : "Exclude"}
+            icon="onboardings"
+            active={excluded.length > 0}
+          >
+            <CheckboxList
+              options={categories.map((c) => ({ value: c, label: c }))}
+              selected={excluded}
+              onChange={(v) => set({ xcat: v })}
+            />
+          </FilterPopover>
 
-        <FilterPopover label="Language" icon="globe" badge={langs.length} active={langs.length > 0}>
-          <CheckboxList
-            options={languages.map((l) => ({ value: l, label: l.toUpperCase() }))}
-            selected={langs}
-            onChange={(v) => set({ lang: v })}
-          />
-        </FilterPopover>
+          <FilterPopover label="Language" icon="globe" badge={langs.length} active={langs.length > 0}>
+            <CheckboxList
+              options={languages.map((l) => ({ value: l, label: l.toUpperCase() }))}
+              selected={langs}
+              onChange={(v) => set({ lang: v })}
+            />
+          </FilterPopover>
 
-        <FilterPopover
-          label="Price"
-          icon="reviews"
-          active={Boolean(get("priceMin") || get("priceMax"))}
-        >
-          <div className="grid grid-cols-2 gap-2">
-            <NumberField label="Min $" value={get("priceMin") ?? ""} onCommit={(v) => set({ priceMin: v })} />
-            <NumberField label="Max $" value={get("priceMax") ?? ""} onCommit={(v) => set({ priceMax: v })} />
-          </div>
-        </FilterPopover>
+          <FilterPopover
+            label="Price"
+            icon="reviews"
+            active={Boolean(get("priceMin") || get("priceMax"))}
+          >
+            <div className="grid grid-cols-2 gap-2">
+              <NumberField label="Min $" value={get("priceMin") ?? ""} onCommit={(v) => set({ priceMin: v })} />
+              <NumberField label="Max $" value={get("priceMax") ?? ""} onCommit={(v) => set({ priceMax: v })} />
+            </div>
+          </FilterPopover>
 
-        <FilterPopover label="In-app purchases" icon="reviews" active={Boolean(get("iap"))}>
-          <RadioList options={IAP_OPTIONS} value={get("iap")} onChange={(v) => set({ iap: v })} />
-        </FilterPopover>
+          <FilterPopover label="In-app purchases" icon="reviews" active={Boolean(get("iap"))}>
+            <RadioList options={IAP_OPTIONS} value={get("iap")} onChange={(v) => set({ iap: v })} />
+          </FilterPopover>
 
-        <FilterPopover label="Min revenue" icon="trending" active={Boolean(get("minRevenue"))}>
-          <NumberField
-            label="Lifetime revenue at least ($)"
-            value={get("minRevenue") ?? ""}
-            placeholder="100000"
-            onCommit={(v) => set({ minRevenue: v })}
-          />
-        </FilterPopover>
+          <FilterPopover label="Min revenue" icon="trending" active={Boolean(get("minRevenue"))}>
+            <NumberField
+              label="Lifetime revenue at least ($)"
+              value={get("minRevenue") ?? ""}
+              placeholder="100000"
+              onCommit={(v) => set({ minRevenue: v })}
+            />
+          </FilterPopover>
 
-        <FilterPopover label="Min downloads" icon="trending" active={Boolean(get("minDownloads"))}>
-          <NumberField
-            label="Downloads at least"
-            value={get("minDownloads") ?? ""}
-            placeholder="50000"
-            onCommit={(v) => set({ minDownloads: v })}
-          />
-        </FilterPopover>
+          <FilterPopover label="Min downloads" icon="trending" active={Boolean(get("minDownloads"))}>
+            <NumberField
+              label="Downloads at least"
+              value={get("minDownloads") ?? ""}
+              placeholder="50000"
+              onCommit={(v) => set({ minDownloads: v })}
+            />
+          </FilterPopover>
 
-        <FilterPopover label="Min reviews" icon="reviews" active={Boolean(get("minReviews"))}>
-          <NumberField
-            label="Reviews at least"
-            value={get("minReviews") ?? ""}
-            placeholder="1000"
-            onCommit={(v) => set({ minReviews: v })}
-          />
-        </FilterPopover>
+          <FilterPopover label="Min reviews" icon="reviews" active={Boolean(get("minReviews"))}>
+            <NumberField
+              label="Reviews at least"
+              value={get("minReviews") ?? ""}
+              placeholder="1000"
+              onCommit={(v) => set({ minReviews: v })}
+            />
+          </FilterPopover>
 
-        <FilterPopover label="Min rating" icon="reviews" active={Boolean(get("minRating"))}>
-          <NumberField
-            label="Rating at least"
-            value={get("minRating") ?? ""}
-            placeholder="4.0"
-            onCommit={(v) => set({ minRating: v })}
-          />
-        </FilterPopover>
+          <FilterPopover label="Min rating" icon="reviews" active={Boolean(get("minRating"))}>
+            <NumberField
+              label="Rating at least"
+              value={get("minRating") ?? ""}
+              placeholder="4.0"
+              onCommit={(v) => set({ minRating: v })}
+            />
+          </FilterPopover>
 
-        <FilterPopover
-          label="Marketing signals"
-          icon="ads"
-          badge={signals.length}
-          active={signals.length > 0}
-        >
-          <CheckboxList options={SIGNAL_OPTIONS} selected={signals} onChange={(v) => set({ signal: v })} />
-        </FilterPopover>
+          <FilterPopover
+            label="Marketing signals"
+            icon="ads"
+            badge={signals.length}
+            active={signals.length > 0}
+          >
+            <CheckboxList options={SIGNAL_OPTIONS} selected={signals} onChange={(v) => set({ signal: v })} />
+          </FilterPopover>
+
+        </MoreFilters>
 
         <FilterPopover label="Sort" icon="trending" active={Boolean(get("sort"))}>
           <RadioList options={SORT_OPTIONS} value={get("sort") ?? "revenue"} onChange={(v) => set({ sort: v })} />

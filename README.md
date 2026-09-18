@@ -23,6 +23,7 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | `npm run seed` | Regenerate the sample dataset |
 | `npm run e2e` | Drive a real browser against a running build (needs `npm run start` first) |
 | `npm run stress` | Load test a running build (`--concurrency`, `--seconds`) |
+| `npm run ux-check` | Drive the keyboard paths, sorting, filter clearing and focus |
 | `npm run shots` | Screenshot dashboard routes into `shots/` |
 | `npm run shots-dark` | Screenshot the same routes in dark mode |
 | `npm run mcp` | Start the MCP server for AI agents |
@@ -83,6 +84,21 @@ never cycled, with their own steps per theme. Both sets pass the palette checks
 against their surface; the orange/carmine pair sits in the tritan floor band, so
 every series also carries a legend entry and a direct end label rather than
 relying on hue.
+
+## Interaction
+
+- **Cmd/Ctrl+K** opens a command palette: search the catalogue, jump to any view,
+  switch theme. Arrow keys move, Enter follows, Escape closes.
+- **Column headers sort** in place and expose `aria-sort`; the old popover hid
+  both the current sort and the alternatives.
+- **Filtering runs in a transition** — results dim and a progress bar shows while
+  the server renders, instead of the click appearing to do nothing.
+- **One button clears every filter**; the chips remove them one at a time.
+- **Secondary filters** sit behind one control with a count, so a dozen equal
+  pills no longer give the rare filter the same weight as the common one.
+- **Keyboard focus is visible everywhere** and a skip link reaches the results.
+  The components set `outline-none` for mouse users, which had left keyboard
+  users with no indication at all.
 
 ## Performance
 

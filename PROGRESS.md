@@ -59,6 +59,10 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [ ] Q. Vista de tarjetas también en Favoritos y Trending
+- [x] R. Pasada de UX: paleta de comandos, orden por columna, foco visible,
+      feedback al filtrar, jerarquía de filtros, tabla usable en móvil
+- [ ] S. Guardar vistas/filtros con nombre
+- [ ] T. Selector de resultados por página
 
 ## Rendimiento (medido, no supuesto)
 - `npm run stress` mide percentiles por ruta. 0 errores en todo lo probado.
