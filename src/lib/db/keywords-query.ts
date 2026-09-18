@@ -112,6 +112,49 @@ export function relatedKeywords(term: string, limit = 8): RelatedKeyword[] {
     }));
 }
 
+/**
+ * A term's crowding without pulling the ranking apps: enough for a row in a
+ * list of candidates. Cached because a page typically asks for several at once
+ * and each one is a LIKE scan.
+ */
+export function keywordSnapshot(term: string): RelatedKeyword {
+  const trimmed = term.trim().toLowerCase();
+  return cached(`keywordSnapshot:${trimmed}`, () => {
+    const like = `%${trimmed}%`;
+    const row = db()
+      .prepare(
+        `SELECT COUNT(*) AS n, COALESCE(SUM(rating_count), 0) AS reviews
+         FROM apps WHERE title LIKE ? OR description LIKE ?`,
+      )
+      .get(like, like) as { n: number; reviews: number };
+
+    return {
+      term: trimmed,
+      apps: row.n,
+      difficulty: clamp(Math.round((Math.log10(row.reviews + 1) / 7) * 100)),
+    };
+  });
+}
+
+/**
+ * The searchable words an app already puts in its own title. Three letters is
+ * the floor here, not four as in the catalogue-wide suggestions: "vpn", "pay"
+ * and "lab" are real terms, and a title is short enough that the noise a lower
+ * floor lets through elsewhere does not arise.
+ */
+export function titleKeywords(title: string, limit = 5): RelatedKeyword[] {
+  const words = [
+    ...new Set(
+      title
+        .toLowerCase()
+        .split(/[^a-z]+/)
+        .filter((word) => word.length >= 3 && !STOPWORDS.has(word)),
+    ),
+  ].slice(0, limit);
+
+  return words.map(keywordSnapshot).sort((a, b) => b.difficulty - a.difficulty);
+}
+
 /** Turns the 0-100 score into the word someone would actually use. */
 export function difficultyBand(score: number): string {
   if (score >= 75) return "Brutal";

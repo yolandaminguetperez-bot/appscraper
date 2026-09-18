@@ -10,6 +10,7 @@ import { OrganicGrid } from "@/components/marketing/organic-grid";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { favoriteIds } from "@/lib/db/favorites";
 import { similarApps } from "@/lib/db/developer-query";
+import { difficultyBand, titleKeywords } from "@/lib/db/keywords-query";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -40,6 +41,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
   const { app, history, reviews, creatives, organic, flowScreens, ratingBreakdown } = detail;
   const saved = favoriteIds("app");
   const similar = similarApps(app);
+  const keywords = titleKeywords(app.title);
 
   const badges = [
     app.category,
@@ -156,6 +158,35 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
           {flowScreens.length > 0 && (
             <Section title="Onboarding flow">
               <ScreenStrip screens={flowScreens} title={app.title} />
+            </Section>
+          )}
+
+          {keywords.length > 0 && (
+            <Section title="Keywords in this title">
+              <p className="-mt-2 pb-3 text-[12px] text-ink-muted">
+                What this app is already competing on, hardest first.
+              </p>
+              <ul className="divide-y divide-line">
+                {keywords.map((keyword) => (
+                  <li key={keyword.term} className="flex items-center gap-3 py-2">
+                    <Link
+                      href={`/dashboard/keywords?term=${encodeURIComponent(keyword.term)}`}
+                      className="min-w-0 flex-1 truncate text-[13.5px] font-medium hover:text-accent-ink"
+                    >
+                      {keyword.term}
+                    </Link>
+                    <span className="text-[12.5px] tabular-nums text-ink-muted">
+                      {keyword.apps.toLocaleString()} apps
+                    </span>
+                    <span className="w-24 text-right text-[12.5px] tabular-nums">
+                      {keyword.difficulty}
+                      <span className="pl-1.5 text-[11px] text-ink-faint">
+                        {difficultyBand(keyword.difficulty)}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </Section>
           )}
 

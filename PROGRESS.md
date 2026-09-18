@@ -60,6 +60,8 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] Y. Keyword Explorer: banda verbal de dificultad (Open/Moderate/Hard/Brutal)
       y panel "terms used alongside it" — términos que comparten título con los
       competidores, puntuados dentro de ese subconjunto y enlazables
+- [x] Z. Detalle de app: bloque "keywords in this title" con nº de apps
+      compitiendo y dificultad de cada término, enlazado al Keyword Explorer
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
