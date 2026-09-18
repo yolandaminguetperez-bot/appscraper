@@ -41,6 +41,20 @@ const screenUrl = (type) => `/sample-screens/${type.toLowerCase().replace(/\s+/g
 
 const SCREEN_TYPES = ["Onboarding", "Quiz", "Home", "Paywall", "Permissions", "Content", "Profile Setup", "Feature Intro", "Welcome", "Preferences", "Sign Up", "Settings", "Login", "Success", "Subscription", "Lesson", "Discount", "Search", "Checkout", "Other"];
 const PLATFORMS = ["tiktok", "instagram", "youtube"];
+// Varied on purpose: one template repeated across every post made the page
+// look generated, which is the one thing sample data must not do.
+const CAPTIONS = [
+  "How I use {app} every morning",
+  "3 things I wish I knew before downloading {app}",
+  "{app} replaced four apps on my phone",
+  "POV: you finally set up {app} properly",
+  "I tried {app} for 30 days — here is what happened",
+  "The {app} setting nobody talks about",
+  "Why I stopped using spreadsheets and switched to {app}",
+  "{app} tips that actually changed my routine",
+  "Honest review of {app} after a year",
+  "Setting up {app} in under two minutes",
+];
 const CTAS = ["Install now", "Get started", "Try free", "Download", "Learn more"];
 
 const RATINGS_PER_DL = { ios: 0.012, android: 0.006 };
@@ -251,13 +265,17 @@ db.transaction(() => {
     if (rnd() < 0.4) {
       const n = between(1, 5);
       for (let k = 0; k < n; k++) {
-        const views = between(4000, 3_000_000);
+        // Log-uniform, not uniform. Creator views follow a power law: a few
+        // posts in the millions and a long tail in the thousands. Drawing
+        // uniformly piled every top post against the ceiling, so the five
+        // highest all rounded to "3M" and the column read as broken data.
+        const views = Math.round(10 ** (3.6 + rnd() * 4.1));
         const clip = pick(CLIPS);
         insertOrganic.run({
           id: `${app.id}:org:${k}`, app_id: app.id, platform: pick(PLATFORMS),
           author: `@${pick(NOUN).toLowerCase()}${between(10, 99)}`,
           author_followers: between(1200, 900_000),
-          caption: `How I use ${app.title} every morning`,
+          caption: pick(CAPTIONS).replace("{app}", app.title),
           post_url: null,
           thumb_url: clipUrl(clip, "jpg"),
           media_url: clipUrl(clip, "mp4"),

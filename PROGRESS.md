@@ -241,4 +241,13 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       adaptadores que ya existían. Un host bloqueado se reporta como INALCANZABLE,
       no como "app no encontrada": son problemas distintos y mandan a buscar a
       sitios distintos. El camino con red NO se puede verificar en este entorno
+- [x] D11. Organic: las vistas se sembraban uniformes y se amontonaban contra el
+      techo, así que los cinco primeros salían todos "3M" y la columna parecía
+      rota. Ahora son log-uniformes (ley de potencias, como las de verdad):
+      49.9M / 49.6M / 45M / 44.2M... Y los pies de vídeo dejan de ser la misma
+      frase repetida en las 491 publicaciones
+- [x] D12. Onboardings: los 20 tipos de pantalla ocupaban cuatro filas y
+      empujaban los flujos —el motivo de la página— casi una pantalla hacia
+      abajo. Ahora se pliegan (se abren solos si hay filtro activo, para que un
+      filtro no pueda esconderse detrás de "+14 more")
 

@@ -108,35 +108,63 @@ export function FlowsFilterBar({
         ))}
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-line pt-3">
-        <span className="pr-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-faint">
-          Screens
-        </span>
-        {screenTypes.map((type) => {
-          const active = selectedScreens.includes(type);
-          return (
-            <button
-              key={type}
-              type="button"
-              onClick={() =>
-                set({
-                  screen: active
-                    ? selectedScreens.filter((s) => s !== type)
-                    : [...selectedScreens, type],
-                })
-              }
-              className={cn(
-                "rounded-full border px-3 py-1.5 text-[12px]",
-                active
-                  ? "border-accent/40 bg-accent-soft text-accent-ink"
-                  : "border-line bg-surface text-ink-muted hover:text-ink",
-              )}
-            >
-              {type}
-            </button>
-          );
-        })}
-      </div>
+      {/* Twenty screen types wrapped to four rows and pushed the flows — the
+          reason for the page — most of a screen down. The common ones stay
+          visible; the rest are one click away, and any selected type is always
+          shown so a filter can never hide behind "more". */}
+      <details className="mt-3 border-t border-line pt-3" open={selectedScreens.length > 0}>
+        <summary className="flex cursor-pointer list-none items-center gap-2">
+          <span className="eyebrow">Screens</span>
+          <span className="flex flex-wrap items-center gap-1.5">
+            {screenTypes.slice(0, 6).map((type) => (
+              <span
+                key={type}
+                className={cn(
+                  "rounded-full border px-2.5 py-1 text-[12px]",
+                  selectedScreens.includes(type)
+                    ? "border-accent/40 bg-accent-soft text-accent-ink"
+                    : "border-line text-ink-faint",
+                )}
+              >
+                {type}
+              </span>
+            ))}
+            {screenTypes.length > 6 && (
+              <span className="text-[12px] text-ink-muted">
+                +{screenTypes.length - 6} more
+              </span>
+            )}
+          </span>
+        </summary>
+
+        <div className="flex flex-wrap items-center gap-1.5 pt-3">
+          {screenTypes.map((type) => {
+            const active = selectedScreens.includes(type);
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() =>
+                  set({
+                    screen: active
+                      ? selectedScreens.filter((s) => s !== type)
+                      : [...selectedScreens, type],
+                  })
+                }
+                className={cn(
+                  "rounded-full border px-3 py-1.5 text-[12px]",
+                  active
+                    ? "border-accent/40 bg-accent-soft text-accent-ink"
+                    : "border-line bg-surface text-ink-muted hover:text-ink",
+                )}
+              >
+                {type}
+              </button>
+            );
+          })}
+        </div>
+      </details>
+
     </div>
   );
 }
