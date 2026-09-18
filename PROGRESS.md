@@ -217,4 +217,10 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       "firing now" vs "watching", y contador en la barra lateral. No se guardan
       filas de "disparado": una alerta es una pregunta a los datos, y guardar el
       disparo se desincroniza de la métrica en cuanto hay un refresh
+- [x] F2. Store Rankings: 14 días de chart en vez de una foto de hoy, y panel
+      "what moved" con quién sube, baja, ENTRA y SALE del top. Un chart de un
+      solo día dice quién es el #3 pero no quién se está moviendo, que es para
+      lo que se mira. La comparación busca el día almacenado más cercano, así
+      que un hueco en la recogida compara contra datos reales en vez de no
+      devolver nada
 

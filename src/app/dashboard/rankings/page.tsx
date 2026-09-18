@@ -4,7 +4,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { AppIcon } from "@/components/ui/app-icon";
 import { QuickLookButton } from "@/components/quicklook/quick-look-button";
 import { RankingsControls } from "@/components/trends/rankings-controls";
-import { queryRankings, rankHistory, rankingCountries, rankingsByCountry } from "@/lib/db/trends-query";
+import { chartMovement, queryRankings, rankHistory, rankingCountries, rankingsByCountry } from "@/lib/db/trends-query";
+import { ChartMovement } from "@/components/trends/chart-movement";
 import { CountryStrip } from "@/components/trends/country-strip";
 import { WorldMap } from "@/components/trends/world-map";
 import { MiniChart } from "@/components/charts/mini-chart";
@@ -32,12 +33,19 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
   const chart = first(params, "chart", "free");
   const country = first(params, "country", "us");
   const byCountry = rankingsByCountry({ store, chart, current: country });
+  const movement = chartMovement({ store, chart, country });
   const countryHref = `/dashboard/rankings?store=${store}&chart=${chart}&country=`;
 
   return (
     <div className="pb-12">
       <PageHeader title="Store Rankings" subtitle="Browse top charts by country and store." />
       <RankingsControls countries={rankingCountries()} />
+
+      {movement && (
+        <div className="px-7 pt-5">
+          <ChartMovement movement={movement} />
+        </div>
+      )}
 
       <div className="grid gap-4 px-7 pt-5 xl:grid-cols-2">
         <WorldMap

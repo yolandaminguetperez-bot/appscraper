@@ -341,6 +341,23 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   );
 }
 
+// Chart movement needs more than one day of chart to exist at all.
+{
+  const days = db
+    .prepare("SELECT COUNT(DISTINCT day) AS n FROM rankings WHERE store='ios' AND chart='free' AND country='us'")
+    .get().n;
+  check("the chart has history to compare against", days > 1, `${days} days stored`);
+
+  await page.goto(`${BASE}/dashboard/rankings`, { waitUntil: "load" });
+  await page.waitForTimeout(900);
+  const body = await page.textContent("body");
+  check(
+    "rankings report what moved",
+    ["Climbing", "Falling", "New on the chart", "Dropped out"].every((panel) => body.includes(panel)),
+    "",
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

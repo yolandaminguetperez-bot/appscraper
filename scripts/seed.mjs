@@ -317,6 +317,15 @@ db.transaction(() => {
     return 0.55 + ((h >>> 0) % 1000) / 1000 * 0.9;
   };
 
+  function hash(value) {
+    let h = 2166136261;
+    for (let i = 0; i < value.length; i++) {
+      h ^= value.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
   for (const store of ["ios", "android"]) {
     const pool = apps.filter((a) => a.store === store);
     for (const chart of ["free", "paid", "grossing"]) {
@@ -324,16 +333,28 @@ db.transaction(() => {
         chart === "paid" ? a.price > 0 : chart === "free" ? a.price === 0 : true,
       );
       for (const country of COUNTRIES) {
-        const ranked = eligible
-          .map((a) => ({
-            app: a,
-            score: (chart === "grossing" ? a.est_mrr : a.est_downloads) * affinity(a.id, country),
-          }))
-          .sort((x, y) => y.score - x.score)
-          .slice(0, 50);
-        ranked.forEach(({ app }, idx) =>
-          insertRanking.run({ store, chart, country, category: "all", position: idx + 1, app_id: app.id, day: today }),
-        );
+        // 14 days of chart, not one. A top chart with a single day of history
+        // can say who is #3 but not who entered, climbed or dropped out, which
+        // is most of what anyone reads a chart for.
+        //
+        // Each day perturbs the score slightly and re-sorts, so apps near the
+        // cut-off cross it and the movement is real rather than assigned.
+        for (let d = 13; d >= 0; d--) {
+          const day = new Date(Date.now() - d * 86400000).toISOString().slice(0, 10);
+          const ranked = eligible
+            .map((a) => {
+              const wobble = 0.82 + ((hash(`${a.id}:${day}`) % 1000) / 1000) * 0.36;
+              return {
+                app: a,
+                score: (chart === "grossing" ? a.est_mrr : a.est_downloads) * affinity(a.id, country) * wobble,
+              };
+            })
+            .sort((x, y) => y.score - x.score)
+            .slice(0, 50);
+          ranked.forEach(({ app }, idx) =>
+            insertRanking.run({ store, chart, country, category: "all", position: idx + 1, app_id: app.id, day }),
+          );
+        }
       }
     }
   }

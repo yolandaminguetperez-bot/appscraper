@@ -139,6 +139,118 @@ export function queryRankings({
   return rows.map((row) => ({ position: row.position as number, app: rowToApp(row) }));
 }
 
+export type ChartMove = {
+  app: App;
+  position: number;
+  /** Places gained since the comparison day; positive is a climb. */
+  change: number | null;
+  /** True when the app was not on the chart on the comparison day. */
+  entered: boolean;
+};
+
+export type ChartMovement = {
+  day: string;
+  comparedTo: string;
+  climbers: ChartMove[];
+  fallers: ChartMove[];
+  entries: ChartMove[];
+  exits: { app: App; previousPosition: number }[];
+};
+
+/**
+ * What changed in a top chart since `days` ago.
+ *
+ * A chart read once tells you who is #3; read twice it tells you who is moving,
+ * which is the part worth acting on. Climbs are signed so that up is positive,
+ * against a position number that falls as an app rises.
+ */
+export function chartMovement({
+  store = "ios",
+  chart = "free",
+  country = "us",
+  days = 7,
+  limit = 5,
+}: {
+  store?: string;
+  chart?: string;
+  country?: string;
+  days?: number;
+  limit?: number;
+} = {}): ChartMovement | null {
+  return cached(`chartMovement:${store}:${chart}:${country}:${days}:${limit}`, () => {
+    const day = (
+      db()
+        .prepare("SELECT MAX(day) AS day FROM rankings WHERE store = ? AND chart = ? AND country = ?")
+        .get(store, chart, country) as { day: string | null }
+    ).day;
+    if (!day) return null;
+
+    // The nearest stored day at or before the target, so a gap in collection
+    // compares against real data instead of returning nothing.
+    const target = new Date(Date.parse(day) - days * 86400000).toISOString().slice(0, 10);
+    const comparedTo = (
+      db()
+        .prepare(
+          `SELECT MAX(day) AS day FROM rankings
+           WHERE store = ? AND chart = ? AND country = ? AND day <= ?`,
+        )
+        .get(store, chart, country, target) as { day: string | null }
+    ).day;
+
+    if (!comparedTo || comparedTo === day) return null;
+
+    const rows = db()
+      .prepare(
+        `SELECT a.*, now.position AS position, before.position AS previous
+         FROM rankings now
+         JOIN apps a ON a.id = now.app_id
+         LEFT JOIN rankings before
+           ON before.app_id = now.app_id AND before.store = now.store
+          AND before.chart = now.chart AND before.country = now.country AND before.day = ?
+         WHERE now.store = ? AND now.chart = ? AND now.country = ? AND now.day = ?`,
+      )
+      .all(comparedTo, store, chart, country, day) as Row[];
+
+    const moves: ChartMove[] = rows.map((row) => {
+      const position = row.position as number;
+      const previous = (row.previous as number) ?? null;
+      return {
+        app: rowToApp(row),
+        position,
+        change: previous === null ? null : previous - position,
+        entered: previous === null,
+      };
+    });
+
+    const gone = db()
+      .prepare(
+        `SELECT a.*, before.position AS previous
+         FROM rankings before
+         JOIN apps a ON a.id = before.app_id
+         WHERE before.store = ? AND before.chart = ? AND before.country = ? AND before.day = ?
+           AND NOT EXISTS (
+             SELECT 1 FROM rankings now
+             WHERE now.app_id = before.app_id AND now.store = before.store
+               AND now.chart = before.chart AND now.country = before.country AND now.day = ?
+           )
+         ORDER BY before.position ASC
+         LIMIT ?`,
+      )
+      .all(store, chart, country, comparedTo, day, limit) as Row[];
+
+    const ranked = moves.filter((move) => move.change !== null);
+
+    return {
+      day,
+      comparedTo,
+      climbers: [...ranked].sort((a, b) => (b.change ?? 0) - (a.change ?? 0)).slice(0, limit),
+      fallers: [...ranked].sort((a, b) => (a.change ?? 0) - (b.change ?? 0)).slice(0, limit),
+      entries: moves.filter((move) => move.entered).sort((a, b) => a.position - b.position).slice(0, limit),
+      exits: gone.map((row) => ({ app: rowToApp(row), previousPosition: row.previous as number })),
+    };
+  });
+}
+
 export function rankingCountries(): string[] {
   const rows = db().prepare("SELECT DISTINCT country FROM rankings ORDER BY country").all() as {
     country: string;
