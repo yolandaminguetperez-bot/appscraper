@@ -218,6 +218,14 @@ export function trackApp(appId: string, role: "own" | "competitor", note?: strin
     .run(appId, role, new Date().toISOString(), note ?? null);
 }
 
+/** A line of context on why this app is being watched. */
+export function setTrackedNote(appId: string, note: string) {
+  invalidateCache();
+  db()
+    .prepare("UPDATE tracked_apps SET note = ? WHERE app_id = ?")
+    .run(note.trim().slice(0, 280) || null, appId);
+}
+
 export function untrackApp(appId: string) {
   invalidateCache();
   db().prepare("DELETE FROM tracked_apps WHERE app_id = ?").run(appId);

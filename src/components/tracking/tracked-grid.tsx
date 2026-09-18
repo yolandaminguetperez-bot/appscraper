@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { untrackAppAction } from "@/app/actions/tracking";
 import { AppIcon } from "@/components/ui/app-icon";
+import { TrackedNote } from "@/components/tracking/tracked-note";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 import type { App } from "@/lib/types";
 
-export type TrackedEntry = { app: App; role: "own" | "competitor"; addedAt: string };
+export type TrackedEntry = { app: App; role: "own" | "competitor"; addedAt: string; note: string | null };
 
 /** Tracked apps deserve the same card as everywhere else, not a bare row. */
 export function TrackedGrid({
@@ -46,7 +47,7 @@ export function TrackedGrid({
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {entries.map(({ app, addedAt }) => (
+      {entries.map(({ app, addedAt, note }) => (
         <article key={app.id} className="surface-card surface-card-interactive p-4">
           <header className="flex items-start gap-3">
             <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-11" />
@@ -100,6 +101,8 @@ export function TrackedGrid({
             />
             <p className="text-right text-[11.5px] text-ink-faint">tracked {daysAgo(addedAt)}</p>
           </div>
+
+          <TrackedNote appId={app.id} initial={note} />
         </article>
       ))}
     </div>

@@ -223,4 +223,11 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       lo que se mira. La comparación busca el día almacenado más cercano, así
       que un hueco en la recogida compara contra datos reales en vez de no
       devolver nada
+- [x] F3. Alertas por posición de keyword desde la sección "Search rankings":
+      el motor ya sabía evaluarlas y NADA podía crearlas. Se vigilan en puestos,
+      no en porcentaje — caer del 4 al 8 son los mismos 4 puestos que del 40 al
+      44, pero un porcentaje llamaría catástrofe al primero y redondeo al
+      segundo, cuando es al revés
+- [x] F4. Notas en apps seguidas: tracked_apps.note existía en el esquema SIN
+      interfaz. Se guarda al salir del campo, no detrás de un botón
 

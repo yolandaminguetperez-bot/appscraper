@@ -312,7 +312,8 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   const app = db.prepare("SELECT id, title FROM apps ORDER BY est_revenue DESC LIMIT 1").get();
   await page.goto(`${BASE}/dashboard/apps/${encodeURIComponent(app.id)}`, { waitUntil: "load" });
   await page.waitForTimeout(800);
-  await page.getByRole("button", { name: "Alert me" }).click();
+  // Exact: the per-term bells are also labelled "Alert me about <term>".
+  await page.getByRole("button", { name: "Alert me", exact: true }).click();
   await page.getByRole("button", { name: "Create alert" }).click();
   await page.waitForTimeout(1200);
 
@@ -354,6 +355,49 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   check(
     "rankings report what moved",
     ["Climbing", "Falling", "New on the chart", "Dropped out"].every((panel) => body.includes(panel)),
+    "",
+  );
+}
+
+// A position alert and a tracked note: both were half-built — the alerts engine
+// could evaluate a term rule that nothing could create, and tracked_apps.note
+// existed with no interface at all.
+{
+  db.prepare("DELETE FROM alerts").run();
+
+  await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+  await page.waitForTimeout(700);
+  const href = await page.locator('tbody a[href^="/dashboard/apps/"]').first().getAttribute("href");
+  await page.goto(BASE + href, { waitUntil: "load" });
+  await page.waitForTimeout(900);
+  await page.getByLabel(/Alert me about/).first().click();
+  await page.waitForTimeout(1200);
+
+  const rule = db.prepare("SELECT metric, term, threshold FROM alerts").get();
+  check(
+    "a search term can be watched",
+    rule?.metric === "position" && Boolean(rule.term),
+    JSON.stringify(rule),
+  );
+
+  db.prepare("DELETE FROM tracked_apps").run();
+  await page.goto(`${BASE}/dashboard/your-apps/new?q=budget`, { waitUntil: "load" });
+  await page.getByRole("button", { name: "Add app" }).first().click();
+  await page.waitForTimeout(1000);
+  await page.goto(`${BASE}/dashboard/your-apps`, { waitUntil: "load" });
+  await page.waitForTimeout(900);
+  await page.locator("textarea").first().fill("Watching their paywall");
+  await page.locator("h1").first().click();
+  await page.waitForTimeout(1400);
+
+  const note = db.prepare("SELECT note FROM tracked_apps").get()?.note;
+  check("a note on a tracked app is stored on blur", note === "Watching their paywall", String(note));
+
+  await page.goto(`${BASE}/dashboard/your-apps`, { waitUntil: "load" });
+  await page.waitForTimeout(900);
+  check(
+    "the note comes back on reload",
+    (await page.locator("textarea").first().inputValue()) === "Watching their paywall",
     "",
   );
 }

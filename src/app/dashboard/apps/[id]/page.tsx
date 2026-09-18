@@ -16,6 +16,7 @@ import { AlertButton } from "@/components/alerts/alert-button";
 import { KeywordRanks } from "@/components/aso/keyword-ranks";
 import { MarketSplit } from "@/components/aso/market-split";
 import { countriesForApp, keywordRanksForApp } from "@/lib/db/aso-query";
+import { listAlerts } from "@/lib/db/alerts-query";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -49,6 +50,9 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
   const keywords = titleKeywords(app.title);
   const ranks = keywordRanksForApp(app.id);
   const markets = countriesForApp(app.id);
+  const alertedTerms = listAlerts()
+    .filter((alert) => alert.appId === app.id && alert.term)
+    .map((alert) => alert.term as string);
 
   // Counted from the creatives already loaded for this page rather than with a
   // second query: they are the same rows the ads section below renders.
@@ -183,7 +187,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
               <p className="-mt-2 pb-3 text-[12px] text-ink-muted">
                 Position for the terms this app is tracked on, and how it moved in 30 days.
               </p>
-              <KeywordRanks ranks={ranks} />
+              <KeywordRanks ranks={ranks} appId={app.id} alertedTerms={alertedTerms} />
             </Section>
           )}
 

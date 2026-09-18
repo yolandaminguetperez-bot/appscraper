@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MiniChart } from "@/components/charts/mini-chart";
 import type { KeywordRank } from "@/lib/db/aso-query";
+import { TermAlertButton } from "@/components/alerts/term-alert-button";
 
 /**
  * Where the app sits in search, per term.
@@ -9,7 +10,16 @@ import type { KeywordRank } from "@/lib/db/aso-query";
  * so a falling number is a rising app, and an un-inverted line would show a
  * climb as a collapse.
  */
-export function KeywordRanks({ ranks }: { ranks: KeywordRank[] }) {
+export function KeywordRanks({
+  ranks,
+  appId,
+  alertedTerms = [],
+}: {
+  ranks: KeywordRank[];
+  appId?: string;
+  /** Terms that already have a rule, so the bell does not offer a duplicate. */
+  alertedTerms?: string[];
+}) {
   if (ranks.length === 0) return null;
 
   return (
@@ -50,6 +60,14 @@ export function KeywordRanks({ ranks }: { ranks: KeywordRank[] }) {
               {rank.change}
             </span>
           </span>
+
+          {appId && (
+            <TermAlertButton
+              appId={appId}
+              term={rank.term}
+              alreadySet={alertedTerms.includes(rank.term)}
+            />
+          )}
         </li>
       ))}
     </ul>
