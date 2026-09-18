@@ -3,17 +3,35 @@ import { Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { KeywordSearch } from "@/components/keywords/keyword-search";
 import { AppIcon } from "@/components/ui/app-icon";
-import { keywordStats, suggestedKeywords } from "@/lib/db/keywords-query";
+import { difficultyBand, keywordStats, relatedKeywords, suggestedKeywords } from "@/lib/db/keywords-query";
 import { compactNumber, money, rating } from "@/lib/format";
 import type { RawParams } from "@/lib/search-params";
 
 export const dynamic = "force-dynamic";
 
-function Meter({ label, value, hint }: { label: string; value: number; hint: string }) {
+function Meter({
+  label,
+  value,
+  hint,
+  band,
+}: {
+  label: string;
+  value: number;
+  hint: string;
+  /** The word for the number; a bare 0-100 score means nothing on its own. */
+  band?: string;
+}) {
   return (
     <div className="surface-card p-5">
       <p className="text-[13px] text-ink-muted">{label}</p>
-      <p className="pt-1 text-[28px] font-semibold tabular-nums">{value}</p>
+      <p className="flex items-baseline gap-2 pt-1">
+        <span className="text-[28px] font-semibold tabular-nums">{value}</span>
+        {band ? (
+          <span className="rounded-full bg-accent-soft px-2 py-0.5 text-[11.5px] font-medium text-accent-ink">
+            {band}
+          </span>
+        ) : null}
+      </p>
       <span className="mt-2 block h-2 overflow-hidden rounded-full bg-surface-muted">
         <span className="block h-full rounded-full bg-accent" style={{ width: `${value}%` }} />
       </span>
@@ -28,6 +46,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
   const term = ((Array.isArray(raw) ? raw[0] : raw) ?? "").trim();
   const suggestions = suggestedKeywords(18);
   const stats = term ? keywordStats(term) : null;
+  const related = term ? relatedKeywords(term) : [];
 
   return (
     <div className="pb-12">
@@ -46,6 +65,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
             <Meter
               label="Difficulty"
               value={stats.difficulty}
+              band={difficultyBand(stats.difficulty)}
               hint="From the review mass of apps already ranking."
             />
             <Meter
@@ -63,6 +83,47 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
               </p>
             </div>
           </div>
+
+          {related.length > 0 && (
+            <section className="surface-card overflow-hidden">
+              <div className="border-b border-line px-5 py-3">
+                <h2 className="text-[15px] font-semibold">Terms used alongside it</h2>
+                <p className="pt-0.5 text-[12px] text-ink-muted">
+                  Scored within the apps competing for “{stats.term}”, so it answers whether
+                  a narrower corner is easier — not how the term does catalogue-wide.
+                </p>
+              </div>
+              <ul className="divide-y divide-line">
+                {related.map((item) => (
+                  <li key={item.term} className="flex items-center gap-4 px-5 py-2.5">
+                    <Link
+                      href={`/dashboard/keywords?term=${encodeURIComponent(item.term)}`}
+                      className="min-w-0 flex-1 truncate text-[14px] font-medium hover:text-accent-ink"
+                    >
+                      {item.term}
+                    </Link>
+                    <span className="w-24 text-right text-[13px] tabular-nums text-ink-muted">
+                      {item.apps} apps
+                    </span>
+                    <span className="hidden w-40 items-center gap-2 sm:flex" aria-hidden>
+                      <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-muted">
+                        <span
+                          className="block h-full rounded-full bg-accent"
+                          style={{ width: `${item.difficulty}%` }}
+                        />
+                      </span>
+                    </span>
+                    <span className="w-24 text-right text-[13px] tabular-nums">
+                      {item.difficulty}
+                      <span className="pl-1.5 text-[11.5px] text-ink-faint">
+                        {difficultyBand(item.difficulty)}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="surface-card overflow-hidden">
             <h2 className="border-b border-line px-5 py-3 text-[15px] font-semibold">

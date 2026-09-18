@@ -60,6 +60,66 @@ export function keywordStats(term: string, { limit = 10 }: { limit?: number } = 
   return { term, competingApps: competing, difficulty, volumeIndex, topApps };
 }
 
+export type RelatedKeyword = {
+  term: string;
+  /** Apps that mention BOTH terms. */
+  apps: number;
+  /** Difficulty of the pair, on the same 0-100 scale as keywordStats. */
+  difficulty: number;
+};
+
+/**
+ * Terms that show up in the titles of the apps already ranking for `term`.
+ *
+ * Scored inside that subset on purpose: running a fresh catalogue-wide LIKE per
+ * candidate would be a dozen full scans to answer a question nobody asked. What
+ * this answers is narrower and more useful — "of the apps competing here, what
+ * else do they call themselves, and is that corner easier?"
+ */
+export function relatedKeywords(term: string, limit = 8): RelatedKeyword[] {
+  const like = `%${term.trim()}%`;
+  const rows = db()
+    .prepare("SELECT title, rating_count FROM apps WHERE title LIKE ? OR description LIKE ?")
+    .all(like, like) as Row[];
+
+  const needle = term.trim().toLowerCase();
+  const counts = new Map<string, { apps: number; reviews: number }>();
+
+  for (const row of rows) {
+    const reviews = Number(row.rating_count ?? 0);
+    const words = new Set(
+      String(row.title ?? "")
+        .toLowerCase()
+        .split(/[^a-z]+/)
+        .filter((word) => word.length >= 4 && !STOPWORDS.has(word) && !needle.includes(word)),
+    );
+    for (const word of words) {
+      const entry = counts.get(word) ?? { apps: 0, reviews: 0 };
+      entry.apps += 1;
+      entry.reviews += reviews;
+      counts.set(word, entry);
+    }
+  }
+
+  return [...counts.entries()]
+    .filter(([, entry]) => entry.apps > 1)
+    .sort((a, b) => b[1].apps - a[1].apps)
+    .slice(0, limit)
+    .map(([word, entry]) => ({
+      term: word,
+      apps: entry.apps,
+      difficulty: clamp(Math.round((Math.log10(entry.reviews + 1) / 7) * 100)),
+    }));
+}
+
+/** Turns the 0-100 score into the word someone would actually use. */
+export function difficultyBand(score: number): string {
+  if (score >= 75) return "Brutal";
+  if (score >= 55) return "Hard";
+  if (score >= 35) return "Moderate";
+  return "Open";
+}
+
 /**
  * Terms that appear across the catalogue, ranked by how often they show up in app
  * titles. Titles only: marketing copy is full of filler that reads as a keyword

@@ -57,8 +57,11 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       lugar: solapamiento de charts entre países, que responde a la pregunta
       real — "¿este mercado se parece al mío?")
 - [x] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
+- [x] Y. Keyword Explorer: banda verbal de dificultad (Open/Moderate/Hard/Brutal)
+      y panel "terms used alongside it" — términos que comparten título con los
+      competidores, puntuados dentro de ese subconjunto y enlazables
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
-- [x] Q. Vista de tarjetas también en Favoritos/apps y Trending (mismo ViewToggle)
+- [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
       API (índice pegajoso + copiar), MCP, landing (preview con datos reales)
 - [x] V1. Detalle de app: cabecera con badges + favorito, ads y vídeos de creadores
