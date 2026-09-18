@@ -15,9 +15,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 3. Shell del dashboard: sidebar (Explore/Favorites/ASO Tracking/Tools/AI Agents) + user footer + colapsable
 - [x] 4. Capa de datos: schema SQLite + repositorios + seed
 - [x] 5. Scraper App Store (búsqueda, lookup, top charts, reviews)
-- [ ] 6. (BLOQUEADO EN ESTE ENTORNO) Scraper Google Play (búsqueda, detalle, top charts, reviews)
+- [x] 6. Scraper Google Play (escrito; sin verificar por bloqueo de red) (búsqueda, detalle, top charts, reviews)
 - [x] 7. Estimaciones (downloads/revenue/MRR) heurísticas
-- [ ] 8. Página Explore Apps: buscador + 14 filtros + chips activos + tabla/grid + export CSV
+- [x] 8. Página Explore Apps: buscador + 14 filtros + chips activos + tabla/grid + export CSV
 - [ ] 9. Página Ads Library (grouped/ads, filtros, creatividades)
 - [ ] 10. Página Organic Content (creator videos, filtros)
 - [ ] 11. Página Onboarding Flows (screens/apps, categorías de pantalla)

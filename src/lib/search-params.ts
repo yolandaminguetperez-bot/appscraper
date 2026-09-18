@@ -1,0 +1,109 @@
+import type { AppFilters, SortKey } from "@/lib/db/app-query";
+import type { Store } from "@/lib/types";
+
+export type RawParams = Record<string, string | string[] | undefined>;
+
+function all(params: RawParams, key: string): string[] {
+  const value = params[key];
+  if (value === undefined) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+function one(params: RawParams, key: string): string | undefined {
+  return all(params, key)[0];
+}
+
+function int(params: RawParams, key: string): number | undefined {
+  const raw = one(params, key);
+  if (raw === undefined) return undefined;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+const SORT_KEYS: SortKey[] = ["revenue", "downloads", "rating", "reviews", "released", "updated", "title"];
+
+export function parseAppFilters(params: RawParams): AppFilters {
+  const signals = all(params, "signal");
+  const sortRaw = one(params, "sort") as SortKey | undefined;
+  const iap = one(params, "iap");
+  const searchIn = one(params, "in");
+
+  return {
+    q: one(params, "q"),
+    searchIn: searchIn === "developer" || searchIn === "description" ? searchIn : "title",
+    stores: all(params, "store").filter((s): s is Store => s === "ios" || s === "android"),
+    releasedWithinDays: int(params, "released"),
+    categories: all(params, "cat"),
+    excludeCategories: all(params, "xcat"),
+    languages: all(params, "lang"),
+    priceMin: int(params, "priceMin"),
+    priceMax: int(params, "priceMax"),
+    hasIap: iap === undefined ? undefined : iap === "1",
+    minRevenue: int(params, "minRevenue"),
+    minDownloads: int(params, "minDownloads"),
+    minReviews: int(params, "minReviews"),
+    minRating: int(params, "minRating"),
+    hasAds: signals.includes("ads") || undefined,
+    hasOrganic: signals.includes("organic") || undefined,
+    hasOnboarding: signals.includes("onboarding") || undefined,
+    sort: sortRaw && SORT_KEYS.includes(sortRaw) ? sortRaw : "revenue",
+    dir: one(params, "dir") === "asc" ? "asc" : "desc",
+    page: int(params, "page") ?? 1,
+    perPage: int(params, "perPage") ?? 50,
+  };
+}
+
+export function toQueryString(params: RawParams, overrides: Record<string, string> = {}): string {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined) continue;
+    for (const v of Array.isArray(value) ? value : [value]) search.append(key, v);
+  }
+  for (const [key, value] of Object.entries(overrides)) search.set(key, value);
+  return search.toString();
+}
+
+const SIGNAL_LABELS: Record<string, string> = {
+  ads: "Running paid ads",
+  organic: "Has creator videos",
+  onboarding: "Onboarding captured",
+};
+
+export function describeAppFilters(params: RawParams) {
+  const chips: { key: string; value?: string; label: string }[] = [];
+  const released = one(params, "released");
+  if (released) chips.push({ key: "released", label: `Released: ${released}d` });
+
+  for (const store of all(params, "store")) {
+    chips.push({ key: "store", value: store, label: store === "ios" ? "App Store" : "Google Play" });
+  }
+  for (const cat of all(params, "cat")) chips.push({ key: "cat", value: cat, label: `Include: ${cat}` });
+  for (const cat of all(params, "xcat")) chips.push({ key: "xcat", value: cat, label: `Exclude: ${cat}` });
+  for (const lang of all(params, "lang")) {
+    chips.push({ key: "lang", value: lang, label: `Language: ${lang.toUpperCase()}` });
+  }
+  for (const signal of all(params, "signal")) {
+    chips.push({ key: "signal", value: signal, label: SIGNAL_LABELS[signal] ?? signal });
+  }
+
+  const numeric: [string, string][] = [
+    ["priceMin", "Price ≥ $"],
+    ["priceMax", "Price ≤ $"],
+    ["minRevenue", "Revenue ≥ $"],
+    ["minDownloads", "Downloads ≥ "],
+    ["minReviews", "Reviews ≥ "],
+    ["minRating", "Rating ≥ "],
+  ];
+  for (const [key, label] of numeric) {
+    const value = one(params, key);
+    if (value) chips.push({ key, label: `${label}${value}` });
+  }
+
+  const iap = one(params, "iap");
+  if (iap) chips.push({ key: "iap", label: iap === "1" ? "Has IAP" : "No IAP" });
+
+  const q = one(params, "q");
+  if (q) chips.push({ key: "q", label: `“${q}”` });
+
+  return chips;
+}
