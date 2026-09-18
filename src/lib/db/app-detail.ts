@@ -23,7 +23,7 @@ export type AppDetail = {
   }[];
   creatives: { id: string; headline: string | null; daysRunning: number | null; kind: string }[];
   organic: { id: string; author: string | null; views: number | null; platform: string }[];
-  flowScreens: { id: string; position: number; screenType: string | null }[];
+  flowScreens: { id: string; position: number; screenType: string | null; imageUrl: string | null }[];
   ratingBreakdown: { stars: number; count: number }[];
 };
 
@@ -92,7 +92,7 @@ export function getAppDetail(id: string): AppDetail | null {
   const flowScreens = (
     db()
       .prepare(
-        `SELECT s.id, s.position, s.screen_type FROM flow_screens s
+        `SELECT s.id, s.position, s.screen_type, s.image_url FROM flow_screens s
          JOIN flows f ON f.id = s.flow_id
          WHERE f.app_id = ? ORDER BY s.position ASC`,
       )
@@ -101,6 +101,7 @@ export function getAppDetail(id: string): AppDetail | null {
     id: row.id as string,
     position: row.position as number,
     screenType: (row.screen_type as string) ?? null,
+    imageUrl: (row.image_url as string) ?? null,
   }));
 
   const breakdownRows = db()

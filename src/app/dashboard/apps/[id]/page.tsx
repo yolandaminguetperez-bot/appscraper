@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import { getAppDetail } from "@/lib/db/app-detail";
 import { TrendChart } from "@/components/charts/trend-chart";
+import { ScreenStrip } from "@/components/flows/screen-strip";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -99,18 +100,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
 
           {flowScreens.length > 0 && (
             <Section title="Onboarding flow">
-              <ol className="scroll-thin flex gap-2.5 overflow-x-auto pb-2">
-                {flowScreens.map((screen) => (
-                  <li key={screen.id} className="w-[104px] shrink-0">
-                    <div className="flex aspect-[9/16] flex-col justify-between rounded-xl border border-panel-line bg-panel p-2 text-panel-ink">
-                      <span className="text-[10px] text-panel-ink-muted">
-                        {String(screen.position + 1).padStart(2, "0")}
-                      </span>
-                      <span className="text-[11px] leading-tight">{screen.screenType}</span>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              <ScreenStrip screens={flowScreens} title={app.title} />
             </Section>
           )}
 

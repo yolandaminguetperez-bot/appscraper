@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 640" width="300" height="640" role="img" aria-label="Welcome screen">
+<rect width="300" height="640" fill="#0c110e"/>
+<rect x="20" y="22" width="34" height="6" rx="3" fill="#8b978f"/><rect x="246" y="22" width="34" height="6" rx="3" fill="#8b978f"/>
+<rect x="116" y="150" width="68" height="68" rx="20" fill="#16c46a"/><text x="150" y="268" font-family="system-ui, sans-serif" font-size="24" font-weight="700" fill="#f2f6f3" text-anchor="middle">Welcome</text><text x="150" y="296" font-family="system-ui, sans-serif" font-size="13" font-weight="400" fill="#8b978f" text-anchor="middle">Set up in under a minute</text><rect x="24" y="520" width="252" height="46" rx="23" fill="#16c46a"/><text x="150" y="548" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#0c110e" text-anchor="middle">Get started</text><text x="150" y="596" font-family="system-ui, sans-serif" font-size="12" font-weight="400" fill="#8b978f" text-anchor="middle">I already have an account</text>
+</svg>

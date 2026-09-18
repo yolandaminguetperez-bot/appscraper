@@ -34,6 +34,9 @@ const COUNTRIES = ["us", "gb", "de", "es", "fr", "br", "jp"];
 const CLIPS = ["pulse", "sweep", "orbit", "rise"].flatMap((v) => [1, 2, 3, 4].map((i) => `${v}-${i}`));
 const clipUrl = (name, ext) => `/sample-creatives/${name}.${ext}`;
 
+// Rendered by scripts/make-sample-screens.mjs — original wireframes, not captures.
+const screenUrl = (type) => `/sample-screens/${type.toLowerCase().replace(/\s+/g, "-")}.svg`;
+
 const SCREEN_TYPES = ["Onboarding", "Quiz", "Home", "Paywall", "Permissions", "Content", "Profile Setup", "Feature Intro", "Welcome", "Preferences", "Sign Up", "Settings", "Login", "Success", "Subscription", "Lesson", "Discount", "Search", "Checkout", "Other"];
 const PLATFORMS = ["tiktok", "instagram", "youtube"];
 const CTAS = ["Install now", "Get started", "Try free", "Download", "Learn more"];
@@ -193,10 +196,12 @@ db.transaction(() => {
       insertFlow.run({ id: flowId, app_id: app.id, kind, title: `${app.title} ${kind}`, captured_at: new Date().toISOString() });
       const steps = between(4, 12);
       for (let s = 0; s < steps; s++) {
+        const screenType = s === 0 ? "Welcome" : s === steps - 1 ? "Paywall" : pick(SCREEN_TYPES);
         insertScreen.run({
           id: `${flowId}:${s}`, flow_id: flowId, position: s,
-          screen_type: s === 0 ? "Welcome" : s === steps - 1 ? "Paywall" : pick(SCREEN_TYPES),
-          image_url: null, note: null,
+          screen_type: screenType,
+          image_url: screenUrl(screenType),
+          note: null,
         });
       }
     }

@@ -25,6 +25,7 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | `npm run shots` | Screenshot dashboard routes into `shots/` |
 | `npm run mcp` | Start the MCP server for AI agents |
 | `npm run media` | Re-render the generated sample clips into `public/sample-creatives/` |
+| `npm run screens` | Re-render the generated onboarding screens into `public/sample-screens/` |
 | `npm run chart-check` | Verify the trend chart's hover readout and table view |
 
 ## What is in it
@@ -77,6 +78,11 @@ are validated against the surface they render on.
 `scripts/make-sample-media.mjs` — abstract shapes only, so the creative player has
 real video to play offline. Nothing there is scraped or third-party, and ad copy is
 overlaid in the DOM rather than burned into the frame, which keeps it selectable.
+
+`public/sample-screens/` holds onboarding screens drawn as SVG by
+`scripts/make-sample-screens.mjs` — original wireframes with generic copy, modelled
+on no particular product, so the flow views show screens rather than a list of
+labels. Real captures replace both sets once the scrapers can reach the stores.
 
 ## Estimates, and what they are worth
 

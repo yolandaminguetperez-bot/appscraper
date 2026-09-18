@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 640" width="300" height="640" role="img" aria-label="Feature Intro screen">
+<rect width="300" height="640" fill="#0c110e"/>
+<rect x="20" y="22" width="34" height="6" rx="3" fill="#8b978f"/><rect x="246" y="22" width="34" height="6" rx="3" fill="#8b978f"/>
+<rect x="24" y="96" width="252" height="210" rx="16" fill="#18211c"/><rect x="110" y="170" width="80" height="62" rx="14" fill="#16c46a"/><text x="24" y="350" font-family="system-ui, sans-serif" font-size="19" font-weight="700" fill="#f2f6f3" text-anchor="start">Track it once</text><rect x="24" y="376" width="239.39999999999998" height="8" rx="4" fill="#2a352e"/><rect x="24" y="392" width="176.39999999999998" height="8" rx="4" fill="#2a352e"/><rect x="128" y="440" width="10" height="10" rx="5" fill="#33413a"/><rect x="146" y="440" width="10" height="10" rx="5" fill="#16c46a"/><rect x="164" y="440" width="10" height="10" rx="5" fill="#33413a"/><rect x="24" y="500" width="252" height="46" rx="23" fill="#16c46a"/><text x="150" y="528" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#0c110e" text-anchor="middle">Next</text>
+</svg>

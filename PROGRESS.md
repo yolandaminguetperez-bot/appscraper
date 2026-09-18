@@ -37,6 +37,16 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 22.  Pulido responsive, estados vacíos, loading skeletons
 - [x] 23. Tests + README
 
+## Trabajo posterior al plan inicial (feedback: "que se vea, no que haya que adivinar")
+- [x] A. Creatividades de ads reproducibles en línea (hover play + visor con controles)
+- [x] B. Vídeos de creadores reproducibles en Organic y Favoritos
+- [x] C. Gráficos de tendencia con ejes, total exacto, delta, tooltip y vista de tabla
+- [x] D. Métricas diarias con tendencia/estacionalidad (antes eran constantes: línea plana)
+- [x] E. Pantallas de onboarding renderizadas como mockups, no como etiquetas
+- [ ] F. Series por día para Trending/Rising (mini gráfico por fila)
+- [ ] G. Evolución de rating en Review Analytics
+- [ ] H. Gráfico de posición histórica en Store Rankings
+
 ## Notas de sesión
 - El registro npmjs.org devuelve 503 en este entorno. Usar el mirror:
   `npm config set registry https://registry.yarnpkg.com/`

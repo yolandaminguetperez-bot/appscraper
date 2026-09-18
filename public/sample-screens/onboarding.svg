@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 640" width="300" height="640" role="img" aria-label="Onboarding screen">
+<rect width="300" height="640" fill="#0c110e"/>
+<rect x="20" y="22" width="34" height="6" rx="3" fill="#8b978f"/><rect x="246" y="22" width="34" height="6" rx="3" fill="#8b978f"/>
+<text x="24" y="88" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#f2f6f3" text-anchor="start">Step</text><rect x="24" y="124" width="239.39999999999998" height="8" rx="4" fill="#2a352e"/><rect x="24" y="140" width="201.60000000000002" height="8" rx="4" fill="#2a352e"/><rect x="24" y="156" width="151.2" height="8" rx="4" fill="#2a352e"/><rect x="24" y="210" width="252" height="56" rx="12" fill="#18211c"/><rect x="24" y="280" width="252" height="56" rx="12" fill="#18211c"/><rect x="24" y="350" width="252" height="56" rx="12" fill="#18211c"/><rect x="24" y="520" width="252" height="46" rx="23" fill="#16c46a"/><text x="150" y="548" font-family="system-ui, sans-serif" font-size="14" font-weight="600" fill="#0c110e" text-anchor="middle">Continue</text>
+</svg>
