@@ -6,6 +6,7 @@ import { ChevronRight, Menu, PanelLeftClose, PanelLeftOpen, X } from "lucide-rea
 import { useEffect, useState } from "react";
 import { navSections } from "@/lib/nav";
 import { NavIcon } from "@/components/ui/icon";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/cn";
 
 export function Sidebar() {
@@ -123,7 +124,8 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-panel-line p-3">
+      <div className="space-y-2 border-t border-panel-line p-3">
+        <ThemeToggle collapsed={collapsed} />
         <div className="flex items-center gap-3 rounded-xl bg-panel-soft px-3 py-2.5">
           <span className="grid size-8 shrink-0 place-items-center rounded-full bg-accent/20 text-xs font-semibold text-accent">
             A

@@ -26,18 +26,45 @@
   --chart-grid: #e7ece8;
 }
 
+/* Dark mode is its own set of steps, not an inversion: surfaces lift off black,
+   ink drops off white, and the chart ink is re-validated against the dark
+   surface it actually renders on. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --bg: #0a0e0c;
+    --surface: #111714;
+    --surface-muted: #1a221d;
+    --ink: #eef3ef;
+    --ink-muted: #9aa8a0;
+    --ink-faint: #7d8b84;
+    --line: #232d27;
+    --accent-soft: #14271d;
+    --accent-ink: #4ade8a;
+    --panel: #070b09;
+    --panel-soft: #121a15;
+    --panel-line: #212a24;
     --chart-line: #12a659;
     --chart-fill: #12a659;
-    --chart-grid: #242e27;
+    --chart-grid: #232d27;
   }
 }
 
 :root[data-theme="dark"] {
+  --bg: #0a0e0c;
+  --surface: #111714;
+  --surface-muted: #1a221d;
+  --ink: #eef3ef;
+  --ink-muted: #9aa8a0;
+  --ink-faint: #7d8b84;
+  --line: #232d27;
+  --accent-soft: #14271d;
+  --accent-ink: #4ade8a;
+  --panel: #070b09;
+  --panel-soft: #121a15;
+  --panel-line: #212a24;
   --chart-line: #12a659;
   --chart-fill: #12a659;
-  --chart-grid: #242e27;
+  --chart-grid: #232d27;
 }
 
 @theme inline {

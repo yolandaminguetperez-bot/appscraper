@@ -23,6 +23,7 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | `npm run seed` | Regenerate the sample dataset |
 | `npm run e2e` | Drive a real browser against a running build (needs `npm run start` first) |
 | `npm run shots` | Screenshot dashboard routes into `shots/` |
+| `npm run shots-dark` | Screenshot the same routes in dark mode |
 | `npm run mcp` | Start the MCP server for AI agents |
 | `npm run media` | Re-render the generated sample clips into `public/sample-creatives/` |
 | `npm run screens` | Re-render the generated onboarding screens into `public/sample-screens/` |
@@ -71,6 +72,14 @@ with a per-day readout, and a table view for every value. Chart ink is its own t
 (`--chart-line`), separate from the brand accent, because the accent only reaches
 2.3:1 against white — below the 3:1 a data mark needs. Both the light and dark steps
 are validated against the surface they render on.
+
+## Theme
+
+Light and dark are two sets of steps, not an inversion. The toggle lives in the
+sidebar (light / dark / follow the system) and is applied before first paint, so a
+stored choice never renders one frame in the wrong palette. Dark ink is checked
+against every dark surface it lands on: `--ink-faint` was raised from 4.09:1 to
+5.10:1 because it labels 11px axis ticks, which need 4.5:1.
 
 ## Sample media
 

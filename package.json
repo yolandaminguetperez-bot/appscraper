@@ -13,7 +13,8 @@
     "mcp": "node scripts/mcp-server.mjs",
     "media": "node scripts/make-sample-media.mjs",
     "chart-check": "node scripts/chart-check.mjs",
-    "screens": "node scripts/make-sample-screens.mjs"
+    "screens": "node scripts/make-sample-screens.mjs",
+    "shots-dark": "node scripts/shots-dark.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

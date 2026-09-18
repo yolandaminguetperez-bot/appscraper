@@ -49,7 +49,7 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] I. Iconos de app generados (hash del id) en todas las vistas
 - [x] J. Página Overview con KPIs, barras y tendencias
 - [x] K. Galería de capturas en el detalle de app
-- [ ] L. Modo oscuro completo de la interfaz (los tokens de gráfico ya lo soportan)
+- [x] L. Modo oscuro completo de la interfaz
 - [ ] M. Comparador de apps lado a lado
 
 ## Aviso para el yo futuro
