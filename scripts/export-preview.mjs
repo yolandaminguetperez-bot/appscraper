@@ -121,15 +121,21 @@ for (const file of readdirSync("public/sample-creatives")) {
 
 // App marks, rendered by the same function the app serves from /api/icon so the
 // preview shows the real artwork rather than grey squares.
-const icons = Object.fromEntries(
-  JSON.parse(
-    execFileSync("npx", ["tsx", "-e", `
-      import { iconSvg } from "./src/lib/identicon";
-      const ids = ${JSON.stringify(JSON.stringify(ids))};
-      process.stdout.write(JSON.stringify(JSON.parse(ids).map((id) => [id, iconSvg(id, 64)])));
-    `], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }),
-  ),
-);
+// Every id the preview can render, not just the app slice: the chart-movement
+// panels name apps that fall outside the top 120, and a missing entry there
+// renders a broken image rather than a mark.
+function renderIcons(idList) {
+  const payload = JSON.stringify(JSON.stringify(idList));
+  const source = `
+    import { iconSvg } from "./src/lib/identicon";
+    const ids = JSON.parse(${payload});
+    process.stdout.write(JSON.stringify(ids.map((id) => [id, iconSvg(id, 64)])));
+  `;
+
+  return Object.fromEntries(
+    JSON.parse(execFileSync("npx", ["tsx", "-e", source], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })),
+  );
+}
 
 // Countries: chart overlap with the US, and where the creatives run. Both are
 // the same numbers the live pages show.
@@ -170,10 +176,98 @@ const details = Object.fromEntries(
 
 const world = JSON.parse(readFileSync("src/lib/geo/world.json", "utf8"));
 
-const payload = { apps, trends, creatives, organic, categories, totals, counts, icons, overlap, adReach, details, world };
+// Search positions and market splits for the apps in the slice, so the preview
+// can show the same ASO panels the app does.
+const rankRows = db
+  .prepare(
+    `SELECT r.app_id, k.term, r.position, r.day
+     FROM keyword_ranks r JOIN keywords k ON k.id = r.keyword_id
+     WHERE r.app_id IN (${ids.map(() => "?").join(",")})
+     ORDER BY r.app_id, k.term, r.day ASC`,
+  )
+  .all(...ids);
+
+const keywordRanks = {};
+for (const row of rankRows) {
+  const perApp = (keywordRanks[row.app_id] ??= {});
+  (perApp[row.term] ??= []).push(row.position);
+}
+
+const marketRows = db
+  .prepare(
+    `SELECT app_id, country, share, revenue FROM app_countries
+     WHERE app_id IN (${ids.map(() => "?").join(",")})
+     ORDER BY app_id, share DESC`,
+  )
+  .all(...ids);
+
+const markets = {};
+for (const row of marketRows) {
+  (markets[row.app_id] ??= []).push({
+    code: row.country,
+    share: row.share,
+    revenue: row.revenue,
+  });
+}
+
+// What moved in the US free chart over the last week.
+const chartDay = db.prepare("SELECT MAX(day) AS day FROM rankings WHERE store='ios' AND chart='free' AND country='us'").get().day;
+const beforeDay = db
+  .prepare("SELECT MAX(day) AS day FROM rankings WHERE store='ios' AND chart='free' AND country='us' AND day <= ?")
+  .get(new Date(Date.parse(chartDay) - 7 * 86400000).toISOString().slice(0, 10)).day;
+
+const movementRows = db
+  .prepare(
+    `SELECT a.id, a.title, now.position, before.position AS previous
+     FROM rankings now
+     JOIN apps a ON a.id = now.app_id
+     LEFT JOIN rankings before ON before.app_id = now.app_id AND before.store='ios'
+       AND before.chart='free' AND before.country='us' AND before.day = ?
+     WHERE now.store='ios' AND now.chart='free' AND now.country='us' AND now.day = ?`,
+  )
+  .all(beforeDay, chartDay)
+  .map((row) => ({
+    id: row.id,
+    title: row.title,
+    position: row.position,
+    change: row.previous == null ? null : row.previous - row.position,
+  }));
+
+const exitRows = db
+  .prepare(
+    `SELECT a.id, a.title, before.position
+     FROM rankings before JOIN apps a ON a.id = before.app_id
+     WHERE before.store='ios' AND before.chart='free' AND before.country='us' AND before.day = ?
+       AND NOT EXISTS (SELECT 1 FROM rankings now WHERE now.app_id = before.app_id
+         AND now.store='ios' AND now.chart='free' AND now.country='us' AND now.day = ?)
+     ORDER BY before.position ASC LIMIT 5`,
+  )
+  .all(beforeDay, chartDay);
+
+const ranked = movementRows.filter((row) => row.change !== null);
+const movement = {
+  since: beforeDay,
+  climbers: [...ranked].sort((a, b) => b.change - a.change).slice(0, 5),
+  fallers: [...ranked].sort((a, b) => a.change - b.change).slice(0, 5),
+  entries: movementRows.filter((row) => row.change === null).sort((a, b) => a.position - b.position).slice(0, 5),
+  exits: exitRows.map((row) => ({ id: row.id, title: row.title, position: row.position })),
+};
+
+const icons = renderIcons([
+  ...new Set([
+    ...ids,
+    ...movement.climbers.map((row) => row.id),
+    ...movement.fallers.map((row) => row.id),
+    ...movement.entries.map((row) => row.id),
+    ...movement.exits.map((row) => row.id),
+  ]),
+]);
+
+const payload = { apps, trends, creatives, organic, categories, totals, counts, icons, overlap, adReach, details, world, keywordRanks, markets, movement };
 writeFileSync(path.join(OUT, "data.json"), JSON.stringify(payload));
 
 console.log(
   `apps=${apps.length} creatives=${creatives.length} organic=${organic.length} media=${wanted.size} ` +
-    `icons=${Object.keys(icons).length} countries=${overlap.length} world=${world.countries.length}`,
+    `icons=${Object.keys(icons).length} countries=${overlap.length} world=${world.countries.length} ` +
+    `ranked=${Object.keys(keywordRanks).length} markets=${Object.keys(markets).length} moved=${movement.climbers.length}`,
 );
