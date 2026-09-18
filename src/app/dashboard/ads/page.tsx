@@ -4,6 +4,7 @@ import { AdsFilterBar } from "@/components/marketing/ads-filter-bar";
 import { AdGroupCard, CreativeCards } from "@/components/marketing/ad-cards";
 import { Pagination } from "@/components/ui/pagination";
 import { SaveView } from "@/components/views/save-view";
+import { ExportButton } from "@/components/ui/export-button";
 import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { distinctCategories, distinctLanguages } from "@/lib/db/app-query";
 import { queryAdGroups, queryCreatives } from "@/lib/db/marketing-query";
@@ -33,7 +34,12 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
       <PageHeader
         title="Ads Library"
         subtitle={view === "grouped" ? "Apps running paid creatives." : "Every creative we have on file."}
-        actions={<SaveView views={savedViews} savedId={savedId} />}
+        actions={
+          <>
+            <SaveView views={savedViews} savedId={savedId} />
+            <ExportButton href={`/api/ads/export?${toQueryString(params)}`} />
+          </>
+        }
       />
 
       <AdsFilterBar

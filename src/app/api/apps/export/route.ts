@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { queryApps } from "@/lib/db/app-query";
 import { parseAppFilters, type RawParams } from "@/lib/search-params";
+import { collectPages, csvBody, csvHeaders, rawParamsFrom } from "@/lib/csv";
 
 export const dynamic = "force-dynamic";
 
@@ -9,40 +10,14 @@ const COLUMNS = [
   "rating", "ratingCount", "estDownloads", "estMrr", "estRevenue", "releasedAt", "updatedAt", "storeUrl",
 ] as const;
 
-function csvCell(value: unknown): string {
-  if (value === null || value === undefined) return "";
-  const text = String(value);
-  return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-}
-
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const params: RawParams = {};
-  for (const key of new Set(url.searchParams.keys())) {
-    params[key] = url.searchParams.getAll(key);
-  }
+  const params = rawParamsFrom(new URL(request.url)) as RawParams;
+  const filters = { ...parseAppFilters(params), perPage: 200 };
 
-  // Export ignores pagination: the point is to take the whole filtered set.
-  const filters = { ...parseAppFilters(params), page: 1, perPage: 200 };
-  const rows: Record<string, unknown>[] = [];
-  let page = 1;
-
-  for (;;) {
+  const rows = collectPages((page) => {
     const result = queryApps({ ...filters, page });
-    rows.push(...(result.apps as unknown as Record<string, unknown>[]));
-    if (page >= result.pages || rows.length >= 10_000) break;
-    page += 1;
-  }
-
-  const body = [
-    COLUMNS.join(","),
-    ...rows.map((row) => COLUMNS.map((col) => csvCell(row[col])).join(",")),
-  ].join("\n");
-
-  return new NextResponse(body, {
-    headers: {
-      "content-type": "text/csv; charset=utf-8",
-      "content-disposition": `attachment; filename="apps-${new Date().toISOString().slice(0, 10)}.csv"`,
-    },
+    return { rows: result.apps as unknown as Record<string, unknown>[], pages: result.pages };
   });
+
+  return new NextResponse(csvBody(COLUMNS, rows), { headers: csvHeaders("apps") });
 }

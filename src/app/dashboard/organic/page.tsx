@@ -4,6 +4,7 @@ import { OrganicFilterBar } from "@/components/marketing/organic-filter-bar";
 import { OrganicGrid } from "@/components/marketing/organic-grid";
 import { Pagination } from "@/components/ui/pagination";
 import { SaveView } from "@/components/views/save-view";
+import { ExportButton } from "@/components/ui/export-button";
 import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { distinctCategories } from "@/lib/db/app-query";
 import { distinctPlatforms, queryOrganic } from "@/lib/db/marketing-query";
@@ -30,7 +31,12 @@ export default async function OrganicPage({ searchParams }: { searchParams: Prom
       <PageHeader
         title="Organic Content"
         subtitle="Creator videos driving installs."
-        actions={<SaveView views={savedViews} savedId={savedId} />}
+        actions={
+          <>
+            <SaveView views={savedViews} savedId={savedId} />
+            <ExportButton href={`/api/organic/export?${toQueryString(params)}`} />
+          </>
+        }
       />
       <OrganicFilterBar platforms={distinctPlatforms()} categories={distinctCategories()} />
       <ActiveChips chips={chips} />

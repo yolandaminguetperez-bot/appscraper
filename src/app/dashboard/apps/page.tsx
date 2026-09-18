@@ -1,4 +1,3 @@
-import { Download } from "lucide-react";
 import Link from "next/link";
 import { PageHeader } from "@/components/layout/page-header";
 import { AppsFilterBar } from "@/components/apps/apps-filter-bar";
@@ -10,6 +9,7 @@ import { PendingOverlay } from "@/components/filters/filter-transition";
 import { SaveView } from "@/components/views/save-view";
 import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { Pagination } from "@/components/ui/pagination";
+import { ExportButton } from "@/components/ui/export-button";
 import { distinctCategories, distinctLanguages, metricsForApps, queryApps } from "@/lib/db/app-query";
 import { favoriteIds } from "@/lib/db/favorites";
 import { describeAppFilters, parseAppFilters, toQueryString, type RawParams } from "@/lib/search-params";
@@ -45,14 +45,7 @@ export default async function AppsPage({
           <>
           <SaveView views={savedViews} savedId={savedId} />
           <ViewToggle />
-          <Link
-            href={`/api/apps/export?${toQueryString(params)}`}
-            className="flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-[13px] font-medium text-panel transition-colors hover:bg-accent-ink hover:text-white"
-          >
-            <Download className="size-4" />
-            <span className="hidden sm:inline">Export CSV</span>
-            <span className="sr-only sm:hidden">Export CSV</span>
-          </Link>
+          <ExportButton href={`/api/apps/export?${toQueryString(params)}`} />
           </>
         }
       />

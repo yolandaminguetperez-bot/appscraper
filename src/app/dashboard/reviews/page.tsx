@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ActiveChips } from "@/components/filters/active-chips";
 import { ReviewsFilterBar } from "@/components/reviews/reviews-filter-bar";
 import { Pagination } from "@/components/ui/pagination";
+import { ExportButton } from "@/components/ui/export-button";
 import { queryReviews, ratingOverTime, summarizeReviews } from "@/lib/db/reviews-query";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { daysAgo } from "@/lib/format";
@@ -36,7 +37,11 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
 
   return (
     <div className="pb-12">
-      <PageHeader title="Review Analytics" subtitle="What users praise, and what they complain about." />
+      <PageHeader
+        title="Review Analytics"
+        subtitle="What users praise, and what they complain about."
+        actions={<ExportButton href={`/api/reviews/export?${toQueryString(params)}`} />}
+      />
       <ReviewsFilterBar topics={allTopics} />
       <ActiveChips chips={chips} />
 

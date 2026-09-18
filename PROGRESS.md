@@ -70,6 +70,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] AB. Peso de página: corazón de favoritos al sprite (se repetía 51 veces
       por página) y coordenadas enteras en los mini gráficos. Explore Apps pasa
       de 388 KB a 352 KB (-9,4%); el sprite se emite una vez en el layout
+- [x] AC. Export CSV en Ads, Organic y Review Analytics (antes solo Explore
+      Apps), respetando los filtros activos; helper compartido en src/lib/csv.ts
+      y botón único ExportButton
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
