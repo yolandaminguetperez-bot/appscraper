@@ -118,14 +118,29 @@ db.transaction(() => {
   for (const app of apps) {
     insertApp.run(app);
 
-    // 90 days of history, walking backwards from today's figures.
+    // 90 days of history, walking backwards from today's figures. Daily values
+    // carry a growth trend, weekend seasonality and noise — a flat line would
+    // make the trend charts unreadable and would not resemble real store data.
     let ratingCount = app.rating_count;
+    const dailyDownloads = app.est_downloads / Math.max(1, monthsLive(app.released_at) * 30.44);
+    const dailyRevenue = app.est_mrr / 30.44;
+    const drift = 0.994 + rnd() * 0.012; // <1 shrinking, >1 growing
+    const weekendLift = 0.85 + rnd() * 0.4;
+
     for (let d = 0; d < 90; d++) {
-      const day = new Date(Date.now() - d * 86400000).toISOString().slice(0, 10);
+      const date = new Date(Date.now() - d * 86400000);
+      const day = date.toISOString().slice(0, 10);
+      const isWeekend = date.getUTCDay() === 0 || date.getUTCDay() === 6;
+      const trend = drift ** d; // d counts backwards, so this walks into the past
+      const season = isWeekend ? weekendLift : 1;
+      const noise = 0.82 + rnd() * 0.36;
+      const shape = (trend === 0 ? 1 : 1 / trend) * season * noise;
+
       insertMetric.run({
         app_id: app.id, day, rating: app.rating, rating_count: Math.max(0, Math.round(ratingCount)),
-        rank: between(1, 400), est_downloads: Math.round(app.est_downloads / 90),
-        est_revenue: Math.round(app.est_mrr / 30),
+        rank: between(1, 400),
+        est_downloads: Math.max(0, Math.round(dailyDownloads * shape)),
+        est_revenue: Math.max(0, Math.round(dailyRevenue * shape)),
       });
       ratingCount *= 1 - (0.002 + rnd() * 0.01);
     }

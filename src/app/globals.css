@@ -17,6 +17,27 @@
   --panel-ink: #f2f6f3;
   --panel-ink-muted: #96a39b;
   --radius: 14px;
+
+  /* Chart ink is its own token: the brand accent is only 2.3:1 on white, which
+     is below the 3:1 a data mark needs. Both steps are validated against the
+     surface they actually render on. */
+  --chart-line: #0d8a49;
+  --chart-fill: #16c46a;
+  --chart-grid: #e7ece8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --chart-line: #12a659;
+    --chart-fill: #12a659;
+    --chart-grid: #242e27;
+  }
+}
+
+:root[data-theme="dark"] {
+  --chart-line: #12a659;
+  --chart-fill: #12a659;
+  --chart-grid: #242e27;
 }
 
 @theme inline {
@@ -35,6 +56,9 @@
   --color-panel-line: var(--panel-line);
   --color-panel-ink: var(--panel-ink);
   --color-panel-ink-muted: var(--panel-ink-muted);
+  --color-chart-line: var(--chart-line);
+  --color-chart-fill: var(--chart-fill);
+  --color-chart-grid: var(--chart-grid);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }

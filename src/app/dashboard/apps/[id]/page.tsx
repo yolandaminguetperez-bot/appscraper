@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Star } from "lucide-react";
 import { getAppDetail } from "@/lib/db/app-detail";
-import { Sparkline } from "@/components/apps/sparkline";
+import { TrendChart } from "@/components/charts/trend-chart";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -78,17 +78,18 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
 
       <div className="grid gap-5 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
-          <Section title="Review growth">
-            <Sparkline
-              points={history.map((point) => point.ratingCount ?? 0)}
-              label={`Review count for ${app.title}`}
-              className="h-24 w-full"
-            />
-            <p className="pt-2 text-[12.5px] text-ink-muted">
-              {history.length} days of history · released {daysAgo(app.releasedAt)} · updated{" "}
-              {daysAgo(app.updatedAt)}
-            </p>
-          </Section>
+          <TrendChart
+            title={`Revenue, last ${history.length} days`}
+            subtitle="Estimated, from review volume, price and monetization shape."
+            format="money"
+            points={history.map((point) => ({ day: point.day, value: point.revenue ?? 0 }))}
+          />
+
+          <TrendChart
+            title={`Downloads, last ${history.length} days`}
+            subtitle={`Released ${daysAgo(app.releasedAt)} · updated ${daysAgo(app.updatedAt)}`}
+            points={history.map((point) => ({ day: point.day, value: point.downloads ?? 0 }))}
+          />
 
           <Section title="Description">
             <p className="whitespace-pre-line text-[13.5px] leading-relaxed text-ink-muted">

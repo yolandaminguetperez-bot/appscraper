@@ -10,7 +10,9 @@
     "seed": "node scripts/seed.mjs",
     "shots": "node scripts/shots.mjs",
     "e2e": "node scripts/e2e.mjs",
-    "mcp": "node scripts/mcp-server.mjs"
+    "mcp": "node scripts/mcp-server.mjs",
+    "media": "node scripts/make-sample-media.mjs",
+    "chart-check": "node scripts/chart-check.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

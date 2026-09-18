@@ -2,7 +2,13 @@ import { db } from "@/lib/db";
 import { getApp } from "@/lib/db/apps-repo";
 import type { App } from "@/lib/types";
 
-export type MetricPoint = { day: string; ratingCount: number | null; rating: number | null };
+export type MetricPoint = {
+  day: string;
+  ratingCount: number | null;
+  rating: number | null;
+  revenue: number | null;
+  downloads: number | null;
+};
 
 export type AppDetail = {
   app: App;
@@ -30,13 +36,16 @@ export function getAppDetail(id: string): AppDetail | null {
   const history = (
     db()
       .prepare(
-        "SELECT day, rating_count, rating FROM app_metrics WHERE app_id = ? ORDER BY day ASC LIMIT 400",
+        `SELECT day, rating_count, rating, est_revenue, est_downloads
+         FROM app_metrics WHERE app_id = ? ORDER BY day ASC LIMIT 400`,
       )
       .all(id) as Row[]
   ).map<MetricPoint>((row) => ({
     day: row.day as string,
     ratingCount: (row.rating_count as number) ?? null,
     rating: (row.rating as number) ?? null,
+    revenue: (row.est_revenue as number) ?? null,
+    downloads: (row.est_downloads as number) ?? null,
   }));
 
   const reviews = (

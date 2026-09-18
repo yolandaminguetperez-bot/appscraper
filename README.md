@@ -24,6 +24,8 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | `npm run e2e` | Drive a real browser against a running build (needs `npm run start` first) |
 | `npm run shots` | Screenshot dashboard routes into `shots/` |
 | `npm run mcp` | Start the MCP server for AI agents |
+| `npm run media` | Re-render the generated sample clips into `public/sample-creatives/` |
+| `npm run chart-check` | Verify the trend chart's hover readout and table view |
 
 ## What is in it
 
@@ -59,6 +61,22 @@ Endpoints: `/api/v1/apps`, `/api/v1/apps/{id}`, `/api/v1/rankings`, `/api/v1/rev
 `get_rankings`, `search_reviews`, `search_ads`, `search_organic`, `search_flows`, `keyword_stats`).
 It forwards each call to the REST API above, so agents and the UI cannot drift apart. Client
 configuration is at `/dashboard/mcp`.
+
+## Charts
+
+Trend charts are inline SVG: a hero total in exact figures, the change against the
+previous period, value axes with round ticks, a labelled end point, a hover crosshair
+with a per-day readout, and a table view for every value. Chart ink is its own token
+(`--chart-line`), separate from the brand accent, because the accent only reaches
+2.3:1 against white — below the 3:1 a data mark needs. Both the light and dark steps
+are validated against the surface they render on.
+
+## Sample media
+
+`public/sample-creatives/` holds generated motion graphics rendered by
+`scripts/make-sample-media.mjs` — abstract shapes only, so the creative player has
+real video to play offline. Nothing there is scraped or third-party, and ad copy is
+overlaid in the DOM rather than burned into the frame, which keeps it selectable.
 
 ## Estimates, and what they are worth
 
