@@ -198,6 +198,32 @@ Después de esto, `npm run seed` vuelve a funcionar. Si lo ejecutaste antes y
 falló con `Cannot find package 'better-sqlite3'`, era la consecuencia de que la
 instalación no había llegado a terminar, no un problema aparte.
 
+## ¿Trae datos reales?
+
+El catálogo de ejemplo son apps inventadas. Para saber si ESTA máquina puede
+traer datos reales de las tiendas:
+
+```bash
+npm run fetch-check
+```
+
+Consulta WhatsApp en las dos tiendas e imprime lo que devuelven, campo a campo:
+título, desarrollador, categoría, valoración y **la URL del icono real**. Si
+todo aparece, los scrapers funcionan aquí y la app puede llenarse de datos de
+verdad. Si falla, dice si es la red o si la tienda cambió de formato.
+
+Importante: **en el entorno donde se construyó esto, las dos tiendas están
+bloqueadas**, así que los adaptadores nunca se han ejecutado contra una
+respuesta real. Este comando existe para que la primera máquina con acceso lo
+compruebe en dos minutos.
+
+Para meter apps reales una a una:
+
+```bash
+npm run import -- https://apps.apple.com/us/app/whatsapp-messenger/id310633997
+npm run import -- com.spotify.music
+```
+
 ## Map geometry
 
 `src/lib/geo/world.json` is built by `scripts/make-world-geo.mjs` from Natural

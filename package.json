@@ -18,7 +18,9 @@
     "stress": "node scripts/stress.mjs",
     "ux-check": "node scripts/ux-check.mjs",
     "preview": "node scripts/export-preview.mjs preview-build && cp preview/index.html preview-build/",
-    "parse-check": "node scripts/parse-check.mjs"
+    "parse-check": "node scripts/parse-check.mjs",
+    "fetch-check": "node scripts/fetch-check.mjs",
+    "import": "node scripts/import-app.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
