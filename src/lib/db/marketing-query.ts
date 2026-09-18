@@ -282,6 +282,7 @@ export function queryOrganic(f: OrganicFilters = {}) {
     appTitle: row.app_title as string,
     appDeveloper: (row.app_developer as string) ?? null,
     appCategory: (row.app_category as string) ?? null,
+    appIconUrl: (row.app_icon_url as string) ?? null,
   }));
 
   return { posts, total, page, perPage, pages: Math.max(1, Math.ceil(total / perPage)) };

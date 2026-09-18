@@ -3,13 +3,20 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, Heart, MessageCircle, Users } from "lucide-react";
+import { AppIcon } from "@/components/ui/app-icon";
 import { VideoTile } from "@/components/media/video-tile";
 import { MediaLightbox } from "@/components/media/media-lightbox";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { compactNumber, daysAgo } from "@/lib/format";
 import type { OrganicPost } from "@/lib/db/marketing-query";
 
-type Post = OrganicPost & { appTitle: string; appCategory: string | null };
+type Post = OrganicPost & { appTitle: string; appCategory: string | null; appIconUrl?: string | null };
+
+const PLATFORM_LABEL: Record<string, string> = {
+  tiktok: "TikTok",
+  instagram: "Instagram",
+  youtube: "YouTube",
+};
 
 export function OrganicGrid({ posts, favorites }: { posts: Post[]; favorites: Set<string> }) {
   const [open, setOpen] = useState<Post | null>(null);
@@ -24,17 +31,21 @@ export function OrganicGrid({ posts, favorites }: { posts: Post[]; favorites: Se
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {posts.map((post) => (
-          <div key={post.id} className="space-y-1.5">
+          <article
+            key={post.id}
+            className="surface-card surface-card-interactive flex flex-col overflow-hidden"
+          >
             <VideoTile
               mediaUrl={post.mediaUrl}
               thumbUrl={post.thumbUrl}
               kind="video"
-              badge={`${compactNumber(post.views)} views`}
+              badge={PLATFORM_LABEL[post.platform] ?? post.platform}
+              className="rounded-none"
               overlay={
                 <span className="block">
-                  <span className="line-clamp-2 block text-[11.5px] leading-snug text-panel-ink">
+                  <span className="line-clamp-2 block text-[12px] font-medium leading-snug text-panel-ink">
                     {post.caption}
                   </span>
                   <span className="mt-0.5 block text-[10.5px] text-panel-ink-muted">{post.author}</span>
@@ -42,16 +53,45 @@ export function OrganicGrid({ posts, favorites }: { posts: Post[]; favorites: Se
               }
               onOpen={() => setOpen(post)}
             />
-            <div className="flex items-center justify-between gap-2 px-0.5">
+
+            <div className="flex items-center gap-2 px-3 pb-2 pt-2.5">
+              <AppIcon
+                id={post.appId}
+                title={post.appTitle}
+                iconUrl={post.appIconUrl}
+                className="size-6"
+              />
               <Link
                 href={`/dashboard/apps/${encodeURIComponent(post.appId)}`}
-                className="min-w-0 truncate text-[12.5px] font-medium hover:text-accent-ink"
+                className="min-w-0 flex-1 truncate text-[12.5px] font-medium hover:text-accent-ink"
               >
                 {post.appTitle}
               </Link>
               <FavoriteButton kind="organic" refId={post.id} initial={favorites.has(post.id)} />
             </div>
-          </div>
+
+            {/* Three metrics, not four: a fourth ran the numbers together and
+                clipped the last one. Follower count lives in the lightbox. */}
+            <dl className="mt-auto grid grid-cols-3 gap-2 border-t border-line px-3 py-2 text-[11.5px] text-ink-muted">
+              <div className="flex items-center gap-1.5">
+                <Eye className="size-3 shrink-0" aria-hidden />
+                <dt className="sr-only">Views</dt>
+                <dd className="truncate font-medium tabular-nums text-ink">
+                  {compactNumber(post.views)}
+                </dd>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Heart className="size-3 shrink-0" aria-hidden />
+                <dt className="sr-only">Likes</dt>
+                <dd className="truncate tabular-nums">{compactNumber(post.likes)}</dd>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <MessageCircle className="size-3 shrink-0" aria-hidden />
+                <dt className="sr-only">Comments</dt>
+                <dd className="truncate tabular-nums">{compactNumber(post.comments)}</dd>
+              </div>
+            </dl>
+          </article>
         ))}
       </div>
 
