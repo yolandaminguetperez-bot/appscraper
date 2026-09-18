@@ -9,7 +9,11 @@ import { NavIcon } from "@/components/ui/icon";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/cn";
 
-export function Sidebar() {
+/**
+ * `badges` maps an href to a count drawn beside it. The layout computes them on
+ * the server: an alert nobody can see without visiting its page is not an alert.
+ */
+export function Sidebar({ badges = {} }: { badges?: Record<string, number> }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -85,7 +89,7 @@ export function Sidebar() {
                     href={item.href}
                     title={collapsed ? item.label : undefined}
                     className={cn(
-                      "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
+                      "relative flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
                       isActive(item.href)
                         ? "bg-panel-soft text-panel-ink ring-1 ring-accent/60"
                         : "text-panel-ink-muted hover:bg-panel-soft hover:text-panel-ink",
@@ -93,7 +97,18 @@ export function Sidebar() {
                   >
                     <NavIcon name={item.icon} className="size-[18px] shrink-0" />
                     {!collapsed && <span className="truncate">{item.label}</span>}
-                    {!collapsed && item.children && (
+                    {badges[item.href] ? (
+                      <span
+                        title={`${badges[item.href]} firing`}
+                        className={cn(
+                          "metric grid min-w-5 place-items-center rounded-full bg-accent px-1.5 text-[11px] font-semibold leading-5 text-panel",
+                          collapsed ? "absolute right-1.5 top-1.5" : "ml-auto",
+                        )}
+                      >
+                        {badges[item.href]}
+                      </span>
+                    ) : null}
+                    {!collapsed && item.children && !badges[item.href] && (
                       <ChevronRight className="ml-auto size-4 opacity-60" />
                     )}
                   </Link>

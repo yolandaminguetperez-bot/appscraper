@@ -42,6 +42,7 @@ export const navSections: NavSection[] = [
     title: "ASO tracking",
     items: [
       { label: "Keyword Explorer", href: "/dashboard/keywords", icon: "key" },
+      { label: "Alerts", href: "/dashboard/alerts", icon: "bell" },
       {
         label: "Your Apps",
         href: "/dashboard/your-apps",

@@ -12,6 +12,7 @@ import { favoriteIds } from "@/lib/db/favorites";
 import { similarApps } from "@/lib/db/developer-query";
 import { difficultyBand, titleKeywords } from "@/lib/db/keywords-query";
 import { WorldMap } from "@/components/trends/world-map";
+import { AlertButton } from "@/components/alerts/alert-button";
 import { KeywordRanks } from "@/components/aso/keyword-ranks";
 import { MarketSplit } from "@/components/aso/market-split";
 import { countriesForApp, keywordRanksForApp } from "@/lib/db/aso-query";
@@ -103,6 +104,7 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <AlertButton appId={app.id} title={app.title} />
           <FavoriteButton kind="app" refId={app.id} initial={saved.has(app.id)} />
           <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1.5 text-[13px]">
             <Star className="size-3.5 text-accent" />

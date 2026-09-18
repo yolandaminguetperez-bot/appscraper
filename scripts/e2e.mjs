@@ -304,6 +304,43 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   );
 }
 
+// Alerts: a rule set from an app page is evaluated against real history, shows
+// in the sidebar, and disappears when deleted.
+{
+  db.prepare("DELETE FROM alerts").run();
+
+  const app = db.prepare("SELECT id, title FROM apps ORDER BY est_revenue DESC LIMIT 1").get();
+  await page.goto(`${BASE}/dashboard/apps/${encodeURIComponent(app.id)}`, { waitUntil: "load" });
+  await page.waitForTimeout(800);
+  await page.getByRole("button", { name: "Alert me" }).click();
+  await page.getByRole("button", { name: "Create alert" }).click();
+  await page.waitForTimeout(1200);
+
+  const stored = db.prepare("SELECT app_id, metric, threshold FROM alerts").all();
+  check(
+    "alert rule is stored from the app page",
+    stored.length === 1 && stored[0].app_id === app.id,
+    JSON.stringify(stored),
+  );
+
+  await page.goto(`${BASE}/dashboard/alerts`, { waitUntil: "load" });
+  await page.waitForTimeout(700);
+  const listed = await page.textContent("body");
+  check(
+    "alerts page reports the rule against real history",
+    /\d+ of 1 firing right now/.test(listed) && listed.includes(app.title),
+    (listed.match(/\d+ of \d+ firing right now/) ?? ["?"])[0],
+  );
+
+  await page.getByLabel(/Delete alert/).first().click();
+  await page.waitForTimeout(1200);
+  check(
+    "deleting the rule removes it",
+    db.prepare("SELECT COUNT(*) AS n FROM alerts").get().n === 0,
+    "",
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

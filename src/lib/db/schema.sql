@@ -169,6 +169,27 @@ CREATE TABLE IF NOT EXISTS app_countries (
 
 CREATE INDEX IF NOT EXISTS idx_app_countries_country ON app_countries (country);
 
+-- Rules the user sets once and the app evaluates on every visit.
+--
+-- No rows are written when a rule fires: an alert is a question asked of the
+-- data, and storing "fired" rows would drift out of step with the metrics they
+-- came from the moment a refresh changes them. last_seen_value only exists so
+-- the feed can say what the number was the last time you looked.
+CREATE TABLE IF NOT EXISTS alerts (
+  id              TEXT PRIMARY KEY,
+  kind            TEXT NOT NULL,        -- 'app' | 'keyword'
+  app_id          TEXT NOT NULL REFERENCES apps(id) ON DELETE CASCADE,
+  term            TEXT,                 -- keyword rules only
+  metric          TEXT NOT NULL,        -- downloads | revenue | reviews | rating | position
+  direction       TEXT NOT NULL,        -- 'up' | 'down'
+  threshold       REAL NOT NULL,        -- percent for app metrics, places for a position
+  window_days     INTEGER NOT NULL DEFAULT 7,
+  created_at      TEXT NOT NULL,
+  last_seen_value REAL
+);
+
+CREATE INDEX IF NOT EXISTS idx_alerts_app ON alerts (app_id);
+
 CREATE TABLE IF NOT EXISTS favorites (
   id         TEXT PRIMARY KEY,
   kind       TEXT NOT NULL,        -- 'app' | 'ad' | 'organic'

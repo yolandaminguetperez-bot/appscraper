@@ -210,3 +210,11 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       apps perdieron su histórico y la tabla seguía pareciendo llena. Upsert en
       sitio; 5.880 -> 73.500 posiciones. Hay check de regresión por cobertura
 
+## Funcionalidad nueva
+- [x] F1. Alertas: reglas por app y métrica (descargas, revenue, reseñas, rating)
+      con umbral y ventana, creadas desde la ficha con "Alert me", evaluadas
+      contra el histórico real en cada visita, página /dashboard/alerts con
+      "firing now" vs "watching", y contador en la barra lateral. No se guardan
+      filas de "disparado": una alerta es una pregunta a los datos, y guardar el
+      disparo se desincroniza de la métrica en cuanto hay un refresh
+

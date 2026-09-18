@@ -1,4 +1,5 @@
 import {
+  Bell,
   Building2,
   Flame,
   Globe,
@@ -29,6 +30,7 @@ const registry: Record<string, LucideIcon> = {
   target: Target,
   mcp: Building2,
   globe: Globe,
+  bell: Bell,
 };
 
 export function NavIcon({ name, className }: { name: string; className?: string }) {
