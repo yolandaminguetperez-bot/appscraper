@@ -2,11 +2,13 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
+import { useFilterTransition } from "@/components/filters/filter-transition";
 
 export function useFilterParams() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
+  const { pending, run } = useFilterTransition();
 
   const set = useCallback(
     (patch: Record<string, string | string[] | null>) => {
@@ -18,15 +20,19 @@ export function useFilterParams() {
         else next.set(key, value);
       }
       next.delete("page");
-      router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+      run(() => router.replace(`${pathname}?${next.toString()}`, { scroll: false }));
     },
-    [params, pathname, router],
+    [params, pathname, router, run],
   );
 
-  const clearAll = useCallback(() => router.replace(pathname, { scroll: false }), [pathname, router]);
+  const clearAll = useCallback(
+    () => run(() => router.replace(pathname, { scroll: false })),
+    [pathname, router, run],
+  );
 
   return {
     params,
+    pending,
     set,
     clearAll,
     get: (key: string) => params.get(key),

@@ -6,6 +6,7 @@ import { AppsTable } from "@/components/apps/apps-table";
 import { AppsGrid } from "@/components/apps/apps-grid";
 import { ViewToggle } from "@/components/apps/view-toggle";
 import { ActiveChips } from "@/components/filters/active-chips";
+import { PendingOverlay } from "@/components/filters/filter-transition";
 import { Pagination } from "@/components/ui/pagination";
 import { distinctCategories, distinctLanguages, metricsForApps, queryApps } from "@/lib/db/app-query";
 import { favoriteIds } from "@/lib/db/favorites";
@@ -52,6 +53,7 @@ export default async function AppsPage({
       <AppsFilterBar categories={distinctCategories()} languages={distinctLanguages()} />
       <ActiveChips chips={chips} />
 
+      <PendingOverlay>
       <div className="px-7 pt-4">
         {view === "grid" ? (
           <AppsGrid apps={result.apps} favorites={favorites} trends={trends} />
@@ -65,6 +67,7 @@ export default async function AppsPage({
           makeHref={(page) => `/dashboard/apps?${toQueryString(params, { page: String(page) })}`}
         />
       </div>
+      </PendingOverlay>
     </div>
   );
 }

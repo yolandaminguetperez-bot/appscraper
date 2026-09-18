@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { RefreshButton } from "@/components/layout/refresh-button";
+import { CommandPalette } from "@/components/command/command-palette";
 
 export function PageHeader({
   title,
@@ -17,6 +18,7 @@ export function PageHeader({
         {subtitle && <p className="mt-1 text-sm text-ink-muted">{subtitle}</p>}
       </div>
       <div className="flex items-center gap-2">
+        <CommandPalette />
         {actions}
         <RefreshButton />
       </div>

@@ -15,7 +15,8 @@
     "chart-check": "node scripts/chart-check.mjs",
     "screens": "node scripts/make-sample-screens.mjs",
     "shots-dark": "node scripts/shots-dark.mjs",
-    "stress": "node scripts/stress.mjs"
+    "stress": "node scripts/stress.mjs",
+    "ux-check": "node scripts/ux-check.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",

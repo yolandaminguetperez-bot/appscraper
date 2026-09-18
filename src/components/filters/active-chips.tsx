@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { useFilterParams } from "@/components/filters/use-filter-params";
+import { ClearFilters } from "@/components/filters/clear-filters";
 
 export type ActiveChip = { key: string; value?: string; label: string };
 
@@ -21,6 +22,7 @@ export function ActiveChips({ chips }: { chips: ActiveChip[] }) {
 
   return (
     <div className="flex flex-wrap gap-2 px-7 pb-1 pt-3">
+      <ClearFilters count={chips.length} />
       {chips.map((chip) => (
         <span
           key={`${chip.key}:${chip.value ?? ""}`}

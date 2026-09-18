@@ -4,6 +4,7 @@ import { FavoriteButton } from "@/components/ui/favorite-button";
 import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { IconSprite, SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
+import { SortableHeader } from "@/components/filters/sortable-header";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
@@ -41,15 +42,15 @@ export function AppsTable({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">
-            <th className="px-4 py-3 font-medium">App</th>
-            <th className="px-4 py-3 font-medium">Category</th>
-            <th className="px-4 py-3 text-right font-medium">Rating</th>
-            <th className="px-4 py-3 text-right font-medium">Reviews</th>
-            <th className="px-4 py-3 text-right font-medium">Downloads</th>
-            <th className="px-4 py-3 text-right font-medium">MRR</th>
-            <th className="px-4 py-3 font-medium">Revenue, 30d</th>
-            <th className="px-4 py-3 text-right font-medium">Revenue</th>
-            <th className="px-4 py-3 text-right font-medium">Released</th>
+            <SortableHeader label="App" sortKey="title" defaultKey="revenue" />
+            <th scope="col" className="px-4 py-3 font-medium">Category</th>
+            <SortableHeader label="Rating" sortKey="rating" align="right" defaultKey="revenue" />
+            <SortableHeader label="Reviews" sortKey="reviews" align="right" defaultKey="revenue" />
+            <SortableHeader label="Downloads" sortKey="downloads" align="right" defaultKey="revenue" />
+            <th scope="col" className="px-4 py-3 text-right font-medium">MRR</th>
+            <th scope="col" className="px-4 py-3 font-medium">Revenue, 30d</th>
+            <SortableHeader label="Revenue" sortKey="revenue" align="right" defaultKey="revenue" />
+            <SortableHeader label="Released" sortKey="released" align="right" defaultKey="revenue" />
             <th className="w-10 px-2 py-3" />
           </tr>
         </thead>
