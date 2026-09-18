@@ -5,12 +5,13 @@ import { Table2 } from "lucide-react";
 import { buildScale, areaPath, linePath, type Point } from "@/lib/chart-scale";
 import { cn } from "@/lib/cn";
 
-type Format = "money" | "count";
+type Format = "money" | "count" | "rating";
 
 const PLOT = { width: 720, height: 200 };
 const PAD = { left: 56, right: 60, top: 12, bottom: 26 };
 
 function formatValue(value: number, format: Format): string {
+  if (format === "rating") return value.toFixed(1);
   if (format === "money") {
     if (value === 0) return "$0";
     return `$${new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 1 }).format(value)}`;
@@ -19,6 +20,7 @@ function formatValue(value: number, format: Format): string {
 }
 
 function formatExact(value: number, format: Format): string {
+  if (format === "rating") return value.toFixed(2);
   const n = new Intl.NumberFormat("en-US").format(Math.round(value));
   return format === "money" ? `$${n}` : n;
 }
@@ -40,24 +42,30 @@ export function TrendChart({
   title,
   format = "count",
   subtitle,
+  aggregate = "sum",
+  scaleMax,
 }: {
   points: Point[];
   title: string;
   format?: Format;
   subtitle?: string;
+  /** Headline figure: a total for flow metrics, a mean for level metrics like rating. */
+  aggregate?: "sum" | "average";
+  /** Fixes the y-axis top, for bounded scales such as a 1–5 rating. */
+  scaleMax?: number;
 }) {
   const [hover, setHover] = useState<number | null>(null);
   const [showTable, setShowTable] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
 
   const { scale, area, line } = useMemo(() => {
-    const scale = buildScale(points, PLOT.width, PLOT.height);
+    const scale = buildScale(points, PLOT.width, PLOT.height, scaleMax);
     return {
       scale,
-      area: areaPath(points, PLOT.width, PLOT.height),
-      line: linePath(points, PLOT.width, PLOT.height),
+      area: areaPath(points, PLOT.width, PLOT.height, scaleMax),
+      line: linePath(points, PLOT.width, PLOT.height, scaleMax),
     };
-  }, [points]);
+  }, [points, scaleMax]);
 
   if (points.length < 2) {
     return (
@@ -68,11 +76,21 @@ export function TrendChart({
     );
   }
 
-  const total = points.reduce((sum, p) => sum + p.value, 0);
+  const mean = (list: Point[]) =>
+    list.length === 0 ? 0 : list.reduce((sum, p) => sum + p.value, 0) / list.length;
+
   const latest = points[points.length - 1];
   const half = Math.floor(points.length / 2);
-  const recent = points.slice(half).reduce((s, p) => s + p.value, 0);
-  const prior = points.slice(0, half).reduce((s, p) => s + p.value, 0);
+  const headline =
+    aggregate === "average" ? mean(points) : points.reduce((sum, p) => sum + p.value, 0);
+  const recent =
+    aggregate === "average"
+      ? mean(points.slice(half))
+      : points.slice(half).reduce((s, p) => s + p.value, 0);
+  const prior =
+    aggregate === "average"
+      ? mean(points.slice(0, half))
+      : points.slice(0, half).reduce((s, p) => s + p.value, 0);
   const delta = prior > 0 ? (recent - prior) / prior : null;
 
   const active = hover === null ? null : points[hover];
@@ -108,7 +126,7 @@ export function TrendChart({
 
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 pt-3">
         {/* Proportional figures: tabular-nums loosens a headline number. */}
-        <p className="text-[32px] font-semibold leading-none">{formatExact(total, format)}</p>
+        <p className="text-[32px] font-semibold leading-none">{formatExact(headline, format)}</p>
         {delta !== null && (
           <p
             className={cn(
@@ -150,7 +168,7 @@ export function TrendChart({
             viewBox={`0 0 ${PLOT.width + PAD.left + PAD.right} ${PLOT.height + PAD.top + PAD.bottom}`}
             className="w-full"
             role="img"
-            aria-label={`${title}. ${formatExact(total, format)} in total over ${points.length} days.`}
+            aria-label={`${title}. ${formatExact(headline, format)} ${aggregate === "average" ? "on average" : "in total"} across ${points.length} points.`}
             onPointerMove={onMove}
             onPointerLeave={() => setHover(null)}
           >

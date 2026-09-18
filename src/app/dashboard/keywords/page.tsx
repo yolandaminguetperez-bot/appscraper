@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { KeywordSearch } from "@/components/keywords/keyword-search";
+import { AppIcon } from "@/components/ui/app-icon";
 import { keywordStats, suggestedKeywords } from "@/lib/db/keywords-query";
 import { compactNumber, money, rating } from "@/lib/format";
 import type { RawParams } from "@/lib/search-params";
@@ -76,6 +77,7 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
                   <span className="w-6 text-right text-[13px] tabular-nums text-ink-faint">
                     {index + 1}
                   </span>
+                  <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-9" />
                   <div className="min-w-0 flex-1">
                     <Link
                       href={`/dashboard/apps/${encodeURIComponent(app.id)}`}

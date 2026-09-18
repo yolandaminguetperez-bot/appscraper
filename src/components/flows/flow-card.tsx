@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Flow } from "@/lib/db/flows-query";
 import { ScreenStrip } from "@/components/flows/screen-strip";
+import { AppIcon } from "@/components/ui/app-icon";
 import { compactNumber, daysAgo, money } from "@/lib/format";
 
 /** A flow reads as a filmstrip: the order of screens is the thing worth studying. */
@@ -8,7 +9,8 @@ export function FlowCard({ flow }: { flow: Flow }) {
   return (
     <article className="rounded-2xl border border-line bg-surface p-4">
       <header className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <AppIcon id={flow.app.id} title={flow.app.title} iconUrl={flow.app.iconUrl} className="size-10" />
+        <div className="min-w-0 flex-1">
           <Link
             href={`/dashboard/apps/${encodeURIComponent(flow.appId)}`}
             className="block truncate font-medium hover:text-accent-ink"

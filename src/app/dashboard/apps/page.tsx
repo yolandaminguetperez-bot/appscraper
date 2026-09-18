@@ -5,7 +5,7 @@ import { AppsFilterBar } from "@/components/apps/apps-filter-bar";
 import { AppsTable } from "@/components/apps/apps-table";
 import { ActiveChips } from "@/components/filters/active-chips";
 import { Pagination } from "@/components/ui/pagination";
-import { distinctCategories, distinctLanguages, queryApps } from "@/lib/db/app-query";
+import { distinctCategories, distinctLanguages, metricsForApps, queryApps } from "@/lib/db/app-query";
 import { favoriteIds } from "@/lib/db/favorites";
 import { describeAppFilters, parseAppFilters, toQueryString, type RawParams } from "@/lib/search-params";
 
@@ -20,6 +20,7 @@ export default async function AppsPage({
   const filters = parseAppFilters(params);
   const result = queryApps(filters);
   const chips = describeAppFilters(params);
+  const trends = metricsForApps(result.apps.map((app) => app.id));
 
   return (
     <div className="pb-12">
@@ -45,7 +46,7 @@ export default async function AppsPage({
       <ActiveChips chips={chips} />
 
       <div className="px-7 pt-4">
-        <AppsTable apps={result.apps} favorites={favoriteIds("app")} />
+        <AppsTable apps={result.apps} favorites={favoriteIds("app")} trends={trends} />
         <Pagination
           page={result.page}
           pages={result.pages}

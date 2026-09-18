@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Apple, Play, Star } from "lucide-react";
 import type { App } from "@/lib/types";
 import { FavoriteButton } from "@/components/ui/favorite-button";
+import { AppIcon } from "@/components/ui/app-icon";
+import { MiniChart } from "@/components/charts/mini-chart";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
@@ -16,7 +18,15 @@ function StoreBadge({ store }: { store: App["store"] }) {
   );
 }
 
-export function AppsTable({ apps, favorites }: { apps: App[]; favorites: Set<string> }) {
+export function AppsTable({
+  apps,
+  favorites,
+  trends,
+}: {
+  apps: App[];
+  favorites: Set<string>;
+  trends?: Map<string, number[]>;
+}) {
   if (apps.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-12 text-center">
@@ -37,6 +47,7 @@ export function AppsTable({ apps, favorites }: { apps: App[]; favorites: Set<str
             <th className="px-4 py-3 text-right font-medium">Reviews</th>
             <th className="px-4 py-3 text-right font-medium">Downloads</th>
             <th className="px-4 py-3 text-right font-medium">MRR</th>
+            <th className="px-4 py-3 font-medium">Revenue, 30d</th>
             <th className="px-4 py-3 text-right font-medium">Revenue</th>
             <th className="px-4 py-3 text-right font-medium">Released</th>
             <th className="w-10 px-2 py-3" />
@@ -47,6 +58,7 @@ export function AppsTable({ apps, favorites }: { apps: App[]; favorites: Set<str
             <tr key={app.id} className="border-b border-line last:border-0 hover:bg-surface-muted/40">
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
+                  <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-9" />
                   <StoreBadge store={app.store} />
                   <div className="min-w-0">
                     <Link
@@ -69,6 +81,12 @@ export function AppsTable({ apps, favorites }: { apps: App[]; favorites: Set<str
               <td className="px-4 py-3 text-right tabular-nums">{compactNumber(app.ratingCount)}</td>
               <td className="px-4 py-3 text-right tabular-nums">{compactNumber(app.estDownloads)}</td>
               <td className="px-4 py-3 text-right tabular-nums">{money(app.estMrr)}</td>
+              <td className="px-4 py-2">
+                <MiniChart
+                  values={trends?.get(app.id) ?? []}
+                  label={`Revenue trend for ${app.title}`}
+                />
+              </td>
               <td className="px-4 py-3 text-right tabular-nums">{money(app.estRevenue)}</td>
               <td className="px-4 py-3 text-right text-[13px] text-ink-muted">{daysAgo(app.releasedAt)}</td>
               <td className="px-2 py-3">

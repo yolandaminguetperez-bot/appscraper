@@ -170,3 +170,29 @@ export function distinctLanguages(): string[] {
     .all() as { primary_language: string }[];
   return rows.map((r) => r.primary_language);
 }
+
+/** Daily series for many apps at once, so a table of rows costs one query. */
+export function metricsForApps(
+  ids: string[],
+  { days = 30, column = "est_revenue" }: { days?: number; column?: "est_revenue" | "est_downloads" } = {},
+): Map<string, number[]> {
+  const series = new Map<string, number[]>();
+  if (ids.length === 0) return series;
+
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+  const rows = db()
+    .prepare(
+      `SELECT app_id, day, ${column} AS value FROM app_metrics
+       WHERE day >= ? AND app_id IN (${ids.map(() => "?").join(",")})
+       ORDER BY app_id, day ASC`,
+    )
+    .all(since, ...ids) as { app_id: string; value: number | null }[];
+
+  for (const row of rows) {
+    const list = series.get(row.app_id) ?? [];
+    list.push(row.value ?? 0);
+    series.set(row.app_id, list);
+  }
+
+  return series;
+}

@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/layout/page-header";
 import { AppsTable } from "@/components/apps/apps-table";
 import { favoriteApps, favoriteIds } from "@/lib/db/favorites";
+import { metricsForApps } from "@/lib/db/app-query";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +12,11 @@ export default async function FavoriteAppsPage() {
     <div className="pb-12">
       <PageHeader title="Favorite apps" subtitle={`${apps.length} saved`} />
       <div className="px-7 pt-5">
-        <AppsTable apps={apps} favorites={favoriteIds("app")} />
+        <AppsTable
+          apps={apps}
+          favorites={favoriteIds("app")}
+          trends={metricsForApps(apps.map((app) => app.id))}
+        />
       </div>
     </div>
   );

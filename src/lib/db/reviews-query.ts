@@ -179,3 +179,22 @@ export function appsWithReviews(limit = 200): App[] {
     .all(limit) as Row[];
   return rows.map(rowToApp);
 }
+
+/** Average rating per week for the current filter, for the trend chart. */
+export function ratingOverTime(f: ReviewFilters = {}): { day: string; value: number }[] {
+  const where = buildWhere(f);
+
+  const rows = db()
+    .prepare(
+      `SELECT substr(r.posted_at, 1, 10) AS day, AVG(r.rating) AS avg_rating
+       FROM reviews r JOIN apps a ON a.id = r.app_id
+       ${where.sql}
+       GROUP BY substr(r.posted_at, 1, 7)
+       ORDER BY day ASC`,
+    )
+    .all(...where.params) as { day: string; avg_rating: number }[];
+
+  return rows
+    .filter((row) => row.day && Number.isFinite(row.avg_rating))
+    .map((row) => ({ day: row.day, value: Number(row.avg_rating.toFixed(2)) }));
+}

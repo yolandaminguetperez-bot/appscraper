@@ -4,7 +4,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ActiveChips } from "@/components/filters/active-chips";
 import { ReviewsFilterBar } from "@/components/reviews/reviews-filter-bar";
 import { Pagination } from "@/components/ui/pagination";
-import { queryReviews, summarizeReviews } from "@/lib/db/reviews-query";
+import { queryReviews, ratingOverTime, summarizeReviews } from "@/lib/db/reviews-query";
+import { TrendChart } from "@/components/charts/trend-chart";
 import { daysAgo } from "@/lib/format";
 import {
   describeReviewFilters,
@@ -28,6 +29,7 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
   const result = queryReviews(filters);
   const chips = describeReviewFilters(params);
   const allTopics = summarizeReviews({}).topics.map((t) => t.topic);
+  const ratingTrend = ratingOverTime(filters);
 
   const sentimentTotal =
     summary.sentiment.positive + summary.sentiment.neutral + summary.sentiment.negative || 1;
@@ -110,6 +112,17 @@ export default async function ReviewsPage({ searchParams }: { searchParams: Prom
             )}
           </ul>
         </section>
+      </div>
+
+      <div className="px-7 pt-4">
+        <TrendChart
+          title="Average rating over time"
+          subtitle="Monthly mean of the reviews matching these filters."
+          points={ratingTrend}
+          format="rating"
+          aggregate="average"
+          scaleMax={5}
+        />
       </div>
 
       <div className="px-7 pt-4">

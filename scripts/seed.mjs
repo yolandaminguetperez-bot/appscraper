@@ -129,6 +129,7 @@ db.transaction(() => {
     const dailyRevenue = app.est_mrr / 30.44;
     const drift = 0.994 + rnd() * 0.012; // <1 shrinking, >1 growing
     const weekendLift = 0.85 + rnd() * 0.4;
+    let rank = between(1, 320);
 
     for (let d = 0; d < 90; d++) {
       const date = new Date(Date.now() - d * 86400000);
@@ -141,11 +142,13 @@ db.transaction(() => {
 
       insertMetric.run({
         app_id: app.id, day, rating: app.rating, rating_count: Math.max(0, Math.round(ratingCount)),
-        rank: between(1, 400),
+        rank,
         est_downloads: Math.max(0, Math.round(dailyDownloads * shape)),
         est_revenue: Math.max(0, Math.round(dailyRevenue * shape)),
       });
       ratingCount *= 1 - (0.002 + rnd() * 0.01);
+      // Walk the rank a few places per day so the history reads as movement.
+      rank = Math.max(1, Math.min(400, rank + Math.round((rnd() - 0.5) * 14)));
     }
 
     if (rnd() < 0.45) {

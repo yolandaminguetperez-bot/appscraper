@@ -4,6 +4,7 @@ import { ArrowLeft, Star } from "lucide-react";
 import { getAppDetail } from "@/lib/db/app-detail";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { ScreenStrip } from "@/components/flows/screen-strip";
+import { AppIcon } from "@/components/ui/app-icon";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -45,11 +46,14 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
       </Link>
 
       <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-4">
+          <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-16" />
+          <div>
           <h1 className="text-[24px] font-semibold tracking-tight">{app.title}</h1>
           <p className="pt-1 text-sm text-ink-muted">
             {app.developer} · {app.category} · {app.store === "ios" ? "App Store" : "Google Play"}
           </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1.5 text-[13px]">

@@ -129,3 +129,29 @@ export function rankingCountries(): string[] {
   }[];
   return rows.map((r) => r.country);
 }
+
+/**
+ * Chart position history. Values are inverted (a lower rank is a better one), so
+ * the plotted line rises when the app climbs — the direction readers expect.
+ */
+export function rankHistory(ids: string[], days = 30): Map<string, number[]> {
+  const series = new Map<string, number[]>();
+  if (ids.length === 0) return series;
+
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+  const rows = db()
+    .prepare(
+      `SELECT app_id, rank FROM app_metrics
+       WHERE day >= ? AND rank IS NOT NULL AND app_id IN (${ids.map(() => "?").join(",")})
+       ORDER BY app_id, day ASC`,
+    )
+    .all(since, ...ids) as { app_id: string; rank: number }[];
+
+  for (const row of rows) {
+    const list = series.get(row.app_id) ?? [];
+    list.push(Math.max(0, 400 - row.rank));
+    series.set(row.app_id, list);
+  }
+
+  return series;
+}

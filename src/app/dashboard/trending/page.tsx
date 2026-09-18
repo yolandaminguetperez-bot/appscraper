@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { TrendTable } from "@/components/trends/trend-table";
 import { WindowTabs } from "@/components/trends/window-tabs";
 import { queryTrending } from "@/lib/db/trends-query";
+import { metricsForApps } from "@/lib/db/app-query";
 import type { RawParams } from "@/lib/search-params";
 
 export const dynamic = "force-dynamic";
@@ -18,6 +19,10 @@ export default async function TrendingPage({ searchParams }: { searchParams: Pro
   const windowDays = Number(raw) || 7;
 
   const rows = queryTrending({ windowDays });
+  const trends = metricsForApps(rows.map((row) => row.app.id), {
+    days: windowDays,
+    column: "est_downloads",
+  });
 
   return (
     <div className="pb-12">
@@ -27,7 +32,7 @@ export default async function TrendingPage({ searchParams }: { searchParams: Pro
         actions={<WindowTabs options={WINDOWS} />}
       />
       <div className="px-7 pt-5">
-        <TrendTable rows={rows} />
+        <TrendTable rows={rows} trends={trends} />
       </div>
     </div>
   );

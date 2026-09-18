@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
+import { AppIcon } from "@/components/ui/app-icon";
 import { RankingsControls } from "@/components/trends/rankings-controls";
-import { queryRankings, rankingCountries } from "@/lib/db/trends-query";
+import { queryRankings, rankHistory, rankingCountries } from "@/lib/db/trends-query";
+import { MiniChart } from "@/components/charts/mini-chart";
 import { compactNumber, money, rating } from "@/lib/format";
 import type { RawParams } from "@/lib/search-params";
 
@@ -21,6 +23,8 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
     chart: first(params, "chart", "free"),
     country: first(params, "country", "us"),
   });
+
+  const history = rankHistory(rows.map((row) => row.app.id));
 
   return (
     <div className="pb-12">
@@ -42,6 +46,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
                 <span className="w-7 shrink-0 text-right text-[15px] font-semibold tabular-nums text-ink-faint">
                   {position}
                 </span>
+                <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-10" />
                 <div className="min-w-0 flex-1">
                   <Link
                     href={`/dashboard/apps/${encodeURIComponent(app.id)}`}
@@ -53,6 +58,11 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
                     {app.developer} · {app.category}
                   </span>
                 </div>
+                <MiniChart
+                  values={history.get(app.id) ?? []}
+                  label={`Chart position history for ${app.title}`}
+                  className="h-8 w-20 shrink-0"
+                />
                 <span className="inline-flex shrink-0 items-center gap-1 text-[13px]">
                   <Star className="size-3.5 text-accent" />
                   {rating(app.rating)}

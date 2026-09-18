@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { AdGroup } from "@/lib/db/marketing-query";
 import { compactNumber, money } from "@/lib/format";
 import { FavoriteButton } from "@/components/ui/favorite-button";
+import { AppIcon } from "@/components/ui/app-icon";
 import { CreativeGrid, type CreativeWithApp } from "@/components/marketing/creative-grid";
 
 export function AdGroupCard({ group, favorites }: { group: AdGroup; favorites: Set<string> }) {
@@ -10,7 +11,8 @@ export function AdGroupCard({ group, favorites }: { group: AdGroup; favorites: S
   return (
     <article className="rounded-2xl border border-line bg-surface p-4">
       <header className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+        <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-10" />
+        <div className="min-w-0 flex-1">
           <Link
             href={`/dashboard/apps/${encodeURIComponent(app.id)}`}
             className="block truncate font-medium hover:text-accent-ink"
