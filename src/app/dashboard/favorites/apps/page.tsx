@@ -1,13 +1,17 @@
 import { PageHeader } from "@/components/layout/page-header";
+import { AppsTable } from "@/components/apps/apps-table";
+import { favoriteApps, favoriteIds } from "@/lib/db/favorites";
 
-export default function Page() {
+export const dynamic = "force-dynamic";
+
+export default async function FavoriteAppsPage() {
+  const apps = favoriteApps();
+
   return (
-    <div className="pb-10">
-      <PageHeader title="Favorite apps" subtitle="Apps you saved." />
-      <div className="px-7 py-10">
-        <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-10 text-center text-sm text-ink-muted">
-          Coming together — this view is being built.
-        </div>
+    <div className="pb-12">
+      <PageHeader title="Favorite apps" subtitle={`${apps.length} saved`} />
+      <div className="px-7 pt-5">
+        <AppsTable apps={apps} favorites={favoriteIds("app")} />
       </div>
     </div>
   );

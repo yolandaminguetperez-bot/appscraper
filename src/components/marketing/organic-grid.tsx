@@ -2,10 +2,11 @@ import Link from "next/link";
 import { Eye, Heart, MessageCircle, Play } from "lucide-react";
 import { compactNumber, daysAgo } from "@/lib/format";
 import type { OrganicPost } from "@/lib/db/marketing-query";
+import { FavoriteButton } from "@/components/ui/favorite-button";
 
 type Post = OrganicPost & { appTitle: string; appCategory: string | null };
 
-export function OrganicGrid({ posts }: { posts: Post[] }) {
+export function OrganicGrid({ posts, favorites }: { posts: Post[]; favorites: Set<string> }) {
   if (posts.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-12 text-center text-sm text-ink-muted">
@@ -24,12 +25,15 @@ export function OrganicGrid({ posts }: { posts: Post[] }) {
             <p className="mt-1.5 text-[11px] text-panel-ink-muted">{post.author}</p>
           </div>
           <div className="space-y-2 p-3">
-            <Link
-              href={`/dashboard/apps/${encodeURIComponent(post.appId)}`}
-              className="block truncate text-[13px] font-medium hover:text-accent-ink"
-            >
-              {post.appTitle}
-            </Link>
+            <div className="flex items-center justify-between gap-2">
+              <Link
+                href={`/dashboard/apps/${encodeURIComponent(post.appId)}`}
+                className="block truncate text-[13px] font-medium hover:text-accent-ink"
+              >
+                {post.appTitle}
+              </Link>
+              <FavoriteButton kind="organic" refId={post.id} initial={favorites.has(post.id)} />
+            </div>
             <div className="flex items-center gap-3 text-[11.5px] text-ink-muted">
               <span className="inline-flex items-center gap-1">
                 <Eye className="size-3" />

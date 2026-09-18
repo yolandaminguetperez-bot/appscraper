@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Apple, Play, Star } from "lucide-react";
 import type { App } from "@/lib/types";
+import { FavoriteButton } from "@/components/ui/favorite-button";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
@@ -15,7 +16,7 @@ function StoreBadge({ store }: { store: App["store"] }) {
   );
 }
 
-export function AppsTable({ apps }: { apps: App[] }) {
+export function AppsTable({ apps, favorites }: { apps: App[]; favorites: Set<string> }) {
   if (apps.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-12 text-center">
@@ -38,6 +39,7 @@ export function AppsTable({ apps }: { apps: App[] }) {
             <th className="px-4 py-3 text-right font-medium">MRR</th>
             <th className="px-4 py-3 text-right font-medium">Revenue</th>
             <th className="px-4 py-3 text-right font-medium">Released</th>
+            <th className="w-10 px-2 py-3" />
           </tr>
         </thead>
         <tbody>
@@ -69,6 +71,9 @@ export function AppsTable({ apps }: { apps: App[] }) {
               <td className="px-4 py-3 text-right tabular-nums">{money(app.estMrr)}</td>
               <td className="px-4 py-3 text-right tabular-nums">{money(app.estRevenue)}</td>
               <td className="px-4 py-3 text-right text-[13px] text-ink-muted">{daysAgo(app.releasedAt)}</td>
+              <td className="px-2 py-3">
+                <FavoriteButton kind="app" refId={app.id} initial={favorites.has(app.id)} />
+              </td>
             </tr>
           ))}
         </tbody>

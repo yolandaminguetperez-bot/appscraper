@@ -5,6 +5,7 @@ import { AdGroupCard, CreativeCard } from "@/components/marketing/ad-cards";
 import { Pagination } from "@/components/ui/pagination";
 import { distinctCategories, distinctLanguages } from "@/lib/db/app-query";
 import { queryAdGroups, queryCreatives } from "@/lib/db/marketing-query";
+import { favoriteIds } from "@/lib/db/favorites";
 import { describeAdFilters, parseAdFilters, toQueryString, type RawParams } from "@/lib/search-params";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,9 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
   const filters = parseAdFilters(params);
   const view = params.view === "ads" ? "ads" : "grouped";
   const chips = describeAdFilters(params);
+
+  const savedApps = favoriteIds("app");
+  const savedAds = favoriteIds("ad");
 
   const grouped = view === "grouped" ? queryAdGroups(filters) : null;
   const flat = view === "ads" ? queryCreatives(filters) : null;
@@ -38,7 +42,7 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
         {grouped && (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {grouped.groups.map((group) => (
-              <AdGroupCard key={group.app.id} group={group} />
+              <AdGroupCard key={group.app.id} group={group} favorites={savedApps} />
             ))}
           </div>
         )}
@@ -46,7 +50,7 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
         {flat && (
           <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
             {flat.creatives.map((creative) => (
-              <CreativeCard key={creative.id} creative={creative} />
+              <CreativeCard key={creative.id} creative={creative} saved={savedAds.has(creative.id)} />
             ))}
           </div>
         )}

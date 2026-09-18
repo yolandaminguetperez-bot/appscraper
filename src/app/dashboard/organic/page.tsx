@@ -5,6 +5,7 @@ import { OrganicGrid } from "@/components/marketing/organic-grid";
 import { Pagination } from "@/components/ui/pagination";
 import { distinctCategories } from "@/lib/db/app-query";
 import { distinctPlatforms, queryOrganic } from "@/lib/db/marketing-query";
+import { favoriteIds } from "@/lib/db/favorites";
 import {
   describeOrganicFilters,
   parseOrganicFilters,
@@ -27,7 +28,7 @@ export default async function OrganicPage({ searchParams }: { searchParams: Prom
       <ActiveChips chips={chips} />
 
       <div className="px-7 pt-4">
-        <OrganicGrid posts={result.posts} />
+        <OrganicGrid posts={result.posts} favorites={favoriteIds("organic")} />
         <Pagination
           page={result.page}
           pages={result.pages}

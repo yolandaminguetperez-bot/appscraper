@@ -6,6 +6,7 @@ import { AppsTable } from "@/components/apps/apps-table";
 import { ActiveChips } from "@/components/filters/active-chips";
 import { Pagination } from "@/components/ui/pagination";
 import { distinctCategories, distinctLanguages, queryApps } from "@/lib/db/app-query";
+import { favoriteIds } from "@/lib/db/favorites";
 import { describeAppFilters, parseAppFilters, toQueryString, type RawParams } from "@/lib/search-params";
 
 export const dynamic = "force-dynamic";
@@ -44,7 +45,7 @@ export default async function AppsPage({
       <ActiveChips chips={chips} />
 
       <div className="px-7 pt-4">
-        <AppsTable apps={result.apps} />
+        <AppsTable apps={result.apps} favorites={favoriteIds("app")} />
         <Pagination
           page={result.page}
           pages={result.pages}

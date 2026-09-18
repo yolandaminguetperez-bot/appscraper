@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Clock3, Film, Globe2, Image as ImageIcon } from "lucide-react";
 import type { AdGroup, Creative } from "@/lib/db/marketing-query";
 import { compactNumber, daysAgo, money } from "@/lib/format";
+import { FavoriteButton } from "@/components/ui/favorite-button";
 
 function CreativeThumb({ creative }: { creative: Creative }) {
   const Icon = creative.kind === "video" ? Film : ImageIcon;
@@ -17,7 +18,7 @@ function CreativeThumb({ creative }: { creative: Creative }) {
   );
 }
 
-export function AdGroupCard({ group }: { group: AdGroup }) {
+export function AdGroupCard({ group, favorites }: { group: AdGroup; favorites: Set<string> }) {
   const { app, creatives, total } = group;
 
   return (
@@ -32,9 +33,12 @@ export function AdGroupCard({ group }: { group: AdGroup }) {
           </Link>
           <p className="truncate text-[12.5px] text-ink-muted">{app.developer}</p>
         </div>
-        <span className="shrink-0 rounded-full bg-accent-soft px-2.5 py-1 text-[11.5px] font-medium text-accent-ink">
-          {total} {total === 1 ? "ad" : "ads"}
-        </span>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span className="rounded-full bg-accent-soft px-2.5 py-1 text-[11.5px] font-medium text-accent-ink">
+            {total} {total === 1 ? "ad" : "ads"}
+          </span>
+          <FavoriteButton kind="app" refId={app.id} initial={favorites.has(app.id)} />
+        </div>
       </header>
 
       <dl className="mt-3 grid grid-cols-3 gap-2 text-[12px]">
@@ -63,19 +67,24 @@ export function AdGroupCard({ group }: { group: AdGroup }) {
 
 export function CreativeCard({
   creative,
+  saved,
 }: {
   creative: Creative & { appTitle: string; appDeveloper: string | null };
+  saved: boolean;
 }) {
   return (
     <article className="overflow-hidden rounded-2xl border border-line bg-surface">
       <CreativeThumb creative={creative} />
       <div className="space-y-1.5 p-3">
-        <Link
-          href={`/dashboard/apps/${encodeURIComponent(creative.appId)}`}
-          className="block truncate text-[13px] font-medium hover:text-accent-ink"
-        >
-          {creative.appTitle}
-        </Link>
+        <div className="flex items-center justify-between gap-2">
+          <Link
+            href={`/dashboard/apps/${encodeURIComponent(creative.appId)}`}
+            className="block truncate text-[13px] font-medium hover:text-accent-ink"
+          >
+            {creative.appTitle}
+          </Link>
+          <FavoriteButton kind="ad" refId={creative.id} initial={saved} />
+        </div>
         <p className="line-clamp-2 text-[12px] text-ink-muted">{creative.body}</p>
         <div className="flex items-center justify-between pt-1 text-[11.5px] text-ink-faint">
           <span className="inline-flex items-center gap-1">
