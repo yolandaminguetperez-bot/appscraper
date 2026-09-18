@@ -222,6 +222,25 @@
   .chip.down { background: var(--neg-soft); color: var(--neg); }
   .chip.flat { background: var(--surface-muted); color: var(--ink-faint); }
 
+  /* Under 720px the table is a sideways scroll of nine columns. The same rows
+     become cards instead: the phone gets a readable list, not a spreadsheet
+     seen through a letterbox. */
+  .cards { display: none; gap: 10px; }
+  .appcard { padding: 12px 14px; }
+  .appcard .top { display: flex; align-items: center; gap: 10px; }
+  .appcard img.ico { width: 38px; height: 38px; border-radius: 11px; flex: none; }
+  .appcard b { display: block; font-size: 14px; }
+  .appcard .sub { font-size: 11.5px; color: var(--ink-muted); }
+  .appcard dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 0; }
+  .appcard dt { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-faint); margin: 0; }
+  .appcard dd { margin: 2px 0 0; font-size: 14px; font-weight: 600; }
+  @media (max-width: 720px) {
+    .tablewrap { display: none; }
+    .cards { display: grid; }
+    h1 { font-size: 25px; }
+    .kpi dd { font-size: 18px; }
+  }
+
   .foot { margin-top: 38px; font-size: 12px; color: var(--ink-faint); border-top: 1px solid var(--line); padding-top: 16px; }
   .foot code { background: var(--surface-muted); border-radius: 5px; padding: 1px 5px; font-size: 11.5px; }
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
@@ -286,6 +305,8 @@
         <tbody id="rows"></tbody>
       </table>
     </div>
+
+    <div class="cards" id="cards"></div>
   </section>
 
   <section>
@@ -403,6 +424,7 @@ function spark(values) {
 /* ---------- table ---------- */
 const state = { q: "", cat: "", store: "all", sort: "revenue", selected: new Set(), country: null };
 const rowsEl = document.getElementById("rows");
+const cardsEl = document.getElementById("cards");
 const countEl = document.getElementById("tablecount");
 
 const catSelect = document.getElementById("cat");
@@ -446,6 +468,34 @@ function renderTable() {
   countEl.textContent =
     `${fmtInt.format(apps.length)} de ${fmtInt.format(DATA.apps.length)} apps en el snapshot` +
     (state.cat || state.q || state.store !== "all" ? " · filtrado" : "");
+
+  cardsEl.innerHTML = apps
+    .map(
+      (a) => `<article class="card appcard" data-id="${a.id}">
+        <div class="top">
+          <button class="check" role="checkbox" aria-checked="${state.selected.has(a.id)}"
+            aria-label="Seleccionar ${a.title}" data-select="${a.id}">
+            <svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg>
+          </button>
+          <img class="ico" src="${icon(a.id)}" alt="" width="38" height="38">
+          <span style="min-width:0;flex:1">
+            <b>${a.title}</b>
+            <span class="sub">${a.developer ?? "—"} · ${a.category ?? "—"}</span>
+          </span>
+          <button class="iconbtn" data-look="${a.id}" aria-label="Vista rápida de ${a.title}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 5h18v14H3z"/><path d="M15 5v14"/>
+            </svg>
+          </button>
+        </div>
+        <dl>
+          <div><dt>Lifetime</dt><dd class="num">${money(a.revenue)}</dd></div>
+          <div><dt>MRR</dt><dd class="num">${money(a.mrr)}</dd></div>
+          <div><dt>Descargas</dt><dd class="num">${compact(a.downloads)}</dd></div>
+        </dl>
+      </article>`,
+    )
+    .join("");
 
   rowsEl.innerHTML = apps
     .map(
@@ -516,13 +566,17 @@ document.getElementById("reset").addEventListener("click", () => {
   renderTable();
 });
 
-rowsEl.addEventListener("click", (event) => {
+function onListClick(event) {
   const select = event.target.closest("[data-select]");
   if (select) {
     const id = select.dataset.select;
     if (state.selected.has(id)) state.selected.delete(id);
     else state.selected.add(id);
-    select.setAttribute("aria-checked", String(state.selected.has(id)));
+    // Both views render the same rows, so the other one has a checkbox for
+    // this app too and it must not disagree.
+    document
+      .querySelectorAll(`[data-select="${CSS.escape(id)}"]`)
+      .forEach((box) => box.setAttribute("aria-checked", String(state.selected.has(id))));
     renderSelection();
     return;
   }
@@ -535,7 +589,10 @@ rowsEl.addEventListener("click", (event) => {
   }
   const look = event.target.closest("[data-look]");
   if (look) openDrawer(look.dataset.look);
-});
+}
+
+rowsEl.addEventListener("click", onListClick);
+cardsEl.addEventListener("click", onListClick);
 
 /* ---------- selection ---------- */
 const selbar = document.getElementById("selbar");
