@@ -250,4 +250,9 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       empujaban los flujos —el motivo de la página— casi una pantalla hacia
       abajo. Ahora se pliegan (se abren solos si hay filtro activo, para que un
       filtro no pueda esconderse detrás de "+14 more")
+- [x] D13. Auditadas TODAS las distribuciones del seeder, no solo la que se veía
+      mal. Otras dos tenían el mismo defecto: seguidores de creador (898.6K,
+      898.1K, 898.0K... ratio max/mediana = 2.0) y días de anuncio en marcha
+      (300, 299, 299, 299). Ambas log-uniformes ahora: seguidores 97K->7.8M,
+      anuncios 33->533 días. Descargas, MRR y reseñas ya estaban bien
 

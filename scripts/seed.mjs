@@ -243,7 +243,10 @@ db.transaction(() => {
     if (rnd() < 0.45) {
       const n = between(1, 6);
       for (let k = 0; k < n; k++) {
-        const first = between(5, 300);
+        // Log-uniform: most creatives are pulled within weeks and a few run for
+        // more than a year. Drawing uniformly made "longest running" a wall of
+        // 299s, which tells you nothing about which ad is actually a winner.
+        const first = Math.round(10 ** (0.3 + rnd() * 2.43));
         // Poster and clip must be the same take, or the frame jumps on play.
         const clip = pick(CLIPS);
         insertCreative.run({
@@ -274,7 +277,10 @@ db.transaction(() => {
         insertOrganic.run({
           id: `${app.id}:org:${k}`, app_id: app.id, platform: pick(PLATFORMS),
           author: `@${pick(NOUN).toLowerCase()}${between(10, 99)}`,
-          author_followers: between(1200, 900_000),
+          // Same shape as views: creator audiences are a power law, and drawing
+          // uniformly put every top creator within a thousand followers of the
+          // ceiling — 898.6K, 898.1K, 898.0K, indistinguishable once formatted.
+          author_followers: Math.round(10 ** (3.1 + rnd() * 3.8)),
           caption: pick(CAPTIONS).replace("{app}", app.title),
           post_url: null,
           thumb_url: clipUrl(clip, "jpg"),
