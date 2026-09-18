@@ -5,6 +5,10 @@ import { getAppDetail } from "@/lib/db/app-detail";
 import { TrendChart } from "@/components/charts/trend-chart";
 import { ScreenStrip } from "@/components/flows/screen-strip";
 import { AppIcon } from "@/components/ui/app-icon";
+import { CreativeGrid } from "@/components/marketing/creative-grid";
+import { OrganicGrid } from "@/components/marketing/organic-grid";
+import { FavoriteButton } from "@/components/ui/favorite-button";
+import { favoriteIds } from "@/lib/db/favorites";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +37,15 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
   if (!detail) notFound();
 
   const { app, history, reviews, creatives, organic, flowScreens, ratingBreakdown } = detail;
+  const saved = favoriteIds("app");
+
+  const badges = [
+    app.category,
+    app.store === "ios" ? "App Store" : "Google Play",
+    app.price > 0 ? `$${app.price.toFixed(2)}` : "Free",
+    app.hasIap ? "In-app purchases" : null,
+    app.contentRating,
+  ].filter((value): value is string => Boolean(value));
   const totalReviews = ratingBreakdown.reduce((sum, row) => sum + row.count, 0);
 
   return (
@@ -49,13 +62,22 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
         <div className="flex items-center gap-4">
           <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-16" />
           <div>
-          <h1 className="text-[24px] font-semibold tracking-tight">{app.title}</h1>
-          <p className="pt-1 text-sm text-ink-muted">
-            {app.developer} · {app.category} · {app.store === "ios" ? "App Store" : "Google Play"}
-          </p>
+            <h1 className="text-[26px] font-semibold tracking-tight">{app.title}</h1>
+            <p className="pt-0.5 text-sm text-ink-muted">{app.developer}</p>
+            <ul className="flex flex-wrap gap-1.5 pt-2.5">
+              {badges.map((badge) => (
+                <li
+                  key={badge}
+                  className="rounded-full bg-surface-muted px-2.5 py-1 text-[11.5px] text-ink-muted"
+                >
+                  {badge}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <FavoriteButton kind="app" refId={app.id} initial={saved.has(app.id)} />
           <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-muted px-3 py-1.5 text-[13px]">
             <Star className="size-3.5 text-accent" />
             {rating(app.rating)} · {compactNumber(app.ratingCount)} reviews
@@ -180,16 +202,10 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
             {creatives.length === 0 ? (
               <p className="text-[13px] text-ink-muted">Not running paid creatives.</p>
             ) : (
-              <ul className="space-y-2">
-                {creatives.map((creative) => (
-                  <li key={creative.id} className="rounded-xl bg-surface-muted px-3 py-2">
-                    <p className="line-clamp-2 text-[12.5px]">{creative.headline}</p>
-                    <p className="pt-0.5 text-[11.5px] text-ink-faint">
-                      {creative.kind} · {creative.daysRunning}d running
-                    </p>
-                  </li>
-                ))}
-              </ul>
+              <CreativeGrid
+                creatives={creatives.map((creative) => ({ ...creative, appTitle: app.title }))}
+                columns="grid grid-cols-2 gap-2.5"
+              />
             )}
           </Section>
 
@@ -197,17 +213,21 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
             {organic.length === 0 ? (
               <p className="text-[13px] text-ink-muted">No creator videos on file.</p>
             ) : (
-              <ul className="space-y-2">
-                {organic.map((post) => (
-                  <li
-                    key={post.id}
-                    className="flex items-center justify-between rounded-xl bg-surface-muted px-3 py-2 text-[12.5px]"
-                  >
-                    <span className="truncate">{post.author}</span>
-                    <span className="shrink-0 text-ink-muted">{compactNumber(post.views)} views</span>
-                  </li>
-                ))}
-              </ul>
+              <OrganicGrid
+                posts={organic.map((post) => ({
+                  ...post,
+                  appId: app.id,
+                  appTitle: app.title,
+                  appCategory: app.category ?? null,
+                  appIconUrl: app.iconUrl ?? null,
+                  comments: null,
+                  authorFollowers: null,
+                  postUrl: null,
+                  postedAt: null,
+                }))}
+                favorites={new Set<string>()}
+                columns="grid grid-cols-2 gap-2.5"
+              />
             )}
           </Section>
         </div>

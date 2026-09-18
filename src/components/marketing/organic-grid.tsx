@@ -18,7 +18,15 @@ const PLATFORM_LABEL: Record<string, string> = {
   youtube: "YouTube",
 };
 
-export function OrganicGrid({ posts, favorites }: { posts: Post[]; favorites: Set<string> }) {
+export function OrganicGrid({
+  posts,
+  favorites,
+  columns = "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5",
+}: {
+  posts: Post[];
+  favorites: Set<string>;
+  columns?: string;
+}) {
   const [open, setOpen] = useState<Post | null>(null);
 
   if (posts.length === 0) {
@@ -31,7 +39,7 @@ export function OrganicGrid({ posts, favorites }: { posts: Post[]; favorites: Se
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+      <div className={columns}>
         {posts.map((post) => (
           <article
             key={post.id}

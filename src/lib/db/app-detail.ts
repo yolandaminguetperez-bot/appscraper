@@ -21,8 +21,32 @@ export type AppDetail = {
     body: string | null;
     postedAt: string | null;
   }[];
-  creatives: { id: string; headline: string | null; daysRunning: number | null; kind: string }[];
-  organic: { id: string; author: string | null; views: number | null; platform: string }[];
+  creatives: {
+    id: string;
+    appId: string;
+    headline: string | null;
+    body: string | null;
+    cta: string | null;
+    daysRunning: number | null;
+    kind: string;
+    network: string;
+    landingUrl: string | null;
+    mediaUrl: string | null;
+    thumbUrl: string | null;
+    firstSeen: string | null;
+    lastSeen: string | null;
+    countries: string[];
+  }[];
+  organic: {
+    id: string;
+    author: string | null;
+    views: number | null;
+    likes: number | null;
+    platform: string;
+    caption: string | null;
+    mediaUrl: string | null;
+    thumbUrl: string | null;
+  }[];
   flowScreens: { id: string; position: number; screenType: string | null; imageUrl: string | null }[];
   ratingBreakdown: { stars: number; count: number }[];
 };
@@ -66,27 +90,51 @@ export function getAppDetail(id: string): AppDetail | null {
   const creatives = (
     db()
       .prepare(
-        "SELECT id, headline, days_running, kind FROM creatives WHERE app_id = ? ORDER BY days_running DESC LIMIT 12",
+        `SELECT id, app_id, headline, body, cta, days_running, kind, network, landing_url,
+                media_url, thumb_url, first_seen, last_seen, countries_json
+         FROM creatives WHERE app_id = ? ORDER BY days_running DESC LIMIT 12`,
       )
       .all(id) as Row[]
   ).map((row) => ({
     id: row.id as string,
+    appId: row.app_id as string,
     headline: (row.headline as string) ?? null,
+    body: (row.body as string) ?? null,
+    cta: (row.cta as string) ?? null,
     daysRunning: (row.days_running as number) ?? null,
     kind: row.kind as string,
+    network: (row.network as string) ?? "meta",
+    landingUrl: (row.landing_url as string) ?? null,
+    mediaUrl: (row.media_url as string) ?? null,
+    thumbUrl: (row.thumb_url as string) ?? null,
+    firstSeen: (row.first_seen as string) ?? null,
+    lastSeen: (row.last_seen as string) ?? null,
+    countries: (() => {
+      try {
+        const parsed = JSON.parse((row.countries_json as string) ?? "[]");
+        return Array.isArray(parsed) ? (parsed as string[]) : [];
+      } catch {
+        return [];
+      }
+    })(),
   }));
 
   const organic = (
     db()
       .prepare(
-        "SELECT id, author, views, platform FROM organic_posts WHERE app_id = ? ORDER BY views DESC LIMIT 12",
+        `SELECT id, author, views, likes, platform, caption, media_url, thumb_url
+         FROM organic_posts WHERE app_id = ? ORDER BY views DESC LIMIT 12`,
       )
       .all(id) as Row[]
   ).map((row) => ({
     id: row.id as string,
     author: (row.author as string) ?? null,
     views: (row.views as number) ?? null,
+    likes: (row.likes as number) ?? null,
     platform: row.platform as string,
+    caption: (row.caption as string) ?? null,
+    mediaUrl: (row.media_url as string) ?? null,
+    thumbUrl: (row.thumb_url as string) ?? null,
   }));
 
   const flowScreens = (
