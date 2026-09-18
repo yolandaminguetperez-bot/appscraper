@@ -31,7 +31,7 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 18. Páginas MCP y API (docs + endpoints reales)
 - [ ] 19. Auth simple (cuenta local) y perfil de usuario
 - [ ] 20. Jobs de refresco de datos + botón refresh en cada página
-- [ ] 21. Landing pública
+- [x] 21. Landing pública
 - [x] 22. (parcial)  Pulido responsive, estados vacíos, loading skeletons
 - [ ] 23. Tests + README
 
