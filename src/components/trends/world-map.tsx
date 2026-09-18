@@ -1,5 +1,6 @@
 import Link from "next/link";
 import world from "@/lib/geo/world.json";
+import { MapOverlay, type MapShape } from "@/components/trends/map-overlay";
 
 export type MapValue = {
   /** ISO 3166-1 alpha-2, lowercase. */
@@ -52,6 +53,25 @@ export function WorldMap({
   const max = Math.max(...scaled.map((row) => row.value));
   const byCode = new Map(values.map((row) => [row.code, row]));
 
+  // Only serializable data crosses into the client overlay: passing a render
+  // function here is what "Functions cannot be passed to Client Components"
+  // means in practice.
+  const shapes: MapShape[] = world.countries
+    .filter((country) => byCode.has(country.code))
+    .map((country) => {
+      const row = byCode.get(country.code)!;
+      const isMarked = country.code === marked;
+      return {
+        code: country.code,
+        d: country.d,
+        fill: isMarked ? "var(--accent-soft)" : STEPS[bucketOf(row.value, min, max)],
+        stroke: isMarked ? "var(--accent-ink)" : "var(--surface)",
+        strokeWidth: isMarked ? 3 : 1,
+        label: row.label,
+        href: row.href,
+      };
+    });
+
   return (
     <section className="surface-card p-5">
       <h2 className="text-[15px] font-semibold">{title}</h2>
@@ -61,41 +81,10 @@ export function WorldMap({
           serialised into the HTML and again into the RSC payload, ~156KB per
           view, for geometry that never changes. Only the countries with data
           stay inline, where they can be hovered and clicked. */}
-      <div className="relative mt-4">
+      <div data-map className="relative mt-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/api/world-map" alt="" width={world.width} height={world.height} className="w-full" />
-        <svg
-          viewBox={`0 0 ${world.width} ${world.height}`}
-          className="absolute inset-0 h-full w-full"
-          role="img"
-          aria-label={title}
-        >
-          {world.countries
-            .filter((country) => byCode.has(country.code))
-            .map((country) => {
-              const row = byCode.get(country.code)!;
-              const isMarked = country.code === marked;
-              const shape = (
-                <path
-                  d={country.d}
-                  fill={isMarked ? "var(--accent-soft)" : STEPS[bucketOf(row.value, min, max)]}
-                  stroke={isMarked ? "var(--accent-ink)" : "var(--surface)"}
-                  strokeWidth={isMarked ? 3 : 1}
-                  className="transition-opacity hover:opacity-75"
-                >
-                  <title>{row.label}</title>
-                </path>
-              );
-
-              return row.href ? (
-                <Link key={country.code} href={row.href}>
-                  {shape}
-                </Link>
-              ) : (
-                <g key={country.code}>{shape}</g>
-              );
-            })}
-        </svg>
+        <MapOverlay width={world.width} height={world.height} shapes={shapes} ariaLabel={title} />
       </div>
 
       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-4 text-[11.5px] text-ink-muted">

@@ -205,6 +205,22 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   check("escape closes quick look", (await page.locator("[role=dialog]").count()) === 0, "");
 }
 
+// The map has a real hover tooltip, not the browser's one-second <title>.
+{
+  await page.goto(`${BASE}/dashboard/rankings`, { waitUntil: "load" });
+  await page.waitForTimeout(800);
+  const shape = page.locator('svg a[href*="country="] path').first();
+  const box = await shape.boundingBox();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(300);
+  const tip = await page.locator("[role=status]").count();
+  check("map shows a tooltip on hover", tip === 1, await page.locator("[role=status]").first().textContent());
+
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(300);
+  check("map tooltip clears on leave", (await page.locator("[role=status]").count()) === 0, "");
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

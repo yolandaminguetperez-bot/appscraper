@@ -157,4 +157,7 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       filtros ni scroll. Carga por fetch al detalle de la API, se cierra con
       Escape o clic fuera, y limpia los datos al cambiar de app para no enseñar
       las cifras de una bajo el nombre de otra
+- [x] I3. Tooltip real en los mapas (seguía al puntero, aparece también al
+      tabular con el teclado) en lugar del <title> nativo, que tarda un segundo,
+      no se puede estilar y no existe para teclado
 
