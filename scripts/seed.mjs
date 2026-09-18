@@ -121,6 +121,14 @@ const insertFlow = db.prepare(`INSERT OR REPLACE INTO flows (id, app_id, kind, t
 const insertScreen = db.prepare(`INSERT OR REPLACE INTO flow_screens (id, flow_id, position, screen_type, image_url, note) VALUES (@id, @flow_id, @position, @screen_type, @image_url, @note)`);
 const insertReview = db.prepare(`INSERT OR REPLACE INTO reviews (id, app_id, author, rating, title, body, version, country, posted_at, sentiment, topics_json) VALUES (@id, @app_id, @author, @rating, @title, @body, @version, @country, @posted_at, @sentiment, @topics_json)`);
 const insertRanking = db.prepare(`INSERT OR REPLACE INTO rankings (store, chart, country, category, position, app_id, day) VALUES (@store, @chart, @country, @category, @position, @app_id, @day)`);
+const insertKeyword = db.prepare(`INSERT OR REPLACE INTO keywords
+  (id, term, store, country, volume, difficulty, checked_at)
+  VALUES (@id, @term, @store, @country, @volume, @difficulty, @checked_at)`);
+const insertKeywordRank = db.prepare(`INSERT OR REPLACE INTO keyword_ranks
+  (keyword_id, app_id, position, day) VALUES (@keyword_id, @app_id, @position, @day)`);
+const insertCountry = db.prepare(`INSERT OR REPLACE INTO app_countries
+  (app_id, country, downloads, revenue, share) VALUES (@app_id, @country, @downloads, @revenue, @share)`);
+
 const insertMetric = db.prepare(`INSERT OR REPLACE INTO app_metrics (app_id, day, rating, rating_count, rank, est_downloads, est_revenue) VALUES (@app_id, @day, @rating, @rating_count, @rank, @est_downloads, @est_revenue)`);
 
 const today = new Date().toISOString().slice(0, 10);
@@ -159,6 +167,54 @@ db.transaction(() => {
       ratingCount *= 1 - (0.002 + rnd() * 0.01);
       // Walk the rank a few places per day so the history reads as movement.
       rank = Math.max(1, Math.min(400, rank + Math.round((rnd() - 0.5) * 14)));
+    }
+
+    // Where the app's installs and money come from. Shares are drawn from a
+    // decaying weight per country and then normalised, so an app has one or two
+    // strong markets and a tail rather than an even split across seven.
+    const homeIndex = Math.floor(rnd() * COUNTRIES.length);
+    const weights = COUNTRIES.map((_, index) => {
+      const distance = Math.abs(index - homeIndex);
+      return (1 / (1 + distance)) * (0.6 + rnd() * 0.8);
+    });
+    const weightTotal = weights.reduce((sum, w) => sum + w, 0);
+    COUNTRIES.forEach((country, index) => {
+      const share = weights[index] / weightTotal;
+      insertCountry.run({
+        app_id: app.id,
+        country,
+        downloads: Math.round(app.est_downloads * share),
+        revenue: Math.round(app.est_revenue * share),
+        share: Number(share.toFixed(4)),
+      });
+    });
+
+    // Keyword positions: the terms the app's own title is made of, plus a
+    // couple of category terms, tracked daily for 60 days. The walk is small
+    // per day — real positions drift, they do not teleport.
+    const terms = [
+      ...app.title.toLowerCase().split(/\s+/).filter((word) => word.length >= 3),
+      app.category.toLowerCase().split(/\s+/)[0],
+    ].slice(0, 4);
+
+    for (const term of new Set(terms)) {
+      const keywordId = `${app.store}:us:${term}`;
+      insertKeyword.run({
+        id: keywordId,
+        term,
+        store: app.store,
+        country: "us",
+        volume: between(10, 90),
+        difficulty: between(10, 95),
+        checked_at: new Date().toISOString(),
+      });
+
+      let position = between(1, 80);
+      for (let d = 0; d < 60; d++) {
+        const day = new Date(Date.now() - d * 86400000).toISOString().slice(0, 10);
+        insertKeywordRank.run({ keyword_id: keywordId, app_id: app.id, position, day });
+        position = Math.max(1, Math.min(200, position + Math.round((rnd() - 0.5) * 6)));
+      }
     }
 
     if (rnd() < 0.45) {
@@ -278,5 +334,6 @@ const n = (t) => db.prepare(`SELECT COUNT(*) AS c FROM ${t}`).get().c;
 console.log(
   `seeded: apps=${n("apps")} creatives=${n("creatives")} organic=${n("organic_posts")} ` +
   `flows=${n("flows")} screens=${n("flow_screens")} reviews=${n("reviews")} ` +
-  `rankings=${n("rankings")} metrics=${n("app_metrics")}`,
+  `rankings=${n("rankings")} metrics=${n("app_metrics")} ` +
+  `keywords=${n("keywords")} keywordRanks=${n("keyword_ranks")} countries=${n("app_countries")}`,
 );

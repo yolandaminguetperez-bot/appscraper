@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { KeywordSearch } from "@/components/keywords/keyword-search";
 import { AppIcon } from "@/components/ui/app-icon";
 import { difficultyBand, keywordStats, relatedKeywords, suggestedKeywords } from "@/lib/db/keywords-query";
+import { appsRankingFor } from "@/lib/db/aso-query";
 import { compactNumber, money, rating } from "@/lib/format";
 import type { RawParams } from "@/lib/search-params";
 
@@ -47,6 +48,8 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
   const suggestions = suggestedKeywords(18);
   const stats = term ? keywordStats(term) : null;
   const related = term ? relatedKeywords(term) : [];
+  // Who actually ranks for the term today, as opposed to who mentions it.
+  const ranking = term ? appsRankingFor(term) : [];
 
   return (
     <div className="pb-12">
@@ -125,9 +128,59 @@ export default async function KeywordsPage({ searchParams }: { searchParams: Pro
             </section>
           )}
 
+          {ranking.length > 0 && (
+            <section className="surface-card overflow-hidden">
+              <div className="border-b border-line px-5 py-3">
+                <h2 className="text-[15px] font-semibold">Ranking for “{stats.term}” today</h2>
+                <p className="pt-0.5 text-[12px] text-ink-muted">
+                  Tracked search positions, best first, with the 30-day move. This is who holds the
+                  term — the list below is who merely mentions it.
+                </p>
+              </div>
+              <ol className="divide-y divide-line">
+                {ranking.map((entry) => (
+                  <li key={entry.appId} className="flex items-center gap-4 px-5 py-2.5">
+                    <span className="metric w-9 shrink-0 text-[15px] font-semibold">#{entry.position}</span>
+                    <AppIcon
+                      id={entry.appId}
+                      title={entry.title}
+                      iconUrl={entry.iconUrl}
+                      className="size-8"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <Link
+                        href={`/dashboard/apps/${encodeURIComponent(entry.appId)}`}
+                        className="block truncate text-[13.5px] font-medium hover:text-accent-ink"
+                      >
+                        {entry.title}
+                      </Link>
+                      <span className="block truncate text-[11.5px] text-ink-faint">
+                        {entry.developer ?? "—"}
+                      </span>
+                    </span>
+                    <span
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-[11.5px] font-medium ${
+                        entry.change > 0
+                          ? "bg-pos-soft text-pos"
+                          : entry.change < 0
+                            ? "bg-neg-soft text-neg"
+                            : "bg-surface-muted text-ink-faint"
+                      }`}
+                    >
+                      <span className="metric">
+                        {entry.change > 0 ? "+" : ""}
+                        {entry.change}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
           <section className="surface-card overflow-hidden">
             <h2 className="border-b border-line px-5 py-3 text-[15px] font-semibold">
-              Apps ranking for “{stats.term}”
+              Apps mentioning “{stats.term}”
             </h2>
             <ol>
               {stats.topApps.map((app, index) => (

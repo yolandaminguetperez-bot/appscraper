@@ -189,4 +189,14 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       completo y cantaba un -88% falso
 - [x] D5. Ads Library: el mapa colapsado a una tira; a pantalla completa empujaba
       las creatividades —el motivo de la página— por debajo del pliegue
+- [x] D6. Datos nuevos: posiciones de keywords por app y día (las tablas
+      keywords/keyword_ranks existían en el esquema y estaban VACÍAS: diseñadas
+      y sin sembrar) y reparto por país en app_countries. 98 keywords, 5.880
+      posiciones y 2.940 filas de países en el set de 420 apps
+- [x] D7. Ficha de app: "Search rankings" (posición, movimiento a 30 días y
+      sparkline invertida — la posición 1 es la mejor, sin invertir una subida
+      se dibujaría como desplome) y "Where the money comes from"
+- [x] D8. Keyword Explorer separa quién RANKEA por el término (posiciones reales)
+      de quién solo lo MENCIONA (coincidencia de texto), que es lo único que
+      sabía antes
 

@@ -155,6 +155,20 @@ CREATE TABLE IF NOT EXISTS keyword_ranks (
   PRIMARY KEY (keyword_id, app_id, day)
 );
 
+-- Where an app's installs and money actually come from. One row per app and
+-- country; shares are stored rather than derived so a partial refresh cannot
+-- leave a country summing to more than the app's total.
+CREATE TABLE IF NOT EXISTS app_countries (
+  app_id     TEXT NOT NULL REFERENCES apps(id) ON DELETE CASCADE,
+  country    TEXT NOT NULL,
+  downloads  INTEGER NOT NULL DEFAULT 0,
+  revenue    INTEGER NOT NULL DEFAULT 0,
+  share      REAL NOT NULL DEFAULT 0,
+  PRIMARY KEY (app_id, country)
+);
+
+CREATE INDEX IF NOT EXISTS idx_app_countries_country ON app_countries (country);
+
 CREATE TABLE IF NOT EXISTS favorites (
   id         TEXT PRIMARY KEY,
   kind       TEXT NOT NULL,        -- 'app' | 'ad' | 'organic'

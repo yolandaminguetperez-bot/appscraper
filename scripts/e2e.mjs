@@ -252,6 +252,46 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   );
 }
 
+// Search positions and market splits are real rows, and the rank move is
+// reported the way a reader means it: climbing is positive.
+{
+  const tracked = db
+    .prepare("SELECT app_id FROM keyword_ranks GROUP BY app_id ORDER BY COUNT(*) DESC LIMIT 1")
+    .get().app_id;
+
+  const shares = db
+    .prepare("SELECT SUM(share) AS total FROM app_countries WHERE app_id = ?")
+    .get(tracked).total;
+  check(
+    "country shares of one app sum to 1",
+    Math.abs(shares - 1) < 0.001,
+    String(shares),
+  );
+
+  await page.goto(`${BASE}/dashboard/apps/${encodeURIComponent(tracked)}`, { waitUntil: "load" });
+  await page.waitForTimeout(900);
+  const body = await page.textContent("body");
+  check(
+    "app page shows search rankings and markets",
+    body.includes("Search rankings") && body.includes("Where the money comes from"),
+    tracked,
+  );
+
+  const term = db
+    .prepare(
+      `SELECT k.term FROM keyword_ranks r JOIN keywords k ON k.id = r.keyword_id
+       WHERE r.app_id = ? LIMIT 1`,
+    )
+    .get(tracked).term;
+  await page.goto(`${BASE}/dashboard/keywords?term=${encodeURIComponent(term)}`, { waitUntil: "load" });
+  await page.waitForTimeout(900);
+  check(
+    "keyword explorer ranks by real position",
+    (await page.textContent("body")).includes("Ranking for"),
+    term,
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],
