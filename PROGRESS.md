@@ -230,4 +230,9 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       segundo, cuando es al revés
 - [x] F4. Notas en apps seguidas: tracked_apps.note existía en el esquema SIN
       interfaz. Se guarda al salir del campo, no detrás de un botón
+- [x] F5. Primer arranque desde un clon limpio: clonar y abrir el dashboard SIN
+      sembrar reventaba Overview con página en blanco (SUM sobre tabla vacía
+      devuelve NULL y el formateador de números petaba). Arreglado en la consulta
+      y añadido estado "the catalogue is empty" con el comando exacto. Las 14
+      páginas restantes ya aguantaban base vacía; comprobado una a una
 

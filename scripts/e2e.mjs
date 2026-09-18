@@ -5,6 +5,7 @@
  */
 import { chromium } from "playwright";
 import Database from "better-sqlite3";
+import { readFileSync } from "node:fs";
 
 const BASE = process.env.E2E_BASE ?? "http://localhost:3000";
 const db = new Database(process.env.APPSCRAPER_DB ?? "data/appscraper.db");
@@ -399,6 +400,28 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
     "the note comes back on reload",
     (await page.locator("textarea").first().inputValue()) === "Watching their paywall",
     "",
+  );
+}
+
+// A fresh clone has no data, and the pages have to survive that: the first
+// thing anyone does with this repo is run it before seeding.
+{
+  const empty = new Database(":memory:");
+  empty.exec(readFileSync("src/lib/db/schema.sql", "utf8"));
+  const totals = empty
+    .prepare(
+      `SELECT COUNT(*) AS n,
+              COALESCE(SUM(CASE WHEN store = 'ios' THEN 1 ELSE 0 END), 0) AS ios,
+              COALESCE(SUM(est_mrr), 0) AS mrr
+       FROM apps`,
+    )
+    .get();
+  empty.close();
+
+  check(
+    "aggregates over an empty catalogue are numbers, not null",
+    totals.n === 0 && totals.ios === 0 && totals.mrr === 0,
+    JSON.stringify(totals),
   );
 }
 

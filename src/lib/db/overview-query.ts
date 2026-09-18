@@ -22,9 +22,12 @@ function computeOverviewTotals(): Totals {
   const one = <T>(sql: string): T => db().prepare(sql).get() as T;
 
   const apps = one<{ n: number; ios: number; android: number; mrr: number; downloads: number }>(
+    // COALESCE on the conditional sums too, not just the money ones: SUM over
+    // no rows is NULL, and an empty catalogue crashed this page on the number
+    // formatter before it could render a single tile.
     `SELECT COUNT(*) AS n,
-            SUM(CASE WHEN store = 'ios' THEN 1 ELSE 0 END) AS ios,
-            SUM(CASE WHEN store = 'android' THEN 1 ELSE 0 END) AS android,
+            COALESCE(SUM(CASE WHEN store = 'ios' THEN 1 ELSE 0 END), 0) AS ios,
+            COALESCE(SUM(CASE WHEN store = 'android' THEN 1 ELSE 0 END), 0) AS android,
             COALESCE(SUM(est_mrr), 0) AS mrr,
             COALESCE(SUM(est_downloads), 0) AS downloads
      FROM apps`,

@@ -29,6 +29,31 @@ export default async function OverviewPage() {
   const formats = creativesByFormat();
   const screens = screenTypeMix();
 
+  // A fresh clone has an empty database, and a wall of zeroes reads as a broken
+  // app rather than one waiting for its first import.
+  if (totals.apps === 0) {
+    return (
+      <div className="pb-12">
+        <PageHeader title="Overview" subtitle="Nothing imported yet." />
+        <div className="px-7 pt-6">
+          <div className="rounded-2xl border border-dashed border-line bg-surface/70 px-6 py-14 text-center">
+            <p className="text-[15px] font-medium">The catalogue is empty</p>
+            <p className="mx-auto max-w-md pt-1.5 text-[13px] leading-relaxed text-ink-muted">
+              Load the sample catalogue to see every view with data in it, then replace it with real
+              apps when the store APIs are reachable from your machine.
+            </p>
+            <pre className="mx-auto mt-5 w-fit rounded-xl bg-panel px-4 py-2.5 text-left text-[12.5px] text-panel-ink">
+              npm run seed
+            </pre>
+            <p className="pt-3 text-[12px] text-ink-faint">
+              Then reload this page. Nothing else to configure — the database is a file in the project.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4 pb-12">
       <PageHeader title="Overview" subtitle="The whole catalogue at a glance." />
