@@ -7,7 +7,8 @@ import { SaveView } from "@/components/views/save-view";
 import { ExportButton } from "@/components/ui/export-button";
 import { findSavedView, listSavedViews } from "@/lib/db/saved-views";
 import { distinctCategories, distinctLanguages } from "@/lib/db/app-query";
-import { queryAdGroups, queryCreatives } from "@/lib/db/marketing-query";
+import { adCountryReach, queryAdGroups, queryCreatives } from "@/lib/db/marketing-query";
+import { WorldMap } from "@/components/trends/world-map";
 import { favoriteIds } from "@/lib/db/favorites";
 import { describeAdFilters, parseAdFilters, toQueryString, type RawParams } from "@/lib/search-params";
 
@@ -26,6 +27,7 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
 
   const grouped = view === "grouped" ? queryAdGroups(filters) : null;
   const flat = view === "ads" ? queryCreatives(filters) : null;
+  const reach = adCountryReach(filters);
   const total = grouped?.total ?? flat?.total ?? 0;
   const pages = grouped?.pages ?? flat?.pages ?? 1;
 
@@ -48,6 +50,23 @@ export default async function AdsPage({ searchParams }: { searchParams: Promise<
         view={view}
       />
       <ActiveChips chips={chips} />
+
+      {/* Capped: at full width the map pushed the creatives themselves below
+          the fold, and the creatives are why the page exists. */}
+      {reach.length > 0 && (
+        <div className="max-w-4xl px-7 pt-4">
+          <WorldMap
+            title="Where these ads run"
+            description="Creatives in the current selection, counted by the countries they are served in."
+            valueHeading="Creatives"
+            values={reach.map((row) => ({
+              code: row.code,
+              value: row.creatives,
+              label: `${row.code.toUpperCase()} — ${row.creatives.toLocaleString()} creatives running here`,
+            }))}
+          />
+        </div>
+      )}
 
       <div className="px-7 pt-4">
         {grouped && (

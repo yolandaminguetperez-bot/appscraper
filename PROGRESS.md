@@ -85,6 +85,11 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       línea costaba ~156 KB por vista, porque un componente de servidor se
       serializa en el HTML y otra vez en el payload RSC.
       Limitación de la fuente: Singapur no está en el dataset 110m.
+- [x] AD. El mapa es genérico (WorldMap recibe valores por país, no una forma
+      concreta) y se reutiliza en Ads Library: "dónde se ven estos ads",
+      contando creatividades por país sobre la selección filtrada
+- [~] Re-verificadas las APIs de tiendas y los CDN de arte: siguen denegados por
+      política de red (connect_rejected). No es una suposición heredada
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),
       API (índice pegajoso + copiar), MCP, landing (preview con datos reales)

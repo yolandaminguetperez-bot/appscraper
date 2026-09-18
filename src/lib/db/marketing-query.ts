@@ -143,6 +143,34 @@ const AD_SORTS = {
   recent: "last_seen DESC",
 } as const;
 
+/**
+ * Creative counts per country for the current Ads Library filters.
+ *
+ * Countries live in a JSON array on each creative rather than their own table,
+ * so they are counted in JS after the filter has already narrowed the set — a
+ * LIKE on the JSON column would match "us" inside "aus" and quietly overcount.
+ */
+export function adCountryReach(f: AdFilters = {}): { code: string; creatives: number }[] {
+  const where = adWhere(f);
+  const rows = db()
+    .prepare(
+      `SELECT c.countries_json FROM creatives c JOIN apps a ON a.id = c.app_id ${where.sql}`,
+    )
+    .all(...where.params) as Row[];
+
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    for (const code of parseList(row.countries_json)) {
+      const key = code.toLowerCase();
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .map(([code, creatives]) => ({ code, creatives }))
+    .sort((a, b) => b.creatives - a.creatives);
+}
+
 export function queryAdGroups(f: AdFilters = {}) {
   const where = adWhere(f);
   const perPage = Math.min(Math.max(f.perPage ?? 24, 1), 100);

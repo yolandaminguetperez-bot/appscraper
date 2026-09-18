@@ -39,7 +39,21 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
       <RankingsControls countries={rankingCountries()} />
 
       <div className="grid gap-4 px-7 pt-5 xl:grid-cols-2">
-        <WorldMap countries={byCountry} current={country} hrefFor={countryHref} />
+        <WorldMap
+          title={`Where this chart looks like ${country.toUpperCase()}`}
+          description={`Darker means more of that country's top 50 also charts in ${country.toUpperCase()}. Countries we hold no chart data for are left unshaded.`}
+          valueHeading={`Shared with ${country.toUpperCase()}`}
+          marked={country}
+          values={byCountry.map((row) => ({
+            code: row.country,
+            value: row.sharedWithCurrent,
+            href: `${countryHref}${row.country}`,
+            label:
+              row.country === country
+                ? `${row.country.toUpperCase()} — the chart you are viewing`
+                : `${row.country.toUpperCase()} — ${row.sharedWithCurrent} of ${row.apps} apps also chart in ${country.toUpperCase()}`,
+          }))}
+        />
         <CountryStrip countries={byCountry} current={country} hrefFor={countryHref} />
       </div>
 
