@@ -156,3 +156,75 @@ export function rankHistory(ids: string[], days = 30): Map<string, number[]> {
 
   return series;
 }
+
+export type CountrySummary = {
+  country: string;
+  apps: number;
+  combinedMrr: number;
+  /** How many of this country's top 50 also chart in the country being viewed. */
+  sharedWithCurrent: number;
+  leader: { id: string; title: string; iconUrl: string | null } | null;
+};
+
+/**
+ * Per-country roll-up of the current chart.
+ *
+ * The comparison metric is overlap with the country you are looking at, not
+ * combined revenue: revenue sums converge across countries and every bar ends up
+ * full, which compares nothing. Overlap actually differs, and answers the
+ * question the strip exists for — is this market the same as mine?
+ */
+export function rankingsByCountry({
+  store = "ios",
+  chart = "free",
+  current = "us",
+}: { store?: string; chart?: string; current?: string } = {}): CountrySummary[] {
+  const day = (
+    db()
+      .prepare("SELECT MAX(day) AS day FROM rankings WHERE store = ? AND chart = ?")
+      .get(store, chart) as { day: string | null }
+  ).day;
+
+  if (!day) return [];
+
+  const rows = db()
+    .prepare(
+      `SELECT r.country,
+              COUNT(*) AS apps,
+              COALESCE(SUM(a.est_mrr), 0) AS combined_mrr,
+              SUM(CASE WHEN EXISTS (
+                SELECT 1 FROM rankings cur
+                WHERE cur.store = r.store AND cur.chart = r.chart AND cur.day = r.day
+                  AND cur.country = ? AND cur.app_id = r.app_id
+              ) THEN 1 ELSE 0 END) AS shared
+       FROM rankings r JOIN apps a ON a.id = r.app_id
+       WHERE r.store = ? AND r.chart = ? AND r.day = ?
+       GROUP BY r.country
+       ORDER BY shared DESC, r.country ASC`,
+    )
+    .all(current, store, chart, day) as {
+    country: string;
+    apps: number;
+    combined_mrr: number;
+    shared: number;
+  }[];
+
+  const leaderStmt = db().prepare(
+    `SELECT a.id, a.title, a.icon_url FROM rankings r JOIN apps a ON a.id = r.app_id
+     WHERE r.store = ? AND r.chart = ? AND r.day = ? AND r.country = ? AND r.position = 1`,
+  );
+
+  return rows.map((row) => {
+    const leader = leaderStmt.get(store, chart, day, row.country) as
+      | { id: string; title: string; icon_url: string | null }
+      | undefined;
+
+    return {
+      country: row.country,
+      apps: row.apps,
+      combinedMrr: row.combined_mrr,
+      sharedWithCurrent: row.shared ?? 0,
+      leader: leader ? { id: leader.id, title: leader.title, iconUrl: leader.icon_url } : null,
+    };
+  });
+}

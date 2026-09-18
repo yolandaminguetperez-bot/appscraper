@@ -236,17 +236,36 @@ db.transaction(() => {
     }
   }
 
-  // Charts per store/chart/country over a slice of the catalogue.
+  // Charts per store/chart/country. Each country gets its own deterministic
+  // affinity per app, so the same global ordering does not repeat everywhere —
+  // a country comparison where every row is identical tells the reader nothing.
+  const affinity = (appId, country) => {
+    let h = 2166136261;
+    for (const ch of `${appId}:${country}`) {
+      h ^= ch.charCodeAt(0);
+      h = Math.imul(h, 16777619);
+    }
+    // 0.55x to 1.45x: enough to reshuffle the order without inventing a
+    // different catalogue per country.
+    return 0.55 + ((h >>> 0) % 1000) / 1000 * 0.9;
+  };
+
   for (const store of ["ios", "android"]) {
     const pool = apps.filter((a) => a.store === store);
     for (const chart of ["free", "paid", "grossing"]) {
+      const eligible = pool.filter((a) =>
+        chart === "paid" ? a.price > 0 : chart === "free" ? a.price === 0 : true,
+      );
       for (const country of COUNTRIES) {
-        const ranked = [...pool]
-          .filter((a) => (chart === "paid" ? a.price > 0 : chart === "free" ? a.price === 0 : true))
-          .sort((a, b) => (chart === "grossing" ? b.est_mrr - a.est_mrr : b.est_downloads - a.est_downloads))
+        const ranked = eligible
+          .map((a) => ({
+            app: a,
+            score: (chart === "grossing" ? a.est_mrr : a.est_downloads) * affinity(a.id, country),
+          }))
+          .sort((x, y) => y.score - x.score)
           .slice(0, 50);
-        ranked.forEach((a, idx) =>
-          insertRanking.run({ store, chart, country, category: "all", position: idx + 1, app_id: a.id, day: today }),
+        ranked.forEach(({ app }, idx) =>
+          insertRanking.run({ store, chart, country, category: "all", position: idx + 1, app_id: app.id, day: today }),
         );
       }
     }

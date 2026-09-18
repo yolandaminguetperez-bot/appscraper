@@ -51,8 +51,14 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] K. Galería de capturas en el detalle de app
 - [x] L. Modo oscuro completo de la interfaz
 - [x] M. Comparador de apps lado a lado
-- [ ] N. Mapa de países en Store Rankings
-- [ ] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
+- [x] N. Comparación por países en Store Rankings (NO es un mapa geográfico:
+      dibujar fronteras requiere un dataset de geometría que no puedo descargar
+      aquí por la política de red, y no voy a inventar un mapa falso. En su
+      lugar: solapamiento de charts entre países, que responde a la pregunta
+      real — "¿este mercado se parece al mío?")
+- [x] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
+- [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
+- [ ] Q. Vista de tarjetas también en Favoritos y Trending
 
 ## Rendimiento (medido, no supuesto)
 - `npm run stress` mide percentiles por ruta. 0 errores en todo lo probado.

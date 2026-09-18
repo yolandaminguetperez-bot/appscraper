@@ -3,7 +3,8 @@ import { Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { AppIcon } from "@/components/ui/app-icon";
 import { RankingsControls } from "@/components/trends/rankings-controls";
-import { queryRankings, rankHistory, rankingCountries } from "@/lib/db/trends-query";
+import { queryRankings, rankHistory, rankingCountries, rankingsByCountry } from "@/lib/db/trends-query";
+import { CountryStrip } from "@/components/trends/country-strip";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { compactNumber, money, rating } from "@/lib/format";
 import type { RawParams } from "@/lib/search-params";
@@ -25,6 +26,11 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
   });
 
   const history = rankHistory(rows.map((row) => row.app.id));
+  const store = first(params, "store", "ios");
+  const chart = first(params, "chart", "free");
+  const country = first(params, "country", "us");
+  const byCountry = rankingsByCountry({ store, chart, current: country });
+  const countryHref = `/dashboard/rankings?store=${store}&chart=${chart}&country=`;
 
   return (
     <div className="pb-12">
@@ -32,6 +38,10 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
       <RankingsControls countries={rankingCountries()} />
 
       <div className="px-7 pt-5">
+        <CountryStrip countries={byCountry} current={country} hrefFor={countryHref} />
+      </div>
+
+      <div className="px-7 pt-4">
         {rows.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line bg-surface/70 p-12 text-center text-sm text-ink-muted">
             No chart data for this combination yet.
