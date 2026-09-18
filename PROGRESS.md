@@ -147,3 +147,10 @@ La política de egress de este contenedor **no permite** `itunes.apple.com`,
 - Mientras tanto se trabaja con un **dataset sembrado (fixtures)** para que toda la UI sea
   navegable y funcional, con la misma forma de datos que devuelven los scrapers.
 Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
+
+## Interactividad
+- [x] I1. Selección de apps con checkbox en tabla y rejilla, que SOBREVIVE a la
+      navegación (sessionStorage, no la URL: cambiar un filtro la borraría), con
+      barra flotante "N selected → Compare". El parámetro del comparador es
+      `app`, no `ids` — con `ids` la comparación salía vacía en silencio
+

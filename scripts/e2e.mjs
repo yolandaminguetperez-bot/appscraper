@@ -154,6 +154,36 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   );
 }
 
+// A selection survives navigation and hands the compare page the parameter it
+// actually reads — `app`, not `ids`, which renders an empty comparison.
+{
+  await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+  for (const index of [0, 1]) await page.getByRole("checkbox").nth(index).click();
+  await page.waitForTimeout(300);
+
+  await page.goto(`${BASE}/dashboard/apps?page=2`, { waitUntil: "load" });
+  const carried = (await page.textContent("body")).match(/(\d+) selected/)?.[1];
+  check("selection survives navigation", carried === "2", `${carried} selected on page 2`);
+
+  await page.getByRole("link", { name: "Compare", exact: true }).click();
+  await page.waitForTimeout(1200);
+  const comparing = await page.textContent("body");
+  check(
+    "compare opens with the selected apps",
+    page.url().includes("app=") && comparing.includes("Lifetime revenue"),
+    page.url().slice(-60),
+  );
+
+  await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+  await page.getByLabel("Clear selection").click();
+  await page.waitForTimeout(300);
+  check(
+    "clearing removes the selection bar",
+    !(await page.textContent("body")).includes(" selected"),
+    "",
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

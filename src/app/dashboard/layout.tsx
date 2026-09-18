@@ -2,10 +2,13 @@ import type { ReactNode } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { FilterTransitionProvider, PendingBar } from "@/components/filters/filter-transition";
 import { IconSprite } from "@/components/ui/icon-sprite";
+import { SelectionProvider } from "@/components/selection/selection-provider";
+import { SelectionBar } from "@/components/selection/selection-bar";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <FilterTransitionProvider>
+      <SelectionProvider>
       <a href="#main" className="skip-link">
         Skip to results
       </a>
@@ -21,6 +24,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {children}
         </main>
       </div>
+        <SelectionBar />
+      </SelectionProvider>
     </FilterTransitionProvider>
   );
 }

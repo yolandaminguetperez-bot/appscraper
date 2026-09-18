@@ -5,6 +5,7 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 import { SortableHeader } from "@/components/filters/sortable-header";
+import { SelectCheckbox } from "@/components/selection/select-checkbox";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
@@ -41,6 +42,9 @@ export function AppsTable({
       <table className="w-full min-w-[860px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">
+            <th scope="col" className="w-9 py-3 pl-4 pr-0">
+              <span className="sr-only">Select</span>
+            </th>
             <SortableHeader label="App" sortKey="title" defaultKey="revenue" />
             <th scope="col" className="px-4 py-3 font-medium">Category</th>
             <SortableHeader label="Rating" sortKey="rating" align="right" defaultKey="revenue" />
@@ -56,6 +60,9 @@ export function AppsTable({
         <tbody>
           {apps.map((app) => (
             <tr key={app.id} className="border-b border-line last:border-0 hover:bg-surface-muted/40">
+              <td className="py-3 pl-4 pr-0">
+                <SelectCheckbox id={app.id} title={app.title} />
+              </td>
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
                   <AppIcon id={app.id} title={app.title} iconUrl={app.iconUrl} className="size-9" />
