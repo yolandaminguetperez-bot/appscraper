@@ -142,6 +142,25 @@ stored choice never renders one frame in the wrong palette. Dark ink is checked
 against every dark surface it lands on: `--ink-faint` was raised from 4.09:1 to
 5.10:1 because it labels 11px axis ticks, which need 4.5:1.
 
+## Ver la app
+
+Dos formas.
+
+**1. La app real, en local.** Es la única que ejecuta el producto entero
+(Next.js + SQLite, filtros por URL, server actions, API):
+
+```bash
+npm install
+npm run seed        # 420 apps de ejemplo; SEED_APPS=25000 para el set grande
+npm run dev         # http://localhost:3000/dashboard/apps
+```
+
+**2. La demo estática.** `preview/index.html` es una página única que lleva sus
+propios datos, exportados de la base con `node scripts/export-preview.mjs`. Se
+abre con doble clic, sin servidor. Reproduce el filtrado, la selección para
+comparar, la vista rápida, el mapa con tooltip y las creatividades en vídeo;
+no incluye lo que necesita servidor (favoritos, seguimiento, exportación CSV).
+
 ## Map geometry
 
 `src/lib/geo/world.json` is built by `scripts/make-world-geo.mjs` from Natural

@@ -3,7 +3,8 @@
  * The preview is a snapshot: it carries its own data and needs no server.
  */
 import Database from "better-sqlite3";
-import { writeFileSync, mkdirSync, copyFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
+import { writeFileSync, mkdirSync, copyFileSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const OUT = process.argv[2] ?? "preview-build";
@@ -118,9 +119,61 @@ for (const file of readdirSync("public/sample-creatives")) {
   if (wanted.has(file)) copyFileSync(path.join("public/sample-creatives", file), path.join(OUT, "media", file));
 }
 
-const payload = { apps, trends, creatives, organic, categories, totals, counts };
+// App marks, rendered by the same function the app serves from /api/icon so the
+// preview shows the real artwork rather than grey squares.
+const icons = Object.fromEntries(
+  JSON.parse(
+    execFileSync("npx", ["tsx", "-e", `
+      import { iconSvg } from "./src/lib/identicon";
+      const ids = ${JSON.stringify(JSON.stringify(ids))};
+      process.stdout.write(JSON.stringify(JSON.parse(ids).map((id) => [id, iconSvg(id, 64)])));
+    `], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }),
+  ),
+);
+
+// Countries: chart overlap with the US, and where the creatives run. Both are
+// the same numbers the live pages show.
+const day = db.prepare("SELECT MAX(day) AS day FROM rankings WHERE store='ios' AND chart='free'").get().day;
+const overlap = db
+  .prepare(
+    `SELECT r.country, COUNT(*) AS apps,
+            SUM(CASE WHEN EXISTS (
+              SELECT 1 FROM rankings cur WHERE cur.store = r.store AND cur.chart = r.chart
+                AND cur.day = r.day AND cur.country = 'us' AND cur.app_id = r.app_id
+            ) THEN 1 ELSE 0 END) AS shared
+     FROM rankings r WHERE r.store='ios' AND r.chart='free' AND r.day = ?
+     GROUP BY r.country`,
+  )
+  .all(day)
+  .map((row) => ({ code: row.country, apps: row.apps, shared: row.shared }));
+
+const adReach = {};
+for (const row of db.prepare("SELECT countries_json FROM creatives").all()) {
+  for (const code of JSON.parse(row.countries_json ?? "[]")) {
+    adReach[code] = (adReach[code] ?? 0) + 1;
+  }
+}
+
+// One extra slice per app for the quick-look panel.
+const detailRows = db
+  .prepare(
+    `SELECT a.id, a.description,
+            (SELECT COUNT(*) FROM creatives c WHERE c.app_id = a.id) AS ads,
+            (SELECT COUNT(*) FROM organic_posts o WHERE o.app_id = a.id) AS organic,
+            (SELECT COUNT(*) FROM reviews rv WHERE rv.app_id = a.id) AS reviews
+     FROM apps a WHERE a.id IN (${ids.map(() => "?").join(",")})`,
+  )
+  .all(...ids);
+const details = Object.fromEntries(
+  detailRows.map((row) => [row.id, { description: row.description, ads: row.ads, organic: row.organic, reviews: row.reviews }]),
+);
+
+const world = JSON.parse(readFileSync("src/lib/geo/world.json", "utf8"));
+
+const payload = { apps, trends, creatives, organic, categories, totals, counts, icons, overlap, adReach, details, world };
 writeFileSync(path.join(OUT, "data.json"), JSON.stringify(payload));
 
 console.log(
-  `apps=${apps.length} creatives=${creatives.length} organic=${organic.length} media=${wanted.size}`,
+  `apps=${apps.length} creatives=${creatives.length} organic=${organic.length} media=${wanted.size} ` +
+    `icons=${Object.keys(icons).length} countries=${overlap.length} world=${world.countries.length}`,
 );
