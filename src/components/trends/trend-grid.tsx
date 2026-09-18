@@ -5,6 +5,8 @@ import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { FavoriteButton } from "@/components/ui/favorite-button";
+import { SelectCheckbox } from "@/components/selection/select-checkbox";
+import { QuickLookButton } from "@/components/quicklook/quick-look-button";
 
 function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -80,7 +82,11 @@ export function TrendGrid({
                 </span>
               </p>
             </div>
-            <FavoriteButton kind="app" refId={row.app.id} initial={favorites.has(row.app.id)} />
+            <div className="flex shrink-0 items-center gap-2">
+              <SelectCheckbox id={row.app.id} title={row.app.title} />
+              <QuickLookButton id={row.app.id} title={row.app.title} />
+              <FavoriteButton kind="app" refId={row.app.id} initial={favorites.has(row.app.id)} />
+            </div>
           </header>
 
           <dl className="grid grid-cols-3 gap-3 border-t border-line px-5 py-3.5">

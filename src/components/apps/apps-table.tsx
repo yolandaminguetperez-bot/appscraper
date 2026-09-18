@@ -88,7 +88,20 @@ export function AppsTable({
                   </div>
                 </div>
               </td>
-              <td className="px-4 py-3 text-[13px] text-ink-muted">{app.category ?? "—"}</td>
+              <td className="px-4 py-3 text-[13px] text-ink-muted">
+                {/* A category is a filter you already have — clicking it beats
+                    finding the same value in the filter bar. */}
+                {app.category ? (
+                  <Link
+                    href={`/dashboard/apps?cat=${encodeURIComponent(app.category)}`}
+                    className="hover:text-accent-ink"
+                  >
+                    {app.category}
+                  </Link>
+                ) : (
+                  "—"
+                )}
+              </td>
               <td className="px-4 py-3 text-right">
                 <span className="inline-flex items-center gap-1">
                   <SpriteIcon id={SPRITE_IDS.star} className="size-3.5 text-accent" />

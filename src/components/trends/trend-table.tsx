@@ -4,6 +4,8 @@ import type { TrendRow } from "@/lib/db/trends-query";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
+import { QuickLookButton } from "@/components/quicklook/quick-look-button";
+import { SelectCheckbox } from "@/components/selection/select-checkbox";
 
 export function TrendTable({
   rows,
@@ -25,6 +27,7 @@ export function TrendTable({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">
+            <th className="w-9 py-3 pl-4 pr-0"><span className="sr-only">Select</span></th>
             <th className="w-12 px-4 py-3 font-medium">#</th>
             <th className="px-4 py-3 font-medium">App</th>
             <th className="px-4 py-3 font-medium">Category</th>
@@ -34,11 +37,15 @@ export function TrendTable({
             <th className="px-4 py-3 text-right font-medium">Rating</th>
             <th className="px-4 py-3 text-right font-medium">MRR</th>
             <th className="px-4 py-3 text-right font-medium">Released</th>
+            <th className="w-10 px-2 py-3" />
           </tr>
         </thead>
         <tbody>
           {rows.map((row, index) => (
             <tr key={row.app.id} className="border-b border-line last:border-0 hover:bg-surface-muted/40">
+              <td className="py-3 pl-4 pr-0">
+                <SelectCheckbox id={row.app.id} title={row.app.title} />
+              </td>
               <td className="px-4 py-3 tabular-nums text-ink-faint">{index + 1}</td>
               <td className="px-4 py-3">
                 <div className="flex items-center gap-3">
@@ -61,7 +68,18 @@ export function TrendTable({
                   </div>
                 </div>
               </td>
-              <td className="px-4 py-3 text-[13px] text-ink-muted">{row.app.category ?? "—"}</td>
+              <td className="px-4 py-3 text-[13px] text-ink-muted">
+                {row.app.category ? (
+                  <Link
+                    href={`/dashboard/apps?cat=${encodeURIComponent(row.app.category)}`}
+                    className="hover:text-accent-ink"
+                  >
+                    {row.app.category}
+                  </Link>
+                ) : (
+                  "—"
+                )}
+              </td>
               <td className="px-4 py-2">
                 <MiniChart
                   values={trends?.get(row.app.id) ?? []}
@@ -84,6 +102,9 @@ export function TrendTable({
               <td className="px-4 py-3 text-right tabular-nums">{money(row.app.estMrr)}</td>
               <td className="px-4 py-3 text-right text-[13px] text-ink-muted">
                 {daysAgo(row.app.releasedAt)}
+              </td>
+              <td className="px-2 py-3">
+                <QuickLookButton id={row.app.id} title={row.app.title} />
               </td>
             </tr>
           ))}

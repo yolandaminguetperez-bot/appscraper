@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Star } from "lucide-react";
 import { PageHeader } from "@/components/layout/page-header";
 import { AppIcon } from "@/components/ui/app-icon";
+import { QuickLookButton } from "@/components/quicklook/quick-look-button";
 import { RankingsControls } from "@/components/trends/rankings-controls";
 import { queryRankings, rankHistory, rankingCountries, rankingsByCountry } from "@/lib/db/trends-query";
 import { CountryStrip } from "@/components/trends/country-strip";
@@ -99,6 +100,7 @@ export default async function RankingsPage({ searchParams }: { searchParams: Pro
                 <span className="w-16 shrink-0 text-right text-[13px] tabular-nums">
                   {money(app.estMrr)}
                 </span>
+                <QuickLookButton id={app.id} title={app.title} />
               </li>
             ))}
           </ol>

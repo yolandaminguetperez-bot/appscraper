@@ -160,4 +160,6 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
 - [x] I3. Tooltip real en los mapas (seguía al puntero, aparece también al
       tabular con el teclado) en lugar del <title> nativo, que tarda un segundo,
       no se puede estilar y no existe para teclado
+- [x] I4. Quick look y selección en Trending, Rising y Store Rankings, no solo
+      en Explore Apps; la categoría de cada fila es un enlace que filtra
 
