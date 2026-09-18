@@ -238,3 +238,27 @@ export function describeFlowFilters(params: RawParams) {
   if (q) chips.push({ key: "q", label: `“${q}”` });
   return chips;
 }
+
+export function parseReviewFilters(params: RawParams) {
+  return {
+    appId: one(params, "app"),
+    q: one(params, "q"),
+    ratings: all(params, "rating").map(Number).filter(Number.isFinite),
+    sentiments: all(params, "sentiment"),
+    topics: all(params, "topic"),
+    windowDays: num(params, "window"),
+    page: num(params, "page") ?? 1,
+  };
+}
+
+export function describeReviewFilters(params: RawParams) {
+  const chips: { key: string; value?: string; label: string }[] = [];
+  for (const r of all(params, "rating")) chips.push({ key: "rating", value: r, label: `${r} stars` });
+  for (const s of all(params, "sentiment")) chips.push({ key: "sentiment", value: s, label: s });
+  for (const t of all(params, "topic")) chips.push({ key: "topic", value: t, label: `Topic: ${t}` });
+  const w = one(params, "window");
+  if (w) chips.push({ key: "window", label: `Last ${w}d` });
+  const q = one(params, "q");
+  if (q) chips.push({ key: "q", label: `“${q}”` });
+  return chips;
+}
