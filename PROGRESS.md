@@ -91,6 +91,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       mapa son además un filtro: click filtra a ese país, click de nuevo lo quita.
       El alcance del filtro depende de la vista — apps que anuncian ALLÍ (126) vs
       creatividades que corren allí (196); cuadran con la base de datos
+- [x] AE. Mapa "dónde anuncia esta app" en el detalle, contado sobre las
+      creatividades ya cargadas en la página (sin segunda query) y enlazado a
+      Ads Library filtrado por app y país
 - [~] Re-verificadas las APIs de tiendas y los CDN de arte: siguen denegados por
       política de red (connect_rejected). No es una suposición heredada
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)

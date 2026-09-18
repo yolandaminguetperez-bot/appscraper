@@ -11,6 +11,7 @@ import { FavoriteButton } from "@/components/ui/favorite-button";
 import { favoriteIds } from "@/lib/db/favorites";
 import { similarApps } from "@/lib/db/developer-query";
 import { difficultyBand, titleKeywords } from "@/lib/db/keywords-query";
+import { WorldMap } from "@/components/trends/world-map";
 import { compactNumber, daysAgo, fileSize, money, rating } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -42,6 +43,15 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
   const saved = favoriteIds("app");
   const similar = similarApps(app);
   const keywords = titleKeywords(app.title);
+
+  // Counted from the creatives already loaded for this page rather than with a
+  // second query: they are the same rows the ads section below renders.
+  const adReach = new Map<string, number>();
+  for (const creative of creatives) {
+    for (const code of creative.countries) {
+      adReach.set(code.toLowerCase(), (adReach.get(code.toLowerCase()) ?? 0) + 1);
+    }
+  }
 
   const badges = [
     app.category,
@@ -265,6 +275,20 @@ export default async function AppDetailPage({ params }: { params: Promise<{ id: 
               Based on the reviews we hold, not the store&apos;s full count.
             </p>
           </Section>
+
+          {adReach.size > 0 && (
+            <WorldMap
+              title="Where this app advertises"
+              description={`Countries the ${creatives.length} creatives below are served in.`}
+              valueHeading="Creatives"
+              values={[...adReach.entries()].map(([code, count]) => ({
+                code,
+                value: count,
+                href: `/dashboard/ads?q=${encodeURIComponent(app.title)}&country=${code}`,
+                label: `${code.toUpperCase()} — ${count} of this app's creatives run here`,
+              }))}
+            />
+          )}
 
           <Section title={`Ads (${creatives.length})`}>
             {creatives.length === 0 ? (
