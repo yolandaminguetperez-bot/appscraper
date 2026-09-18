@@ -38,6 +38,8 @@ const routes = [
   "/dashboard/favorites/ads",
   "/dashboard/favorites/organic",
   "/dashboard/keywords",
+  "/dashboard/keywords?term=budget",
+  "/dashboard/your-apps/new",
   "/dashboard/your-apps",
   "/dashboard/reviews",
   "/dashboard/competitors",
@@ -61,8 +63,8 @@ const saved = db.prepare("SELECT kind, ref_id FROM favorites").all();
 check("favoriting an app writes to the database", saved.length === 1, JSON.stringify(saved));
 
 await page.goto(`${BASE}/dashboard/favorites/apps`, { waitUntil: "load" });
-const favBody = await page.textContent("body");
-check("saved app appears on the favorites page", favBody.includes("1 saved"));
+const favRows = await page.locator("main tbody tr").count();
+check("saved app appears on the favorites page", favRows === 1, `${favRows} rows`);
 
 // Filters actually narrow the result set.
 await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
@@ -76,6 +78,20 @@ check(
   allCount > 0 && filteredCount > 0 && filteredCount < allCount,
   `${allCount} -> ${filteredCount}`,
 );
+
+// Tracking an app writes through and shows on Your Apps.
+db.prepare("DELETE FROM tracked_apps").run();
+await page.goto(`${BASE}/dashboard/your-apps/new?q=budget`, { waitUntil: "load" });
+await page.getByRole("button", { name: "Add app" }).first().click();
+await page.waitForTimeout(1200);
+const tracked = db.prepare("SELECT app_id, role FROM tracked_apps").all();
+check("adding an app writes to tracked_apps", tracked.length === 1, JSON.stringify(tracked));
+
+await page.goto(`${BASE}/dashboard/your-apps`, { waitUntil: "load" });
+// Assert against rendered rows, not body text: RSC payload scripts carry the
+// empty-state string even when the list is populated.
+const trackedRows = await page.locator("main ul > li").count();
+check("tracked app appears on Your Apps", trackedRows === 1, `${trackedRows} rows`);
 
 check("no 5xx responses", serverErrors.length === 0, serverErrors.join(", "));
 

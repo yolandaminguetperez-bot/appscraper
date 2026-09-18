@@ -25,9 +25,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [x] 13. Store Rankings (Top Free/Paid/Grossing, país, categoría, ambas tiendas)
 - [x] 14. Favoritos (Apps/Ads/Organic) con persistencia
 - [x] 15a. Keyword Explorer
-- [ ] 15b. Your Apps + Add App
+- [x] 15b. Your Apps + Add App
 - [x] 16. Review Analytics
-- [ ] 17. Competitor Tracking
+- [x] 17. Competitor Tracking
 - [ ] 18. Páginas MCP y API (docs + endpoints reales)
 - [ ] 19. Auth simple (cuenta local) y perfil de usuario
 - [ ] 20. Jobs de refresco de datos + botón refresh en cada página
