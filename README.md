@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AppScraper
 
-## Getting Started
+App Store and Google Play market intelligence — free, no paywall. A working rebuild of the
+kind of dashboard app-marketing teams use to find apps, ads, creator videos and onboarding
+flows worth studying.
 
-First, run the development server:
+## Preview it locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone -b claude/replicate-appkittie-web-qft5y2 https://github.com/yolandaminguetperez-bot/appscraper
+cd appscraper
+npm install
+npm run seed     # fills data/appscraper.db with a sample catalogue
+npm run dev      # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run seed` generates a deterministic sample dataset so every view is usable offline.
+Real store data comes from the scrapers in `src/lib/sources/` (see *Network access* below).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Screenshots without running it
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build && npm run start &
+npm run shots                        # writes shots/*.png
+npm run shots /dashboard/ads         # or capture specific routes
+```
 
-## Learn More
+## Network access
 
-To learn more about Next.js, take a look at the following resources:
+The scrapers talk to `itunes.apple.com`, `rss.applemarketingtools.com` and `play.google.com`.
+Some sandboxes block those hosts; when they are blocked the app still runs on seeded data.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Path | What lives there |
+| --- | --- |
+| `src/app/dashboard/*` | One route per dashboard view |
+| `src/components/filters/*` | URL-backed filter primitives shared by every view |
+| `src/lib/db/*` | SQLite schema, repositories and query builders |
+| `src/lib/sources/*` | Store scrapers and the download/revenue estimate model |
+| `scripts/seed.mjs` | Sample dataset generator |
 
-## Deploy on Vercel
+## Estimates
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Stores do not publish download or revenue figures. `src/lib/sources/estimates.ts` derives them
+from public signals (rating volume, age, price, IAP presence). Read them as orders of
+magnitude, not facts.
