@@ -36,15 +36,16 @@ export function MiniChart({
   const max = Math.max(...points);
   const span = max - min || 1;
 
-  // One decimal: at 24px tall the second one is sub-pixel, and it is paid for on
-  // every row of every page.
+  // Whole units in a 100x32 viewBox: the chart is drawn ~96px wide, so a unit is
+  // under a pixel and a decimal place is invisible — but it is paid for on every
+  // row of every page, and it was 49KB of one apps page.
   const coords = points.map((value, index) => {
     const x = (index / (points.length - 1)) * width;
     const y = pad + (1 - (value - min) / span) * (height - pad * 2);
     return [x, y] as const;
   });
 
-  const line = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const line = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${Math.round(x)},${Math.round(y)}`).join(" ");
   const area = `${line} L${width},${height} L0,${height} Z`;
   const rising = points[points.length - 1] >= points[0];
 
@@ -67,8 +68,8 @@ export function MiniChart({
         strokeLinecap="round"
       />
       <circle
-        cx={coords[coords.length - 1][0]}
-        cy={coords[coords.length - 1][1]}
+        cx={Math.round(coords[coords.length - 1][0])}
+        cy={Math.round(coords[coords.length - 1][1])}
         r={2.5}
         fill={rising ? "var(--chart-line)" : "var(--ink-faint)"}
         vectorEffect="non-scaling-stroke"

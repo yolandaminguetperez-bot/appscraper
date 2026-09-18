@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { FilterTransitionProvider, PendingBar } from "@/components/filters/filter-transition";
+import { IconSprite } from "@/components/ui/icon-sprite";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -9,6 +10,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         Skip to results
       </a>
       <PendingBar />
+      {/* Once per document: every view below repeats these icons per row. */}
+      <IconSprite />
       <div className="flex h-dvh overflow-hidden bg-panel p-0">
         <Sidebar />
         <main

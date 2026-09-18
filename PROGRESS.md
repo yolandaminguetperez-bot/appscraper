@@ -67,6 +67,9 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
       queries de Rankings y keywords se midieron también: 24 ms y 10-20 ms a
       25k, así que NO se tocaron — el techo restante es CPU de render en un
       solo proceso, no la base de datos
+- [x] AB. Peso de página: corazón de favoritos al sprite (se repetía 51 veces
+      por página) y coordenadas enteras en los mini gráficos. Explore Apps pasa
+      de 388 KB a 352 KB (-9,4%); el sprite se emite una vez en el layout
 - [ ] P. Mapa geográfico real (requiere permitir un host con geometría, p.ej. Natural Earth)
 - [x] Q. Vista de tarjetas también en Favoritos/apps, Trending y Rising (mismo ViewToggle)
 - [x] U. Pasada visual del resto de páginas: Organic (tarjetas con métricas),

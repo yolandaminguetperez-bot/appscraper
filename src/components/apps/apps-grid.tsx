@@ -4,7 +4,7 @@ import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { FavoriteButton } from "@/components/ui/favorite-button";
-import { IconSprite, SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
+import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 
 function Metric({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
@@ -40,7 +40,6 @@ export function AppsGrid({
 
   return (
     <>
-      <IconSprite />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
         {apps.map((app) => (
           <article

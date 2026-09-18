@@ -3,7 +3,7 @@ import type { App } from "@/lib/types";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
-import { IconSprite, SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
+import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 import { SortableHeader } from "@/components/filters/sortable-header";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
@@ -38,7 +38,6 @@ export function AppsTable({
 
   return (
     <div className="surface-card scroll-thin overflow-x-auto">
-      <IconSprite />
       <table className="w-full min-w-[860px] border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">

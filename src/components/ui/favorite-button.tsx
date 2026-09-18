@@ -1,11 +1,11 @@
 "use client";
 
-import { Heart } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useOptimistic, useTransition } from "react";
 import { toggleFavoriteAction } from "@/app/actions/favorites";
 import type { FavoriteKind } from "@/lib/db/favorites";
 import { cn } from "@/lib/cn";
+import { SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 
 export function FavoriteButton({
   kind,
@@ -39,7 +39,7 @@ export function FavoriteButton({
         className,
       )}
     >
-      <Heart className={cn("size-4", saved && "fill-current")} />
+      <SpriteIcon id={saved ? SPRITE_IDS.heartFilled : SPRITE_IDS.heart} className="size-4" />
     </button>
   );
 }
