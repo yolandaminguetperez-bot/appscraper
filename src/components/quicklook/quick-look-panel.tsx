@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Star, X } from "lucide-react";
+import { ArrowUpRight, Heart, Star, Target, X } from "lucide-react";
+import { toggleFavoriteAction } from "@/app/actions/favorites";
+import { trackAppAction, untrackAppAction } from "@/app/actions/tracking";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/cn";
 import { useQuickLook } from "@/components/quicklook/quick-look-provider";
 import { MiniChart } from "@/components/charts/mini-chart";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
@@ -41,8 +45,13 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 export function QuickLookPanel() {
   const { openId, close } = useQuickLook();
+  const pathname = usePathname();
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState(false);
+  const [state, setState] = useState<{ favorite: boolean; role: string | null }>({
+    favorite: false,
+    role: null,
+  });
 
   useEffect(() => {
     if (!openId) return;
@@ -50,6 +59,7 @@ export function QuickLookPanel() {
     // so it never shows one app's numbers under another app's name.
     setDetail(null);
     setError(false);
+    setState({ favorite: false, role: null });
 
     const controller = new AbortController();
     fetch(`/api/v1/apps/${encodeURIComponent(openId)}`, { signal: controller.signal })
@@ -57,6 +67,13 @@ export function QuickLookPanel() {
       .then((body) => setDetail(body.data as Detail))
       .catch((cause) => {
         if ((cause as Error).name !== "AbortError") setError(true);
+      });
+
+    fetch(`/api/app-state/${encodeURIComponent(openId)}`, { signal: controller.signal })
+      .then((res) => (res.ok ? res.json() : { favorite: false, role: null }))
+      .then(setState)
+      .catch(() => {
+        // The panel is still useful without the toggles reflecting state.
       });
 
     return () => controller.abort();
@@ -174,6 +191,46 @@ export function QuickLookPanel() {
             {app.description && (
               <p className="line-clamp-4 text-[12.5px] leading-relaxed text-ink-muted">{app.description}</p>
             )}
+
+            {/* The panel is where you decide about an app, so the decisions
+                belong here rather than back on the row. */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setState((current) => ({ ...current, favorite: !current.favorite }));
+                  void toggleFavoriteAction("app", app.id, pathname);
+                }}
+                aria-pressed={state.favorite}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-full border px-3 py-2 text-[12.5px] transition-colors",
+                  state.favorite
+                    ? "border-accent/40 bg-accent-soft text-accent-ink"
+                    : "border-line text-ink-muted hover:text-ink",
+                )}
+              >
+                <Heart className={cn("size-3.5", state.favorite && "fill-current")} />
+                {state.favorite ? "Saved" : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = state.role === "competitor" ? null : "competitor";
+                  setState((current) => ({ ...current, role: next }));
+                  void (next ? trackAppAction(app.id, "competitor") : untrackAppAction(app.id));
+                }}
+                aria-pressed={state.role === "competitor"}
+                className={cn(
+                  "flex flex-1 items-center justify-center gap-1.5 rounded-full border px-3 py-2 text-[12.5px] transition-colors",
+                  state.role === "competitor"
+                    ? "border-accent/40 bg-accent-soft text-accent-ink"
+                    : "border-line text-ink-muted hover:text-ink",
+                )}
+              >
+                <Target className="size-3.5" />
+                {state.role === "competitor" ? "Tracking" : "Track as competitor"}
+              </button>
+            </div>
 
             <div className="flex gap-2 pb-2">
               <Link

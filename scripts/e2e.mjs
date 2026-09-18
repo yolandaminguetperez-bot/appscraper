@@ -221,6 +221,37 @@ check("tracked app appears on Your Apps", trackedShown, trackedTitle ?? "no titl
   check("map tooltip clears on leave", (await page.locator("[role=status]").count()) === 0, "");
 }
 
+// The quick-look panel is where you decide about an app, so its buttons must
+// write through, not just light up.
+{
+  db.prepare("DELETE FROM favorites").run();
+  db.prepare("DELETE FROM tracked_apps").run();
+
+  await page.goto(`${BASE}/dashboard/apps`, { waitUntil: "load" });
+  await page.getByLabel(/Quick look at/).first().click();
+  await page.waitForSelector("[role=dialog]");
+  await page.waitForTimeout(1200);
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+  await page.waitForTimeout(700);
+  await page.getByRole("button", { name: "Track as competitor" }).click();
+  await page.waitForTimeout(1000);
+
+  const saved = db.prepare("SELECT ref_id FROM favorites").all();
+  const tracked = db.prepare("SELECT app_id, role FROM tracked_apps").all();
+  check(
+    "quick look save and track write to the database",
+    saved.length === 1 && tracked.length === 1 && tracked[0].role === "competitor",
+    JSON.stringify({ saved, tracked }),
+  );
+
+  const state = await (await page.request.get(`${BASE}/api/app-state/${encodeURIComponent(saved[0].ref_id)}`)).json();
+  check(
+    "reopening reflects the stored state",
+    state.favorite === true && state.role === "competitor",
+    JSON.stringify(state),
+  );
+}
+
 // Every export endpoint returns CSV that parses back with a stable column count.
 for (const [name, path] of [
   ["apps", "/api/apps/export?store=ios"],

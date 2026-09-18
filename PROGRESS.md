@@ -162,4 +162,7 @@ Para activarlo de verdad: añadir esos hosts al allowlist de egress del entorno.
       no se puede estilar y no existe para teclado
 - [x] I4. Quick look y selección en Trending, Rising y Store Rankings, no solo
       en Explore Apps; la categoría de cada fila es un enlace que filtra
+- [x] I5. El quick look actúa, no solo informa: guardar en favoritos y seguir
+      como competidor desde el panel, con estado real leído de /api/app-state
+      (fuera de /api/v1, que es la forma pública documentada)
 
