@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { cached, invalidateCache } from "@/lib/db/cache";
 import { rowToApp } from "@/lib/db/apps-repo";
 import type { App } from "@/lib/types";
 
@@ -65,6 +66,7 @@ export function keywordStats(term: string, { limit = 10 }: { limit?: number } = 
  * but nobody searches for.
  */
 export function suggestedKeywords(limit = 24): { term: string; count: number }[] {
+  return cached(`suggestedKeywords:${limit}`, () => {
   const rows = db().prepare("SELECT title FROM apps").all() as Row[];
   const counts = new Map<string, number>();
 
@@ -80,6 +82,7 @@ export function suggestedKeywords(limit = 24): { term: string; count: number }[]
     .map(([term, count]) => ({ term, count }))
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
+  });
 }
 
 export function trackedApps(role?: "own" | "competitor") {
@@ -104,6 +107,7 @@ export function trackedApps(role?: "own" | "competitor") {
 }
 
 export function trackApp(appId: string, role: "own" | "competitor", note?: string) {
+  invalidateCache();
   db()
     .prepare(
       "INSERT INTO tracked_apps (app_id, role, added_at, note) VALUES (?, ?, ?, ?) ON CONFLICT (app_id) DO UPDATE SET role = excluded.role, note = excluded.note",
@@ -112,6 +116,7 @@ export function trackApp(appId: string, role: "own" | "competitor", note?: strin
 }
 
 export function untrackApp(appId: string) {
+  invalidateCache();
   db().prepare("DELETE FROM tracked_apps WHERE app_id = ?").run(appId);
 }
 

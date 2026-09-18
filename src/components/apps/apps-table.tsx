@@ -1,19 +1,18 @@
 import Link from "next/link";
-import { Apple, Play, Star } from "lucide-react";
 import type { App } from "@/lib/types";
 import { FavoriteButton } from "@/components/ui/favorite-button";
 import { AppIcon } from "@/components/ui/app-icon";
 import { MiniChart } from "@/components/charts/mini-chart";
+import { IconSprite, SpriteIcon, SPRITE_IDS } from "@/components/ui/icon-sprite";
 import { compactNumber, daysAgo, money, rating } from "@/lib/format";
 
 function StoreBadge({ store }: { store: App["store"] }) {
-  const Icon = store === "ios" ? Apple : Play;
   return (
     <span
       title={store === "ios" ? "App Store" : "Google Play"}
       className="grid size-6 place-items-center rounded-md bg-surface-muted text-ink-muted"
     >
-      <Icon className="size-3.5" />
+      <SpriteIcon id={store === "ios" ? SPRITE_IDS.apple : SPRITE_IDS.play} className="size-3.5" />
     </span>
   );
 }
@@ -38,6 +37,7 @@ export function AppsTable({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+      <IconSprite />
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-line bg-surface-muted/60 text-left text-[12px] uppercase tracking-wide text-ink-muted">
@@ -74,7 +74,7 @@ export function AppsTable({
               <td className="px-4 py-3 text-[13px] text-ink-muted">{app.category ?? "—"}</td>
               <td className="px-4 py-3 text-right">
                 <span className="inline-flex items-center gap-1">
-                  <Star className="size-3.5 text-accent" />
+                  <SpriteIcon id={SPRITE_IDS.star} className="size-3.5 text-accent" />
                   {rating(app.rating)}
                 </span>
               </td>

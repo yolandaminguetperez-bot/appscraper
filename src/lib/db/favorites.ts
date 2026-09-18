@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { invalidateCache } from "@/lib/db/cache";
 import { rowToApp } from "@/lib/db/apps-repo";
 import type { App } from "@/lib/types";
 
@@ -13,6 +14,8 @@ export function isFavorite(kind: FavoriteKind, refId: string): boolean {
 
 /** Returns the state after the toggle, so callers can render without a re-read. */
 export function toggleFavorite(kind: FavoriteKind, refId: string): boolean {
+  invalidateCache();
+
   if (isFavorite(kind, refId)) {
     db().prepare("DELETE FROM favorites WHERE kind = ? AND ref_id = ?").run(kind, refId);
     return false;

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { cached } from "@/lib/db/cache";
 import { rowToApp } from "@/lib/db/apps-repo";
 import type { App } from "@/lib/types";
 
@@ -127,10 +128,12 @@ export function queryFlows(f: FlowFilters = {}) {
 }
 
 export function distinctScreenTypes(): string[] {
+  return cached("distinctScreenTypes", () => {
   const rows = db()
     .prepare(
       "SELECT screen_type, COUNT(*) AS n FROM flow_screens WHERE screen_type IS NOT NULL GROUP BY screen_type ORDER BY n DESC",
     )
     .all() as { screen_type: string }[];
   return rows.map((r) => r.screen_type);
+  });
 }

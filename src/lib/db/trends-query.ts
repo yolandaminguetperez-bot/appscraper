@@ -36,7 +36,7 @@ export function queryTrending({
 } = {}) {
   const since = new Date(Date.now() - windowDays * 86400000).toISOString().slice(0, 10);
   const conditions: string[] = ["a.rating_count >= ?"];
-  const params: unknown[] = [since, minReviews];
+  const params: unknown[] = [minReviews];
 
   if (stores.length) {
     conditions.push(`a.store IN (${stores.map(() => "?").join(",")})`);
@@ -51,30 +51,31 @@ export function queryTrending({
     params.push(new Date(Date.now() - maxAgeDays * 86400000).toISOString());
   }
 
+  // The window's first and last stored day. Everything between them is noise for
+  // a growth figure, and scanning it dominated the query at catalogue scale.
+  const bounds = db()
+    .prepare("SELECT MIN(day) AS first, MAX(day) AS last FROM app_metrics WHERE day >= ?")
+    .get(since) as { first: string | null; last: string | null };
+
+  if (!bounds.first || !bounds.last || bounds.first === bounds.last) return [];
+
   const sql = `
-    WITH bounds AS (
-      SELECT app_id,
-             MIN(rating_count) AS start_count,
-             MAX(rating_count) AS end_count
-      FROM app_metrics
-      WHERE day >= ?
-      GROUP BY app_id
-    )
     SELECT a.*,
-           (b.end_count - b.start_count) AS gained,
-           CASE WHEN b.start_count > 0
-                THEN (CAST(b.end_count - b.start_count AS REAL) / b.start_count)
+           (e.rating_count - s.rating_count) AS gained,
+           CASE WHEN s.rating_count > 0
+                THEN (CAST(e.rating_count - s.rating_count AS REAL) / s.rating_count)
                 ELSE 0 END AS growth
-    FROM bounds b
-    JOIN apps a ON a.id = b.app_id
-    WHERE ${conditions.join(" AND ")}
+    FROM app_metrics s
+    JOIN app_metrics e ON e.app_id = s.app_id AND e.day = ?
+    JOIN apps a ON a.id = s.app_id
+    WHERE s.day = ? AND ${conditions.join(" AND ")}
     ORDER BY growth DESC, gained DESC
     LIMIT ? OFFSET ?
   `;
 
   const rows = db()
     .prepare(sql)
-    .all(...params, limit, (page - 1) * limit) as Row[];
+    .all(bounds.last, bounds.first, ...params, limit, (page - 1) * limit) as Row[];
 
   return rows.map<TrendRow>((row) => ({
     app: rowToApp(row),

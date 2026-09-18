@@ -53,6 +53,10 @@ CREATE TABLE IF NOT EXISTS app_metrics (
   PRIMARY KEY (app_id, day)
 );
 
+-- Growth windows look up a single day across every app, which the (app_id, day)
+-- primary key cannot serve.
+CREATE INDEX IF NOT EXISTS idx_metrics_day ON app_metrics (day, app_id);
+
 CREATE TABLE IF NOT EXISTS rankings (
   store      TEXT NOT NULL,
   chart      TEXT NOT NULL,   -- 'free' | 'paid' | 'grossing'

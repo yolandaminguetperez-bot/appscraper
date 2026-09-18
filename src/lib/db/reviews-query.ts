@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { cached } from "@/lib/db/cache";
 import { rowToApp } from "@/lib/db/apps-repo";
 import type { App } from "@/lib/types";
 
@@ -113,6 +114,10 @@ export function queryReviews(f: ReviewFilters = {}) {
 }
 
 export function summarizeReviews(f: ReviewFilters = {}): ReviewSummary {
+  return cached(`summarizeReviews:${JSON.stringify(f)}`, () => computeSummary(f));
+}
+
+function computeSummary(f: ReviewFilters): ReviewSummary {
   const where = buildWhere(f);
 
   const distRows = db()
@@ -182,6 +187,7 @@ export function appsWithReviews(limit = 200): App[] {
 
 /** Average rating per week for the current filter, for the trend chart. */
 export function ratingOverTime(f: ReviewFilters = {}): { day: string; value: number }[] {
+  return cached(`ratingOverTime:${JSON.stringify(f)}`, () => {
   const where = buildWhere(f);
 
   const rows = db()
@@ -197,4 +203,5 @@ export function ratingOverTime(f: ReviewFilters = {}): { day: string; value: num
   return rows
     .filter((row) => row.day && Number.isFinite(row.avg_rating))
     .map((row) => ({ day: row.day, value: Number(row.avg_rating.toFixed(2)) }));
+  });
 }

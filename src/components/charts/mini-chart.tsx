@@ -6,6 +6,15 @@
  * starting at zero: values that sit in a narrow band high above zero flatten
  * into a straight line otherwise, which is exactly the shape a reader cannot use.
  */
+/** Points beyond this add bytes to every row without adding readable detail. */
+const MAX_POINTS = 24;
+
+function downsample(values: number[]): number[] {
+  if (values.length <= MAX_POINTS) return values;
+  const step = (values.length - 1) / (MAX_POINTS - 1);
+  return Array.from({ length: MAX_POINTS }, (_, i) => values[Math.round(i * step)]);
+}
+
 export function MiniChart({
   values,
   label,
@@ -19,22 +28,25 @@ export function MiniChart({
     return <span className={`${className} block`} aria-hidden />;
   }
 
+  const points = downsample(values);
   const width = 100;
   const height = 32;
   const pad = 3;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
+  const min = Math.min(...points);
+  const max = Math.max(...points);
   const span = max - min || 1;
 
-  const coords = values.map((value, index) => {
-    const x = (index / (values.length - 1)) * width;
+  // One decimal: at 24px tall the second one is sub-pixel, and it is paid for on
+  // every row of every page.
+  const coords = points.map((value, index) => {
+    const x = (index / (points.length - 1)) * width;
     const y = pad + (1 - (value - min) / span) * (height - pad * 2);
     return [x, y] as const;
   });
 
-  const line = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
+  const line = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
   const area = `${line} L${width},${height} L0,${height} Z`;
-  const rising = values[values.length - 1] >= values[0];
+  const rising = points[points.length - 1] >= points[0];
 
   return (
     <svg

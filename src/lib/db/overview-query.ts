@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { cached } from "@/lib/db/cache";
 import { rowToApp } from "@/lib/db/apps-repo";
 import type { App } from "@/lib/types";
 
@@ -17,7 +18,7 @@ export type Totals = {
   reviews: number;
 };
 
-export function overviewTotals(): Totals {
+function computeOverviewTotals(): Totals {
   const one = <T>(sql: string): T => db().prepare(sql).get() as T;
 
   const apps = one<{ n: number; ios: number; android: number; mrr: number; downloads: number }>(
@@ -47,9 +48,13 @@ export function overviewTotals(): Totals {
   };
 }
 
+export function overviewTotals(): Totals {
+  return cached("overviewTotals", () => computeOverviewTotals());
+}
+
 export type CategorySlice = { label: string; value: number; apps: number };
 
-export function revenueByCategory(limit = 10): CategorySlice[] {
+function computeRevenueByCategory(limit = 10): CategorySlice[] {
   const rows = db()
     .prepare(
       `SELECT category AS label, COALESCE(SUM(est_mrr), 0) AS value, COUNT(*) AS apps
@@ -65,7 +70,11 @@ export function revenueByCategory(limit = 10): CategorySlice[] {
   }));
 }
 
-export function releasesByMonth(months = 18): { day: string; value: number }[] {
+export function revenueByCategory(limit = 10): CategorySlice[] {
+  return cached(`revenueByCategory:${limit}`, () => computeRevenueByCategory(limit));
+}
+
+function computeReleasesByMonth(months = 18): { day: string; value: number }[] {
   const since = new Date(Date.now() - months * 30.44 * 86400000).toISOString();
   const rows = db()
     .prepare(
@@ -78,7 +87,11 @@ export function releasesByMonth(months = 18): { day: string; value: number }[] {
   return rows.filter((r) => r.month).map((r) => ({ day: `${r.month}-01`, value: r.n }));
 }
 
-export function topMovers(limit = 6): { app: App; gained: number }[] {
+export function releasesByMonth(months = 18): { day: string; value: number }[] {
+  return cached(`releasesByMonth:${months}`, () => computeReleasesByMonth(months));
+}
+
+function computeTopMovers(limit = 6): { app: App; gained: number }[] {
   const since = new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10);
   const rows = db()
     .prepare(
@@ -96,9 +109,13 @@ export function topMovers(limit = 6): { app: App; gained: number }[] {
   return rows.map((row) => ({ app: rowToApp(row), gained: (row.gained as number) ?? 0 }));
 }
 
+export function topMovers(limit = 6): { app: App; gained: number }[] {
+  return cached(`topMovers:${limit}`, () => computeTopMovers(limit));
+}
+
 export type PlatformSlice = { label: string; value: number };
 
-export function organicByPlatform(): PlatformSlice[] {
+function computeOrganicByPlatform(): PlatformSlice[] {
   const rows = db()
     .prepare(
       "SELECT platform AS label, COUNT(*) AS value FROM organic_posts GROUP BY platform ORDER BY value DESC",
@@ -107,14 +124,22 @@ export function organicByPlatform(): PlatformSlice[] {
   return rows.map((row) => ({ label: row.label as string, value: row.value as number }));
 }
 
-export function creativesByFormat(): PlatformSlice[] {
+export function organicByPlatform(): PlatformSlice[] {
+  return cached("organicByPlatform", () => computeOrganicByPlatform());
+}
+
+function computeCreativesByFormat(): PlatformSlice[] {
   const rows = db()
     .prepare("SELECT kind AS label, COUNT(*) AS value FROM creatives GROUP BY kind ORDER BY value DESC")
     .all() as Row[];
   return rows.map((row) => ({ label: row.label as string, value: row.value as number }));
 }
 
-export function screenTypeMix(limit = 8): PlatformSlice[] {
+export function creativesByFormat(): PlatformSlice[] {
+  return cached("creativesByFormat", () => computeCreativesByFormat());
+}
+
+function computeScreenTypeMix(limit = 8): PlatformSlice[] {
   const rows = db()
     .prepare(
       `SELECT screen_type AS label, COUNT(*) AS value FROM flow_screens
@@ -122,4 +147,8 @@ export function screenTypeMix(limit = 8): PlatformSlice[] {
     )
     .all(limit) as Row[];
   return rows.map((row) => ({ label: row.label as string, value: row.value as number }));
+}
+
+export function screenTypeMix(limit = 8): PlatformSlice[] {
+  return cached(`screenTypeMix:${limit}`, () => computeScreenTypeMix(limit));
 }

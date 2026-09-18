@@ -44,8 +44,12 @@ const CTAS = ["Install now", "Get started", "Try free", "Download", "Learn more"
 const RATINGS_PER_DL = { ios: 0.012, android: 0.006 };
 const monthsLive = (iso) => Math.max(1, Math.round((Date.now() - Date.parse(iso)) / (1000 * 60 * 60 * 24 * 30.44)));
 
+// Scale is configurable so the load test can seed a realistic catalogue:
+// SEED_APPS=25000 node scripts/seed.mjs
+const APP_COUNT = Number(process.env.SEED_APPS ?? 420);
+
 const apps = [];
-for (let i = 0; i < 420; i++) {
+for (let i = 0; i < APP_COUNT; i++) {
   const store = rnd() < 0.55 ? "ios" : "android";
   const title = `${pick(NOUN)} ${pick(SUFFIX)}`;
   const category = pick(CATEGORIES);

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { invalidateCache } from "@/lib/db/cache";
 import type { App, Store } from "@/lib/types";
 
 type Row = Record<string, unknown>;
@@ -136,6 +137,7 @@ export function upsertApps(apps: App[]): number {
     for (const app of batch) stmt.run(appToRow(app));
   });
   run(apps);
+  invalidateCache();
   return apps.length;
 }
 

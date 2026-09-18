@@ -54,6 +54,14 @@ Modo: autónomo (Routine horaria). Al despertar: leer este archivo, coger la pri
 - [ ] N. Mapa de países en Store Rankings
 - [ ] O. Vista de tarjetas (grid) alternativa a la tabla en Explore Apps
 
+## Rendimiento (medido, no supuesto)
+- `npm run stress` mide percentiles por ruta. 0 errores en todo lo probado.
+- Cuello de botella real a escala: peso de la respuesta (~380 KB/página), no la BD.
+- better-sqlite3 es SÍNCRONO: un agregado lento bloquea TODAS las peticiones.
+  Por eso los agregados de catálogo van memorizados con invalidación en escritura.
+- Pendiente si hace falta más: reducir filas por página, y varios procesos
+  detrás de un balanceador (un proceso Node = un núcleo).
+
 ## Aviso para el yo futuro
 NO borrar `data/appscraper.db` con el servidor levantado: mantiene abierto el fichero
 borrado y sigue sirviendo datos fantasma con ids que ya no existen. Parar el servidor,

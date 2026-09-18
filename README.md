@@ -22,6 +22,7 @@ data comes from the scrapers in `src/lib/sources/` — press Refresh in any view
 | `npm run dev` / `build` / `start` | Next.js dev server, production build, production server |
 | `npm run seed` | Regenerate the sample dataset |
 | `npm run e2e` | Drive a real browser against a running build (needs `npm run start` first) |
+| `npm run stress` | Load test a running build (`--concurrency`, `--seconds`) |
 | `npm run shots` | Screenshot dashboard routes into `shots/` |
 | `npm run shots-dark` | Screenshot the same routes in dark mode |
 | `npm run mcp` | Start the MCP server for AI agents |
@@ -82,6 +83,28 @@ never cycled, with their own steps per theme. Both sets pass the palette checks
 against their surface; the orange/carmine pair sits in the tritan floor band, so
 every series also carries a legend entry and a direct end label rather than
 relying on hue.
+
+## Performance
+
+`npm run stress` drives a weighted mix of pages and API calls at a fixed
+concurrency and reports per-route percentiles. On a 4-core box, 16 concurrent
+against the sample catalogue: ~55 req/s, p50 204 ms, p95 701 ms, no errors.
+
+Two things dominate at catalogue scale (25k apps, 2.25M metric rows):
+
+- **The driver is synchronous.** better-sqlite3 blocks the event loop, so one
+  300 ms aggregate stalls every other in-flight request. Catalogue-wide
+  aggregates are memoised in `src/lib/db/cache.ts` and dropped on any write.
+- **Page payload, not query time.** The apps table ships ~380 KB, roughly half of
+  it the RSC payload mirroring the rendered tree. Row icons are referenced from a
+  sprite rather than inlined per row, and row sparklines are downsampled; beyond
+  that the lever is fewer rows per page.
+
+Growth windows read the first and last stored day rather than aggregating every
+row between them — 383 ms to 131 ms at that scale, and end-vs-start is the
+honest definition of growth.
+
+`SEED_APPS=25000 node scripts/seed.mjs` builds a large catalogue to test against.
 
 ## Theme
 

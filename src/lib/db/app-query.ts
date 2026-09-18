@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { cached } from "@/lib/db/cache";
 import { rowToApp } from "@/lib/db/apps-repo";
 import type { App, Store } from "@/lib/types";
 
@@ -156,19 +157,23 @@ export function queryApps(f: AppFilters = {}): AppQueryResult {
 }
 
 export function distinctCategories(): string[] {
+  return cached("distinctCategories", () => {
   const rows = db()
     .prepare("SELECT DISTINCT category FROM apps WHERE category IS NOT NULL ORDER BY category")
     .all() as { category: string }[];
   return rows.map((r) => r.category);
+  });
 }
 
 export function distinctLanguages(): string[] {
+  return cached("distinctLanguages", () => {
   const rows = db()
     .prepare(
       "SELECT DISTINCT primary_language FROM apps WHERE primary_language IS NOT NULL ORDER BY primary_language",
     )
     .all() as { primary_language: string }[];
   return rows.map((r) => r.primary_language);
+  });
 }
 
 /** Daily series for many apps at once, so a table of rows costs one query. */
